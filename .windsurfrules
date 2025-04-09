@@ -1,0 +1,6 @@
+# Database Configuration
+database:
+  type: supabase
+  organization_id: pqzdjpoftdwvghuumclm
+  project_id: uhpodnudaupilwjlylzo
+  region: us-east-1
