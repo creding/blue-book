@@ -11,7 +11,7 @@ import type { Devotional } from "@/types/devotional";
 import {
   fetchDevotionals,
   getDevotionalByWeekAndDay,
-} from "@/lib/devotional-service";
+} from "@/data-access/devotion";
 
 interface DevotionalContextType {
   devotionals: Devotional[];
@@ -29,13 +29,27 @@ const DevotionalContext = createContext<DevotionalContextType | undefined>(
   undefined
 );
 
-export function DevotionalProvider({ children }: { children: ReactNode }) {
-  const [devotionals, setDevotionals] = useState<Devotional[]>([]);
+interface DevotionalProviderProps {
+  children: ReactNode;
+  initialDevotional?: Devotional;
+  initialDevotionals?: Devotional[];
+  initialWeek?: number;
+  initialDay?: string;
+}
+
+export function DevotionalProvider({ 
+  children,
+  initialDevotional,
+  initialDevotionals = [],
+  initialWeek,
+  initialDay = "monday",
+}: DevotionalProviderProps) {
+  const [devotionals, setDevotionals] = useState<Devotional[]>(initialDevotionals);
   const [currentDevotional, setCurrentDevotional] = useState<Devotional | null>(
-    null
+    initialDevotional || null
   );
-  const [currentWeek, setCurrentWeek] = useState<number | null>(null);
-  const [currentDay, setCurrentDay] = useState<string>("monday");
+  const [currentWeek, setCurrentWeek] = useState<number | null>(initialWeek || null);
+  const [currentDay, setCurrentDay] = useState<string>(initialDay);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch devotionals on mount
@@ -46,12 +60,6 @@ export function DevotionalProvider({ children }: { children: ReactNode }) {
         const data = await fetchDevotionals();
         console.log("Fetched devotionals:", data);
         setDevotionals(data);
-
-        // Set initial week if not already set
-        if (currentWeek === null && data.length > 0) {
-          // Set to first devotional's ID
-          setCurrentWeek(data[0].devotion_id);
-        }
       } catch (error) {
         console.error("Error loading devotionals:", error);
       } finally {
@@ -59,8 +67,10 @@ export function DevotionalProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    loadDevotionals();
-  }, [currentWeek]);
+    if (initialDevotionals.length === 0) {
+      loadDevotionals();
+    }
+  }, []);
 
   // Update current devotional when week or day changes
   useEffect(() => {
@@ -68,7 +78,10 @@ export function DevotionalProvider({ children }: { children: ReactNode }) {
       if (currentWeek !== null && currentDay) {
         setIsLoading(true);
         try {
-          const devotional = await getDevotionalByWeekAndDay(currentWeek, currentDay);
+          const devotional = await getDevotionalByWeekAndDay(
+            currentWeek,
+            currentDay
+          );
           setCurrentDevotional(devotional);
         } catch (error) {
           console.error("Error fetching devotional:", error);
@@ -101,7 +114,9 @@ export function DevotionalProvider({ children }: { children: ReactNode }) {
       setCurrentDay(days[currentDayIndex + 1]);
     } else {
       // Move to next devotional, first day
-      const currentIndex = devotionals.findIndex(d => d.devotion_id === currentWeek);
+      const currentIndex = devotionals.findIndex(
+        (d) => d.devotion_id === currentWeek
+      );
       const nextExists = currentIndex < devotionals.length - 1;
 
       if (nextExists) {
@@ -131,7 +146,9 @@ export function DevotionalProvider({ children }: { children: ReactNode }) {
       setCurrentDay(days[currentDayIndex - 1]);
     } else {
       // Move to previous devotional, last day
-      const currentIndex = devotionals.findIndex(d => d.devotion_id === currentWeek);
+      const currentIndex = devotionals.findIndex(
+        (d) => d.devotion_id === currentWeek
+      );
       const prevExists = currentIndex > 0;
 
       if (prevExists) {

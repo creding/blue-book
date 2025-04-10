@@ -4,3 +4,45 @@ database:
   organization_id: pqzdjpoftdwvghuumclm
   project_id: uhpodnudaupilwjlylzo
   region: us-east-1
+
+# Project Structure
+structure:
+  - data_access: data-access/
+  - supabase_client: lib/supabase.ts
+  - types: types/
+
+# Data Access Rules
+data_access:
+  # Client Configuration
+  client:
+    - Single Supabase instance from lib/supabase.ts
+    - Required env vars: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  # Core Functions
+  functions:
+    - fetchDevotionals: Get all devotionals with related data
+    - getDevotionalByWeekAndDay: Get specific devotional
+    - searchDevotionals: Search by text content
+
+  # Error Handling
+  errors:
+    - Log errors to console
+    - Return empty arrays for failed lists
+    - Return null for failed single items
+    - Components must handle loading/error states
+
+  # Query Patterns
+  queries:
+    - Use select("*") for full table queries
+    - Join related data with separate queries
+    - Use .eq() for exact matches
+    - Use .single() for single results
+    - Use double quotes for strings
+
+  # Code Style
+  style:
+    - Use arrow functions
+    - Use async/await consistently
+    - Use proper TypeScript types
+    - Handle null checks
+    - Use double quotes for strings

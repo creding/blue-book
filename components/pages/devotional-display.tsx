@@ -8,6 +8,7 @@ import {
   Text,
   Title,
   ActionIcon,
+  Skeleton,
 } from "@mantine/core";
 import {
   IconStar,
@@ -18,6 +19,7 @@ import {
   IconHeartCheck,
 } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
+import { useBibleVersion } from "@/providers/bible-version-provider";
 import { Devotional } from "@/types/devotional";
 import { getDayContent } from "@/lib/devotional-utils";
 import { fetchVersesAction } from "@/actions/fetchVersesAction";
@@ -33,25 +35,26 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
   const [showDebug, setShowDebug] = useState(false);
   const [psalm, setPsalm] = useState<string | null>(null);
   const [verse, setVerse] = useState<string | null>(null);
-  const [bibleVersion, setBibleVersion] = useState<string>();
+  const { bibleVersion } = useBibleVersion();
 
   useEffect(() => {
     async function fetchVerses() {
       if (devotional) {
         if (devotional.psalm?.reference) {
-          const psalmText = await fetchVersesAction(devotional.psalm.reference);
+          const psalmText = await fetchVersesAction(devotional.psalm.reference, bibleVersion);
           setPsalm(psalmText);
         }
         if (devotional.scriptures[0].reference) {
           const verseText = await fetchVersesAction(
-            devotional.scriptures[0].reference
+            devotional.scriptures[0].reference,
+            bibleVersion
           );
           setVerse(verseText);
         }
       }
     }
     fetchVerses();
-  }, [devotional]);
+  }, [devotional, bibleVersion]);
 
   useEffect(() => {
     const savedFavorites = localStorage.getItem("favorites");
@@ -168,18 +171,28 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.opening_prayer && (
           <Stack gap="xs">
             <Title order={3}>Opening Prayer</Title>
-            <Text style={{ whiteSpace: "pre-wrap" }}>
-              {devotional.opening_prayer}
+            <Text>{devotional.opening_prayer}</Text>
+            <Text c="dimmed" size="sm" fs="italic">
+              -- {devotional.opening_prayer_source}
             </Text>
           </Stack>
         )}
 
         {/* Psalm */}
-        {psalm && (
+        {devotional?.psalm?.reference && (
           <Stack gap="xs">
             <Title order={3}>{devotional?.psalm?.reference}</Title>
             <div className="scripture-container">
-              <div dangerouslySetInnerHTML={{ __html: psalm }} />
+              {psalm ? (
+                <div dangerouslySetInnerHTML={{ __html: psalm }} />
+              ) : (
+                <Stack gap="md">
+                  <Skeleton height={16} radius="xl" />
+                  <Skeleton height={16} radius="xl" width="90%" />
+                  <Skeleton height={16} radius="xl" width="95%" />
+                  <Skeleton height={16} radius="xl" width="85%" />
+                </Stack>
+              )}
             </div>
           </Stack>
         )}
@@ -227,8 +240,9 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.closing_prayer && (
           <Stack gap="xs">
             <Title order={3}>Closing Prayer</Title>
-            <Text style={{ whiteSpace: "pre-wrap" }}>
-              {devotional.closing_prayer}
+            <Text>{devotional.closing_prayer}</Text>
+            <Text size="sm" fs="italic" c="dimmed">
+              -- {devotional.closing_prayer_source}
             </Text>
           </Stack>
         )}
@@ -238,23 +252,6 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
           <Stack gap="xs">
             <Title order={3}>Song</Title>
             <Text>{devotional.song_title}</Text>
-          </Stack>
-        )}
-
-        {/* Debug Info */}
-        {showDebug && (
-          <Stack gap="xs">
-            <Title order={3}>Debug Info</Title>
-            <Text component="pre" style={{ whiteSpace: "pre-wrap" }}>
-              {JSON.stringify(
-                {
-                  devotional,
-                  day,
-                },
-                null,
-                2
-              )}
-            </Text>
           </Stack>
         )}
       </Stack>

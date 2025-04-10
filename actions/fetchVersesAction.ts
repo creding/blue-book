@@ -8,10 +8,10 @@ interface BibleApiResponse {
   };
 }
 
-export const fetchVersesAction = async (reference: string): Promise<string> => {
+export const fetchVersesAction = async (reference: string, bibleId: string = "de4e12af7f28f599-02"): Promise<string> => {
   try {
     const response = await fetch(
-      `https://api.scripture.api.bible/v1/bibles/de4e12af7f28f599-02/search?query=${encodeURIComponent(
+      `https://api.scripture.api.bible/v1/bibles/${bibleId}/search?query=${encodeURIComponent(
         reference
       )}`,
       {

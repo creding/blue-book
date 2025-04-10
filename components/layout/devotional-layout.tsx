@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import type { Devotional } from "@/types/devotional";
 import {
   AppShell,
   Burger,
@@ -14,15 +15,23 @@ import {
   rem,
   Loader,
   Center,
+  Select,
 } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { IconChevronLeft, IconChevronRight, IconSun, IconMoon } from "@tabler/icons-react";
-import { TableOfContents } from "./table-of-contents";
-import { DevotionalDisplay } from "./devotional-display";
-import { SearchSidebar } from "./search-sidebar";
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconSun,
+  IconMoon,
+} from "@tabler/icons-react";
+import { TableOfContents } from "../ui/table-of-contents";
+import { DevotionalDisplay } from "../pages/devotional-display";
+import { SearchSidebar } from "../ui/search-sidebar";
 import { useDevotional } from "@/providers/devotional-provider";
-import { DaySelector } from "./day-selector";
-import { WeekSelector } from "./week-selector";
+import { bible_versions } from "@/lib/bibles";
+import { useBibleVersion } from "@/providers/bible-version-provider";
+import { DaySelector } from "../ui/day-selector";
+import { WeekSelector } from "../ui/week-selector";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
 interface DevotionalLayoutProps {
   initialWeek?: number;
@@ -31,7 +40,7 @@ interface DevotionalLayoutProps {
 
 function ColorSchemeToggle() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const isDark = colorScheme === 'dark';
+  const isDark = colorScheme === "dark";
 
   return (
     <ActionIcon
@@ -51,6 +60,7 @@ export function DevotionalLayout({
   const [leftOpened, { toggle: toggleLeft }] = useDisclosure();
   const [rightOpened, { toggle: toggleRight }] = useDisclosure();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const { bibleVersion, setBibleVersion } = useBibleVersion();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -60,36 +70,38 @@ export function DevotionalLayout({
     setCurrentWeek,
     currentDay,
     setCurrentDay,
+    isLoading,
+    devotionals,
     nextDevotional,
     previousDevotional,
-    isLoading,
   } = useDevotional();
 
   console.log("currentDevotional", currentDevotional);
 
-  // Set initial week and day from props or URL if provided
+  // Set initial week and day from props or use current values
   useEffect(() => {
-    if (initialWeek) {
+    if (initialWeek && initialDay) {
+      // If we have URL params, use those
       setCurrentWeek(initialWeek);
-    }
-    if (initialDay) {
       setCurrentDay(initialDay);
+    } else if (!isLoading && currentWeek === null && devotionals.length > 0) {
+      // If no URL params and devotionals are loaded, use first devotional
+      setCurrentWeek(devotionals[0].devotion_id);
+      setCurrentDay("monday");
     }
-  }, [initialWeek, initialDay, setCurrentWeek, setCurrentDay]);
+  }, [devotionals, initialWeek, initialDay, currentWeek, isLoading, setCurrentWeek, setCurrentDay]); // Run when devotionals are loaded or props change
 
   // Update URL when week or day changes
   useEffect(() => {
-    // Only update URL if initialWeek and initialDay were provided
-    // or if the user manually navigated (not on first load)
     if (
-      currentWeek &&
-      currentDay &&
-      (initialWeek || initialDay || pathname !== "/") &&
-      !pathname.includes(`/week-${currentWeek}/${currentDay}`)
+      !isLoading && 
+      currentWeek && 
+      currentDay && 
+      !pathname.includes(`/${currentWeek}/${currentDay}`)
     ) {
-      router.push(`/week-${currentWeek}/${currentDay}`);
+      router.push(`/${currentWeek}/${currentDay}`);
     }
-  }, [currentWeek, currentDay, router, pathname, initialWeek, initialDay]);
+  }, [currentWeek, currentDay, router, pathname, isLoading]);
 
   return (
     <AppShell
@@ -123,6 +135,19 @@ export function DevotionalLayout({
               <Group>
                 <WeekSelector />
                 <DaySelector />
+                <Select
+                  size="sm"
+                  placeholder="Select Bible version"
+                  data={bible_versions.map((bible) => ({
+                    value: bible.id,
+                    label: bible.name,
+                  }))}
+                  value={bibleVersion}
+                  onChange={(value) =>
+                    setBibleVersion(value || "de4e12af7f28f599-02")
+                  }
+                  searchable
+                />
               </Group>
             )}
             <Group gap="xs">
