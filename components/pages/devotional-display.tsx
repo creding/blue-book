@@ -9,6 +9,7 @@ import {
   Title,
   ActionIcon,
   Skeleton,
+  Container,
 } from "@mantine/core";
 import {
   IconStar,
@@ -22,7 +23,7 @@ import { useState, useEffect } from "react";
 import { useBibleVersion } from "@/providers/bible-version-provider";
 import { Devotional } from "@/types/devotional";
 import { getDayContent } from "@/lib/devotional-utils";
-import { fetchVersesAction } from "@/actions/fetchVersesAction";
+import { fetchEsvAction } from "@/actions/esv";
 
 export interface DevotionalDisplayProps {
   devotional: Devotional;
@@ -41,13 +42,12 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
     async function fetchVerses() {
       if (devotional) {
         if (devotional.psalm?.reference) {
-          const psalmText = await fetchVersesAction(devotional.psalm.reference, bibleVersion);
+          const psalmText = await fetchEsvAction(devotional.psalm.reference);
           setPsalm(psalmText);
         }
         if (devotional.scriptures[0].reference) {
-          const verseText = await fetchVersesAction(
-            devotional.scriptures[0].reference,
-            bibleVersion
+          const verseText = await fetchEsvAction(
+            devotional.scriptures[0].reference
           );
           setVerse(verseText);
         }
@@ -130,7 +130,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
     : null;
 
   return (
-    <Paper p="md" withBorder className="devotional-content">
+    <Paper p="lg" withBorder className="devotional-content">
       <Stack gap="lg">
         <Group justify="space-between" mb="md">
           <Title order={2}>{devotional.title}</Title>

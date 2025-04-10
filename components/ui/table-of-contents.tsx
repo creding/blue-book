@@ -13,26 +13,15 @@ import {
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
 import { useDevotional } from "@/providers/devotional-provider";
+import Link from "next/link";
 
 export function TableOfContents() {
-  const { devotionals, setCurrentWeek, setCurrentDay, currentDevotional } =
-    useDevotional();
+  const { devotionals } = useDevotional();
   const [filter, setFilter] = useState("");
 
   const filteredDevotionals = devotionals.filter((devotional) =>
     devotional.title?.toLowerCase().includes(filter.toLowerCase())
   );
-
-  const handleDevotionalSelect = (devotionId: number) => {
-    const devotional = devotionals.find((d) => d.devotion_id === devotionId);
-    if (devotional) {
-      // Extract week from devotional (assuming it's stored in the title or elsewhere)
-      // For this example, we'll use the devotion_id as the week
-      const week = devotional.devotion_id;
-      setCurrentWeek(week);
-      setCurrentDay("monday"); // Default to Monday when selecting from TOC
-    }
-  };
 
   return (
     <Stack gap="md" h="100%">
@@ -51,10 +40,10 @@ export function TableOfContents() {
           {filteredDevotionals.length > 0 ? (
             filteredDevotionals.map((devotional) => (
               <NavLink
+                component={Link}
+                href={`/${devotional.devotion_id}/monday`}
                 key={devotional.devotion_id}
-                onClick={() => handleDevotionalSelect(devotional.devotion_id!)}
                 p="xs"
-                component="button"
                 variant="subtle"
                 color="blue"
                 label={devotional.title}

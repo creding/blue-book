@@ -16,6 +16,7 @@ import {
   Loader,
   Center,
   Select,
+  Container,
 } from "@mantine/core";
 import {
   IconChevronLeft,
@@ -89,17 +90,26 @@ export function DevotionalLayout({
       setCurrentWeek(devotionals[0].devotion_id);
       setCurrentDay("monday");
     }
-  }, [devotionals, initialWeek, initialDay, currentWeek, isLoading, setCurrentWeek, setCurrentDay]); // Run when devotionals are loaded or props change
+  }, [
+    devotionals,
+    initialWeek,
+    initialDay,
+    currentWeek,
+    isLoading,
+    setCurrentWeek,
+    setCurrentDay,
+  ]); // Run when devotionals are loaded or props change
 
-  // Update URL when week or day changes
+  // Update URL when week or day changes, but only if they came from user interaction
   useEffect(() => {
     if (
-      !isLoading && 
-      currentWeek && 
-      currentDay && 
-      !pathname.includes(`/${currentWeek}/${currentDay}`)
+      !isLoading &&
+      currentWeek &&
+      currentDay &&
+      !pathname.includes(`/${currentWeek}/${currentDay}`) &&
+      pathname !== "/" // Don't update URL on initial load
     ) {
-      router.push(`/${currentWeek}/${currentDay}`);
+      router.replace(`/${currentWeek}/${currentDay}`, { scroll: false });
     }
   }, [currentWeek, currentDay, router, pathname, isLoading]);
 
@@ -168,53 +178,55 @@ export function DevotionalLayout({
       </AppShell.Navbar>
 
       <AppShell.Main>
-        {isMobile && (
-          <Group mb="md" justify="apart">
-            <WeekSelector />
-            <DaySelector />
+        <Container size="md">
+          {isMobile && (
+            <Group mb="md" justify="apart">
+              <WeekSelector />
+              <DaySelector />
+            </Group>
+          )}
+
+          <Group justify="apart" mb="md">
+            <Button
+              leftSection={<IconChevronLeft size={rem(16)} />}
+              variant="subtle"
+              onClick={previousDevotional}
+            >
+              Previous
+            </Button>
+            <Button
+              rightSection={<IconChevronRight size={rem(16)} />}
+              variant="subtle"
+              onClick={nextDevotional}
+            >
+              Next
+            </Button>
           </Group>
-        )}
 
-        <Group justify="apart" mb="md">
-          <Button
-            leftSection={<IconChevronLeft size={rem(16)} />}
-            variant="subtle"
-            onClick={previousDevotional}
-          >
-            Previous
-          </Button>
-          <Button
-            rightSection={<IconChevronRight size={rem(16)} />}
-            variant="subtle"
-            onClick={nextDevotional}
-          >
-            Next
-          </Button>
-        </Group>
-
-        {isLoading ? (
-          <Center p="xl">
-            <Loader size="md" />
-          </Center>
-        ) : (
-          <Transition
-            mounted={!!currentDevotional}
-            transition="fade"
-            duration={400}
-            timingFunction="ease"
-          >
-            {(styles) => (
-              <div style={styles}>
-                {currentDevotional && (
-                  <DevotionalDisplay
-                    devotional={currentDevotional}
-                    day={currentDay}
-                  />
-                )}
-              </div>
-            )}
-          </Transition>
-        )}
+          {isLoading ? (
+            <Center p="xl">
+              <Loader size="md" />
+            </Center>
+          ) : (
+            <Transition
+              mounted={!!currentDevotional}
+              transition="fade"
+              duration={400}
+              timingFunction="ease"
+            >
+              {(styles) => (
+                <div style={styles}>
+                  {currentDevotional && (
+                    <DevotionalDisplay
+                      devotional={currentDevotional}
+                      day={currentDay}
+                    />
+                  )}
+                </div>
+              )}
+            </Transition>
+          )}
+        </Container>
       </AppShell.Main>
 
       <AppShell.Aside p="md">
