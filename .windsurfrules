@@ -46,3 +46,14 @@ data_access:
     - Use proper TypeScript types
     - Handle null checks
     - Use double quotes for strings
+    - avoid useEffect
+    - favor server components
+
+  # Planning
+  planning:
+    - When implementing new features, always plan out the implementation first
+    - Plan out the implementation in a step-by-step manner
+    - Write the plan in markdown
+    - Save the plan in the docs directory
+    
+    
