@@ -69,6 +69,7 @@ export interface Devotional {
   song_title?: string;
   scriptures: Scripture[];
   readings: Reading[];
+  isFavorited?: boolean;
 }
 
 export interface DayContent {

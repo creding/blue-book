@@ -12,7 +12,7 @@ export async function getDevotionals(): Promise<Devotional[]> {
     console.error("Error fetching devotionals:", error);
     return [];
   }
-  console.log("Fetched devotionals:", data);
+
   return data || [];
 }
 
@@ -168,16 +168,19 @@ export async function updateDevotionalSlug(
 }
 
 export async function getDevotionalByWeekAndDay(
-  devotionId: number,
-  day: string
+  week: number,
+  day: string,
+  userId?: string
 ): Promise<Devotional | null> {
-  const { data: devotional, error } = await supabase
+  // Get the devotional
+  const { data: devotional, error: devotionalError } = await supabase
     .from("devotions")
     .select("*")
-    .eq("id", devotionId)
+    .eq("id", week)
     .single();
 
-  if (error || !devotional) {
+  if (devotionalError || !devotional) {
+    console.error("Error fetching devotional:", devotionalError);
     return null;
   }
 
@@ -208,6 +211,17 @@ export async function getDevotionalByWeekAndDay(
         day: ds.day_of_week,
       })) || [];
 
+  let isFavorited = false;
+  if (userId) {
+    const { data: favorite } = await supabase
+      .from("favorites")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("devotional_id", devotional.id)
+      .single();
+    isFavorited = !!favorite;
+  }
+
   return {
     id: devotional.id,
     devotion_id: devotional.id,
@@ -228,5 +242,6 @@ export async function getDevotionalByWeekAndDay(
         title: r.title,
         day: day,
       })) || [],
+    isFavorited,
   };
 }
