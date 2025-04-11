@@ -4,11 +4,13 @@ import { Auth } from "@supabase/auth-ui-react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Paper } from "@mantine/core";
+import { getURL } from "@/utils/getUrl";
 
 export default function AuthForm({ redirectPath }: { redirectPath: string }) {
-  const redirectTo = `${
-    process.env.NEXT_PUBLIC_VERCEL_URL
-  }/auth/callback?redirect=${encodeURIComponent(redirectPath)}`;
+  const url = getURL();
+  const redirectTo = `${url}/auth/callback?redirect=${encodeURIComponent(
+    redirectPath
+  )}`;
 
   console.log("Redirecting to:", redirectTo);
   const supabase = createClientComponentClient();
