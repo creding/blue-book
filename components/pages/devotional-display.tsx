@@ -26,15 +26,22 @@ import {
   IconQuote,
 } from "@tabler/icons-react";
 import FavoriteButton from "@/components/FavoriteButton";
+import { Notes } from "@/components/Notes";
 
 import { Devotional } from "@/types/devotional";
+import { Note } from "@/types/note";
 
 export interface DevotionalDisplayProps {
   devotional: Devotional | null;
   day: string | null;
+  notes: Note[];
 }
 
-export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
+export function DevotionalDisplay({
+  devotional,
+  day,
+  notes,
+}: DevotionalDisplayProps) {
   const theme = useMantineTheme();
 
   const handleShare = () => {
@@ -206,6 +213,16 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
             {/* Optionally add artist/source if available */}
           </Stack>
         )}
+
+        {/* Optional Divider */}
+        {devotional.song_title && <Divider />}
+
+        {/* Notes Section */}
+        <Notes
+          notes={notes}
+          referenceType="devotion"
+          referenceId={String(devotional.id)}
+        />
       </Stack>
     </Paper>
   );

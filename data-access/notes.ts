@@ -1,117 +1,123 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabaseServerClient";
 import { Note, CreateNoteParams, UpdateNoteParams } from "@/types/note";
 
 /**
  * Get all notes for the current user
  */
 export async function getNotes() {
-  try {
-    const { data, error } = await supabase
-      .from("notes")
-      .select("*")
-      .order("created_at", { ascending: false });
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
 
-    if (error) {
-      console.error("Error fetching notes:", error);
-      return [];
-    }
+  const { data, error } = await supabase
+    .from("notes")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
 
-    return data as Note[];
-  } catch (error) {
-    console.error("Error in getNotes:", error);
+  if (error) {
+    console.error("Error fetching notes:", error);
     return [];
   }
+
+  return data as Note[];
 }
 
 /**
  * Get notes for a specific reference (devotion, scripture, or reading)
  */
-export async function getNotesByReference(referenceType: Note["reference_type"], referenceId: string) {
-  try {
-    const { data, error } = await supabase
-      .from("notes")
-      .select("*")
-      .eq("reference_type", referenceType)
-      .eq("reference_id", referenceId)
-      .order("created_at", { ascending: false });
+export async function getNotesByReference(
+  referenceType: Note["reference_type"],
+  referenceId: string
+) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
 
-    if (error) {
-      console.error("Error fetching notes by reference:", error);
-      return [];
-    }
+  const { data, error } = await supabase
+    .from("notes")
+    .select("*")
+    .eq("user_id", user.id)
+    .eq("reference_type", referenceType)
+    .eq("reference_id", referenceId)
+    .order("created_at", { ascending: false });
 
-    return data as Note[];
-  } catch (error) {
-    console.error("Error in getNotesByReference:", error);
+  if (error) {
+    console.error("Error fetching notes by reference:", error);
     return [];
   }
+
+  return data as Note[];
 }
 
 /**
  * Create a new note
  */
 export async function createNote(params: CreateNoteParams) {
-  try {
-    const { data, error } = await supabase
-      .from("notes")
-      .insert([params])
-      .select()
-      .single();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
-    if (error) {
-      console.error("Error creating note:", error);
-      return null;
-    }
+  const { data, error } = await supabase
+    .from("notes")
+    .insert({
+      id: crypto.randomUUID(),
+      user_id: user.id,
+      ...params,
+    })
+    .select()
+    .single();
 
-    return data as Note;
-  } catch (error) {
-    console.error("Error in createNote:", error);
+  if (error) {
+    console.error("Error creating note:", error);
     return null;
   }
+
+  return data as Note;
 }
 
 /**
  * Update an existing note
  */
 export async function updateNote(id: string, params: UpdateNoteParams) {
-  try {
-    const { data, error } = await supabase
-      .from("notes")
-      .update(params)
-      .eq("id", id)
-      .select()
-      .single();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
 
-    if (error) {
-      console.error("Error updating note:", error);
-      return null;
-    }
+  const { data, error } = await supabase
+    .from("notes")
+    .update(params)
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single();
 
-    return data as Note;
-  } catch (error) {
-    console.error("Error in updateNote:", error);
+  if (error) {
+    console.error("Error updating note:", error);
     return null;
   }
+
+  return data as Note;
 }
 
 /**
  * Delete a note
  */
 export async function deleteNote(id: string) {
-  try {
-    const { error } = await supabase
-      .from("notes")
-      .delete()
-      .eq("id", id);
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
 
-    if (error) {
-      console.error("Error deleting note:", error);
-      return false;
-    }
+  const { error } = await supabase
+    .from("notes")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
 
-    return true;
-  } catch (error) {
-    console.error("Error in deleteNote:", error);
+  if (error) {
+    console.error("Error deleting note:", error);
     return false;
   }
+
+  return true;
 }

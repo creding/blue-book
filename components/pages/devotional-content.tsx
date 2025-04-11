@@ -4,6 +4,7 @@ import { DaySelector } from "../ui/day-selector";
 import { WeekSelector } from "../ui/week-selector";
 import { getDevotionalByWeekAndDay } from "@/data-access/devotion";
 import { createClient } from "@/lib/supabaseServerClient";
+import { getNotesByReference } from "@/data-access/notes";
 
 export async function DevotionalContent({
   week,
@@ -17,6 +18,7 @@ export async function DevotionalContent({
     data: { user },
   } = await supabase.auth.getUser();
   const devotional = await getDevotionalByWeekAndDay(week, day, user?.id);
+  const notes = devotional ? await getNotesByReference("devotion", String(devotional.id)) : [];
 
   return (
     <Container size="md">
@@ -24,7 +26,7 @@ export async function DevotionalContent({
         <WeekSelector week={week} day={day} />
         <DaySelector week={week} day={day} />
       </Group>
-      <DevotionalDisplay devotional={devotional} day={day} />
+      <DevotionalDisplay devotional={devotional} day={day} notes={notes} />
     </Container>
   );
 }
