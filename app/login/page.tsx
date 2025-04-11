@@ -1,11 +1,12 @@
 import AuthForm from "@/components/auth/auth-form";
 import { Title, Container, Card, Center } from "@mantine/core";
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
   searchParams: { redirect?: string };
 }) {
+  const { redirect } = await searchParams;
   return (
     <Container size="sm" my="lg">
       <Center h="100vh">
@@ -21,7 +22,7 @@ export default function LoginPage({
           <Title order={2} ta="center" mt="xl" mb="lg">
             Welcome to The Blue Book
           </Title>
-          <AuthForm redirectPath={searchParams.redirect || "/"} />
+          <AuthForm redirectPath={redirect || "/"} />
         </Card>
       </Center>
     </Container>

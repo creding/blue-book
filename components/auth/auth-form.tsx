@@ -7,7 +7,7 @@ import { Paper } from "@mantine/core";
 
 export default function AuthForm({ redirectPath }: { redirectPath: string }) {
   const redirectTo = `${
-    process.env.NEXT_PUBLIC_BASE_URL
+    process.env.NEXT_PUBLIC_VERCEL_URL
   }/auth/callback?redirect=${encodeURIComponent(redirectPath)}`;
 
   console.log("Redirecting to:", redirectTo);
