@@ -21,7 +21,7 @@ export function DevotionalLayout({
   toc,
 }: DevotionalLayoutProps) {
   const [leftOpened, { toggle: toggleLeft }] = useDisclosure();
-  const [rightOpened, { toggle: toggleRight }] = useDisclosure();
+  const [rightOpened, { toggle: toggleRight }] = useDisclosure(false);
 
   return (
     <AppShell
@@ -32,9 +32,9 @@ export function DevotionalLayout({
         collapsed: { mobile: !leftOpened, desktop: false },
       }}
       aside={{
-        width: 300,
+        width: 600,
         breakpoint: "md",
-        collapsed: { mobile: !rightOpened, desktop: false },
+        collapsed: { mobile: !rightOpened, desktop: !rightOpened },
       }}
       padding="md"
     >
@@ -53,8 +53,8 @@ export function DevotionalLayout({
 
       <AppShell.Main>{children}</AppShell.Main>
 
-      <AppShell.Aside p="md">
-        <SearchSidebar />
+      <AppShell.Aside>
+        <SearchSidebar rightOpened={rightOpened} toggleRight={toggleRight} />
       </AppShell.Aside>
     </AppShell>
   );
