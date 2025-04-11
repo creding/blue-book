@@ -1,26 +1,20 @@
 import { DevotionalLayout } from "@/components/layout/devotional-layout";
-import { Title, Text, Container, Paper, Stack } from "@mantine/core";
+import { DevotionalContent } from "@/components/pages/devotional-content";
+import { DevotionalSkeleton } from "@/components/skeletons/devotional-skeleton";
+import { getCurrentWeekAndDay } from "@/lib/date-utils";
+import { Suspense } from "react";
+import { TableOfContents } from "@/components/ui/table-of-contents";
 
 export default function HomePage() {
+  const { week, day } = getCurrentWeekAndDay();
+
   return (
     <>
-      <DevotionalLayout />
-      <Container
-        size="sm"
-        py="xl"
-        style={{ display: "none" }}
-        className="welcome-message"
-      >
-        <Paper p="xl" withBorder>
-          <Stack gap="md">
-            <Title order={2}>Welcome to Daily Devotional</Title>
-            <Text>
-              Please select a week and day from the navigation controls above,
-              or browse devotionals from the sidebar.
-            </Text>
-          </Stack>
-        </Paper>
-      </Container>
+      <DevotionalLayout week={week} day={day} toc={<TableOfContents />}>
+        <Suspense fallback={<DevotionalSkeleton />}>
+          <DevotionalContent week={week} day={day} />
+        </Suspense>
+      </DevotionalLayout>
     </>
   );
 }

@@ -1,6 +1,13 @@
 import { DevotionalLayout } from "@/components/layout/devotional-layout";
-import { getDevotionalByWeekAndDay, fetchDevotionals } from "@/data-access/devotion";
+import { DevotionalContent } from "@/components/pages/devotional-content";
+import { DevotionalSkeleton } from "@/components/skeletons/devotional-skeleton";
+import {
+  getDevotionalByWeekAndDay,
+  getDevotionals,
+} from "@/data-access/devotion";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { TableOfContents } from "@/components/ui/table-of-contents";
 
 export async function generateMetadata({
   params,
@@ -49,12 +56,11 @@ export default async function DevotionalPage({
     return null;
   }
 
-  const devotional = await getDevotionalByWeekAndDay(weekNum, day);
-
-  if (!devotional) {
-    redirect("/");
-    return null;
-  }
-
-  return <DevotionalLayout initialWeek={weekNum} initialDay={day} />;
+  return (
+    <DevotionalLayout week={weekNum} day={day} toc={<TableOfContents />}>
+      <Suspense fallback={<DevotionalSkeleton />}>
+        <DevotionalContent week={weekNum} day={day} />
+      </Suspense>
+    </DevotionalLayout>
+  );
 }

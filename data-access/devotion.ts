@@ -1,65 +1,18 @@
 import { Devotional } from "@/types/devotional";
 import { supabase } from "@/lib/supabase";
 
-export async function fetchDevotionals(): Promise<Devotional[]> {
-  const { data: devotions, error } = await supabase
+export async function getDevotionals(): Promise<Devotional[]> {
+  const { data, error } = await supabase
     .from("devotions")
-    .select("*");
+    .select()
+    .order("week", { ascending: true });
 
   if (error) {
     console.error("Error fetching devotionals:", error);
     return [];
   }
-
-  const result = [];
-
-  for (const devotion of devotions) {
-    // Get scriptures for this devotion
-    const { data: devotionScriptures } = await supabase
-      .from("devotion_scriptures")
-      .select("*, scriptures(*)")
-      .eq("devotion_id", devotion.id);
-
-    // Get readings for this devotion
-    const { data: readings } = await supabase
-      .from("readings")
-      .select("*")
-      .eq("devotion_id", devotion.id);
-
-    const psalm =
-      devotionScriptures?.find((ds) => ds.is_psalm)?.scriptures || null;
-    const scriptures =
-      devotionScriptures
-        ?.filter((ds) => !ds.is_psalm)
-        ?.map((ds) => ({
-          id: ds.scriptures.id,
-          reference: ds.scriptures.reference,
-          text: ds.scriptures.text,
-          day: ds.day_of_week,
-        })) || [];
-
-    result.push({
-      devotion_id: devotion.id,
-      title: devotion.title,
-      opening_prayer: devotion.opening_prayer || "",
-      opening_prayer_source: devotion.opening_prayer_source,
-      closing_prayer: devotion.closing_prayer || "",
-      closing_prayer_source: devotion.closing_prayer_source,
-      song_title: devotion.song_title,
-      psalm,
-      scriptures,
-      readings:
-        readings?.map((r) => ({
-          id: r.id,
-          text: r.text,
-          source: r.source,
-          title: r.title,
-          day: "monday",
-        })) || [],
-    });
-  }
-
-  return result;
+  console.log("Fetched devotionals:", data);
+  return data || [];
 }
 
 interface SearchFilters {
@@ -71,8 +24,14 @@ interface SearchFilters {
 
 export async function searchDevotionals(
   query: string,
-  filters: SearchFilters = { title: true, prayers: true, readings: true, scripture: true }
+  filters: SearchFilters = {
+    title: true,
+    prayers: true,
+    readings: true,
+    scripture: true,
+  }
 ): Promise<Devotional[]> {
+
   // Start with an empty set of devotion IDs
   const devotionIds = new Set<number>();
 
@@ -89,32 +48,37 @@ export async function searchDevotionals(
       conditions.push(`closing_prayer.ilike.%${query}%`);
     }
 
-    const { data: titleMatches } = await supabase
+    const { data: titleMatches, error: titleError } = await supabase
       .from("devotions")
       .select("id")
-      .or(conditions.join(','));
+      .or(conditions.join(","));
 
-    titleMatches?.forEach(d => devotionIds.add(d.id));
+    if (titleError) console.error("Title/prayer search error:", titleError);
+    titleMatches?.forEach((d) => devotionIds.add(d.id));
   }
 
   // Search in readings
   if (filters.readings) {
-    const { data: readingMatches } = await supabase
+    const { data: readingMatches, error: readingError } = await supabase
       .from("readings")
       .select("devotion_id")
-      .or(`text.ilike.%${query}%,source.ilike.%${query}%,title.ilike.%${query}%`);
+      .or(
+        `text.ilike.%${query}%,source.ilike.%${query}%,title.ilike.%${query}%`
+      );
 
-    readingMatches?.forEach(r => devotionIds.add(r.devotion_id));
+    if (readingError) console.error("Reading search error:", readingError);
+    readingMatches?.forEach((r) => devotionIds.add(r.devotion_id));
   }
 
   // Search in scriptures
   if (filters.scripture) {
-    const { data: scriptureMatches } = await supabase
+    const { data: scriptureMatches, error: scriptureError } = await supabase
       .from("devotion_scriptures")
       .select("devotion_id, scriptures(*)")
-      .textSearch('scriptures.text', query);
+      .textSearch("scriptures.text", query);
 
-    scriptureMatches?.forEach(s => devotionIds.add(s.devotion_id));
+    if (scriptureError) console.error("Scripture search error:", scriptureError);
+    scriptureMatches?.forEach((s) => devotionIds.add(s.devotion_id));
   }
 
   // If no matches or no filters selected, return empty array
@@ -161,6 +125,7 @@ export async function searchDevotionals(
         })) || [];
 
     result.push({
+      id: devotion.id,
       devotion_id: devotion.id,
       title: devotion.title,
       opening_prayer: devotion.opening_prayer || "",
@@ -227,6 +192,7 @@ export async function getDevotionalByWeekAndDay(
       })) || [];
 
   return {
+    id: devotional.id,
     devotion_id: devotional.id,
     title: devotional.title,
     opening_prayer: devotional.opening_prayer || "",

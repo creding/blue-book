@@ -1,10 +1,10 @@
 "use client";
 
 import { Select } from "@mantine/core";
-import { useDevotional } from "@/providers/devotional-provider";
+import { useRouter } from "next/navigation";
 
-export function WeekSelector() {
-  const { currentWeek, setCurrentWeek } = useDevotional();
+export function WeekSelector({ week, day }: { week: number; day: string }) {
+  const router = useRouter();
 
   // Generate options for all 52 weeks
   const weekOptions = Array.from({ length: 52 }, (_, i) => ({
@@ -16,9 +16,14 @@ export function WeekSelector() {
     <Select
       placeholder="Select week"
       data={weekOptions}
-      value={currentWeek?.toString()}
-      onChange={(value) => setCurrentWeek(Number.parseInt(value!, 10))}
-      style={{ width: 120 }}
+      value={week.toString()}
+      onChange={(value) => {
+        if (value) {
+          router.push(`/${value}/${day}`);
+        }
+      }}
+      size="sm"
+      w={120}
     />
   );
 }

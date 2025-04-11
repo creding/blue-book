@@ -1,8 +1,6 @@
 import type React from "react";
 import "@mantine/core/styles.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import { DevotionalProvider } from "@/providers/devotional-provider";
-import { BibleVersionProvider } from "@/providers/bible-version-provider";
 import { theme } from "@/theme";
 
 export const metadata = {
@@ -26,14 +24,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>
-          <DevotionalProvider
-            initialDevotionals={[]}
-            initialDay="monday"
-          >
-            <BibleVersionProvider>{children}</BibleVersionProvider>
-          </DevotionalProvider>
-        </MantineProvider>
+        <MantineProvider theme={theme}>{children}</MantineProvider>
       </body>
     </html>
   );

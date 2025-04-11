@@ -20,7 +20,7 @@ data_access:
 
   # Core Functions
   functions:
-    - fetchDevotionals: Get all devotionals with related data
+    - getDevotionals: Get all devotionals with related data
     - getDevotionalByWeekAndDay: Get specific devotional
     - searchDevotionals: Search by text content
 

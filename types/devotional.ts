@@ -57,6 +57,7 @@ export interface Reading {
 }
 
 export interface Devotional {
+  id: number;
   devotion_id: number;
   title: string;
   psalm: Scripture | null;

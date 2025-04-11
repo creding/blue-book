@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Box,
   Group,
   Paper,
   Stack,
@@ -9,10 +8,8 @@ import {
   Title,
   ActionIcon,
   Skeleton,
-  Container,
 } from "@mantine/core";
 import {
-  IconStar,
   IconShare,
   IconPrinter,
   IconBug,
@@ -22,21 +19,18 @@ import {
 import { useState, useEffect } from "react";
 import { useBibleVersion } from "@/providers/bible-version-provider";
 import { Devotional } from "@/types/devotional";
-import { getDayContent } from "@/lib/devotional-utils";
 import { fetchEsvAction } from "@/actions/esv";
 
 export interface DevotionalDisplayProps {
-  devotional: Devotional;
+  devotional: Devotional | null;
   day: string | null;
 }
 
 export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
   const [favorites, setFavorites] = useState<number[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [showDebug, setShowDebug] = useState(false);
   const [psalm, setPsalm] = useState<string | null>(null);
   const [verse, setVerse] = useState<string | null>(null);
-  const { bibleVersion } = useBibleVersion();
 
   useEffect(() => {
     async function fetchVerses() {
@@ -54,39 +48,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
       }
     }
     fetchVerses();
-  }, [devotional, bibleVersion]);
-
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem("favorites");
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (devotional && favorites.includes(devotional.devotion_id)) {
-      setIsFavorite(true);
-    } else {
-      setIsFavorite(false);
-    }
-
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-  }, [devotional, favorites]);
-
-  const toggleFavorite = () => {
-    if (!devotional) return;
-
-    const devotionId = devotional.devotion_id;
-    let newFavorites: number[];
-
-    if (isFavorite) {
-      newFavorites = favorites.filter((id) => id !== devotionId);
-    } else {
-      newFavorites = [...favorites, devotionId];
-    }
-
-    setFavorites(newFavorites);
-  };
+  }, [devotional]);
 
   const handleShare = () => {
     if (navigator.share && devotional) {
@@ -122,13 +84,6 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
     );
   }
 
-  const { scripture, reflection } = getDayContent(devotional, day);
-
-  // Format psalm if it exists
-  const psalmContent = devotional.psalm
-    ? `${devotional.psalm.reference}\n\n${devotional.psalm.text}`
-    : null;
-
   return (
     <Paper p="lg" withBorder className="devotional-content">
       <Stack gap="lg">
@@ -138,7 +93,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
             <ActionIcon
               variant="subtle"
               color={isFavorite ? "red" : "blue"}
-              onClick={toggleFavorite}
+              onClick={() => {}}
               title={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               {isFavorite ? <IconHeartCheck /> : <IconHeart />}
@@ -156,13 +111,6 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
               title="Print devotional"
             >
               <IconPrinter />
-            </ActionIcon>
-            <ActionIcon
-              variant="subtle"
-              onClick={() => setShowDebug(!showDebug)}
-              title="Toggle debug info"
-            >
-              <IconBug />
             </ActionIcon>
           </Group>
         </Group>
