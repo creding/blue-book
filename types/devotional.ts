@@ -60,6 +60,7 @@ export interface Devotional {
   id: number;
   devotion_id: number;
   title: string;
+  slug: string;
   psalm: Scripture | null;
   opening_prayer: string;
   opening_prayer_source?: string;

@@ -278,7 +278,11 @@ export function SearchSidebar() {
                                   {highlightText(reading.title, searchQuery)} -{" "}
                                 </Text>
                               )}
-                              {highlightText(reading.text, searchQuery)}
+                              <span
+                                dangerouslySetInnerHTML={{
+                                  __html: reading.text || "",
+                                }}
+                              />
                               {reading.source && (
                                 <Text span size="xs" c="dimmed.4">
                                   {" "}

@@ -1,7 +1,7 @@
 import type React from "react";
 import "@mantine/core/styles.css";
-import { ColorSchemeScript, MantineProvider } from "@mantine/core";
-import { theme } from "@/theme";
+import { ColorSchemeScript } from "@mantine/core";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
 export const metadata = {
   title: "Daily Devotional",
@@ -24,7 +24,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

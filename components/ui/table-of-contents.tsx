@@ -2,7 +2,7 @@ import { Text, Title, Stack, ScrollArea, NavLink } from "@mantine/core";
 import Link from "next/link";
 import { getDevotionals } from "@/data-access/devotion";
 
-export async function TableOfContents() {
+export async function TableOfContents({ week }: { week: number }) {
   const devotionals = await getDevotionals();
 
   return (
@@ -14,10 +14,16 @@ export async function TableOfContents() {
           {devotionals.length > 0 ? (
             devotionals.map((devotional) => (
               <NavLink
+                active={devotional.id === week}
                 component={Link}
                 href={`/${devotional.id}/monday`}
                 key={devotional.id}
-                p="xs"
+                p="sm"
+                rightSection={
+                  <Text span c="dimmed" size="xs">
+                    Week {devotional.id}
+                  </Text>
+                }
                 label={devotional.title}
               />
             ))

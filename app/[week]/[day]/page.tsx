@@ -57,7 +57,11 @@ export default async function DevotionalPage({
   }
 
   return (
-    <DevotionalLayout week={weekNum} day={day} toc={<TableOfContents />}>
+    <DevotionalLayout
+      week={weekNum}
+      day={day}
+      toc={<TableOfContents week={weekNum} />}
+    >
       <Suspense fallback={<DevotionalSkeleton />}>
         <DevotionalContent week={weekNum} day={day} />
       </Suspense>

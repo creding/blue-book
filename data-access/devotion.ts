@@ -1,5 +1,6 @@
-import { Devotional } from "@/types/devotional";
 import { supabase } from "@/lib/supabase";
+import { Devotional } from "@/types/devotional";
+import { generateSlug } from "@/lib/slug-utils";
 
 export async function getDevotionals(): Promise<Devotional[]> {
   const { data, error } = await supabase
@@ -31,7 +32,6 @@ export async function searchDevotionals(
     scripture: true,
   }
 ): Promise<Devotional[]> {
-
   // Start with an empty set of devotion IDs
   const devotionIds = new Set<number>();
 
@@ -77,7 +77,8 @@ export async function searchDevotionals(
       .select("devotion_id, scriptures(*)")
       .textSearch("scriptures.text", query);
 
-    if (scriptureError) console.error("Scripture search error:", scriptureError);
+    if (scriptureError)
+      console.error("Scripture search error:", scriptureError);
     scriptureMatches?.forEach((s) => devotionIds.add(s.devotion_id));
   }
 
@@ -128,6 +129,7 @@ export async function searchDevotionals(
       id: devotion.id,
       devotion_id: devotion.id,
       title: devotion.title,
+      slug: devotion.slug,
       opening_prayer: devotion.opening_prayer || "",
       opening_prayer_source: devotion.opening_prayer_source,
       closing_prayer: devotion.closing_prayer || "",
@@ -149,6 +151,22 @@ export async function searchDevotionals(
   return result;
 }
 
+export async function updateDevotionalSlug(
+  devotionId: number,
+  title: string
+): Promise<void> {
+  const slug = generateSlug(title);
+  const { error } = await supabase
+    .from("devotions")
+    .update({ slug })
+    .eq("id", devotionId);
+
+  if (error) {
+    console.error("Error updating devotional slug:", error);
+    throw error;
+  }
+}
+
 export async function getDevotionalByWeekAndDay(
   devotionId: number,
   day: string
@@ -160,7 +178,6 @@ export async function getDevotionalByWeekAndDay(
     .single();
 
   if (error || !devotional) {
-    console.error("Error fetching devotional:", error);
     return null;
   }
 
@@ -195,6 +212,7 @@ export async function getDevotionalByWeekAndDay(
     id: devotional.id,
     devotion_id: devotional.id,
     title: devotional.title,
+    slug: devotional.slug,
     opening_prayer: devotional.opening_prayer || "",
     opening_prayer_source: devotional.opening_prayer_source,
     closing_prayer: devotional.closing_prayer || "",

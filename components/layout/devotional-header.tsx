@@ -1,22 +1,29 @@
-import { ActionIcon, Burger, Group, Title } from "@mantine/core";
-import { useColorScheme } from "@mantine/hooks";
+import { ActionIcon, Burger, Group, Title, Anchor } from "@mantine/core";
+import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
 import { WeekSelector } from "../ui/week-selector";
 import { DaySelector } from "../ui/day-selector";
-
-interface BibleVersion {
-  id: string;
-  name: string;
-}
+import Link from "next/link";
 
 function ColorSchemeToggle() {
-  const colorScheme = useColorScheme();
+  const { setColorScheme } = useMantineColorScheme();
+  const computedColorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
+
   return (
-    <ActionIcon variant="light" size="sm" aria-label="Toggle color scheme">
-      {colorScheme === "dark" ? (
-        <IconSun size="1rem" />
+    <ActionIcon
+      onClick={() =>
+        setColorScheme(computedColorScheme === "light" ? "dark" : "light")
+      }
+      variant="light"
+      size="sm"
+      aria-label="Toggle color scheme"
+    >
+      {computedColorScheme === "dark" ? (
+        <IconSun size="1rem" stroke={1.5} />
       ) : (
-        <IconMoonStars size="1rem" />
+        <IconMoonStars size="1rem" stroke={1.5} />
       )}
     </ActionIcon>
   );
@@ -48,7 +55,11 @@ export function DevotionalHeader({
           hiddenFrom="sm"
           size="sm"
         />
-        <Title order={3}>The Blue Book - Jim Branch</Title>
+        <Anchor component={Link} href="/">
+          <Title td="none" c="gray.8" order={3}>
+            The Blue Book - Jim Branch
+          </Title>
+        </Anchor>
       </Group>
       <Group>
         <Group visibleFrom="sm">

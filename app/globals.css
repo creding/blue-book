@@ -38,56 +38,100 @@ body {
   }
 }
 
-/* Scripture styles */
+/* ============================ */
+/* Scripture Container Styles   */
+/* ============================ */
 .scripture-container {
-  font-family: 'Times New Roman', Times, serif;
+  font-family: var(--mantine-font-family); /* Theme body font (Inter) */
   line-height: 1.6;
   color: var(--mantine-color-text);
+  max-width: 70ch; /* Optimal line length */
+}
+
+/* Default paragraph spacing */
+.scripture-container p {
+  margin-bottom: var(--mantine-spacing-sm);
+}
+/* Remove margin from the last paragraph within the container */
+.scripture-container p:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Headings within scripture (like the H3 in the sample) */
+.scripture-container h3 { /* Target specific heading level found */
+  font-family: var(--mantine-font-family-headings); /* Theme heading font (Lora) */
+  font-size: var(--mantine-font-size-lg);       /* Or h4 size if more appropriate */
+  color: var(--mantine-color-text);
+  margin-top: var(--mantine-spacing-lg);        /* Space above heading */
+  margin-bottom: var(--mantine-spacing-sm);     /* Space below heading */
+  line-height: var(--mantine-line-height-sm);
+  font-weight: 600; /* Match theme heading weight */
+}
+
+/* Verse Numbers - Corrected Selector */
+.scripture-container b.verse-num { /* Selects <b class="verse-num"> */
+  font-size: 0.8em;
+  vertical-align: super; /* Test this visually on <b> */
+  /* position: relative; top: -0.4em; */ /* Alternative if vertical-align is odd */
+  margin-right: rem(3);
+  color: var(--mantine-color-text); /* Or var(--mantine-color-dimmed) */
+  font-weight: 600;                 /* Bolder for scannability */
+  /* Prevent line break immediately after verse number if needed */
+  /* display: inline-block; */
+}
+
+/* Words of Christ - Added Style */
+.scripture-container span.woc { /* Selects <span class="woc"> */
+  /* Consider adding a 'wordsOfChrist' red to your Mantine theme */
+  color: #C00; /* Standard WoC Red - Replace with theme variable if possible */
+  /* color: var(--mantine-color-red-8); */ /* Example using Mantine red */
+}
+
+/* --- Potentially Unused Styles (Based on Sample) --- */
+/* Keep or remove these based on whether they appear in other passages */
+
+/* Description / Italic Intro Text (e.g., Psalm titles) */
+/* .scripture-container p.d { ... } */
+
+/* Quoted / Indented Text (poetry, etc.) */
+/* .scripture-container p.q, .scripture-container p.q1, .scripture-container p.q2 { ... } */
+
+/* Added Text (often italic in translations) */
+/* .scripture-container span.add { font-style: italic; } */
+
+/* Name of Deity ("LORD") */
+/* .scripture-container span.nd { font-variant: small-caps; } */
+
+/* Selah */
+/* .scripture-container span.selah { ... } */
+
+
+/* ============================ */
+/* Reading Container Styles     */
+/* (Assumed unchanged unless specified) */
+/* ============================ */
+.reading-container {
+  font-family: var(--mantine-font-family); /* Theme body font (Inter) */
+  line-height: 1.7;
+  color: var(--mantine-color-text);
   max-width: 70ch;
-  margin: 1em auto;
-  padding: 1em;
 }
 
-.scripture-container p.d {
-  font-style: italic;
-  text-align: center;
-  margin-bottom: 1.5em;
-  font-size: 0.95em;
-  color: var(--mantine-color-dimmed);
+.reading-container p {
+  margin-bottom: var(--mantine-spacing-md);
 }
 
-.scripture-container p.q1 {
-  margin-bottom: 0.3em;
-  margin-left: 1em;
+.reading-container p:last-child {
+  margin-bottom: 0;
 }
 
-.scripture-container span.v {
-  font-size: 0.75em;
-  vertical-align: super;
-  margin-right: 0.3em;
-  color: var(--mantine-color-dimmed);
-  font-weight: normal;
-}
-
-.scripture-container span.add {
-  font-style: italic;
-}
-
-.scripture-container p.b {
-  height: 0.8em;
-  margin: 0.5em 0;
-  padding: 0;
-  border: none;
-}
-
-.scripture-container span.nd {
-  font-variant: small-caps;
-}
-
-.scripture-container span.selah {
-  display: block;
-  text-align: right;
-  font-style: italic;
-  margin: 0.5em 0;
-  color: var(--mantine-color-dimmed);
+.reading-container h3,
+.reading-container h4 {
+  font-family: var(--mantine-font-family-headings); /* Theme heading font (Lora) */
+  font-size: var(--mantine-font-size-lg);
+  color: var(--mantine-color-text);
+  margin-top: var(--mantine-spacing-lg);
+  margin-bottom: var(--mantine-spacing-sm);
+  line-height: var(--mantine-line-height-sm);
+  font-weight: 600;
 }

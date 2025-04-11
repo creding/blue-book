@@ -10,7 +10,11 @@ export default function HomePage() {
 
   return (
     <>
-      <DevotionalLayout week={week} day={day} toc={<TableOfContents />}>
+      <DevotionalLayout
+        week={week}
+        day={day}
+        toc={<TableOfContents week={week} />}
+      >
         <Suspense fallback={<DevotionalSkeleton />}>
           <DevotionalContent week={week} day={day} />
         </Suspense>
