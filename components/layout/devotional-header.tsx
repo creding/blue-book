@@ -3,6 +3,7 @@ import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
 import { IconSun, IconMoonStars } from "@tabler/icons-react";
 import { WeekSelector } from "../ui/week-selector";
 import { DaySelector } from "../ui/day-selector";
+import { LoginButton } from "../auth/login-button";
 import Link from "next/link";
 
 function ColorSchemeToggle() {
@@ -65,6 +66,7 @@ export function DevotionalHeader({
         <Group visibleFrom="sm">
           <WeekSelector week={week} day={day} />
           <DaySelector week={week} day={day} />
+          <LoginButton />
         </Group>
         <Group gap="xs">
           <Burger
