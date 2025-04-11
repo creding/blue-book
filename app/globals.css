@@ -135,3 +135,14 @@ body {
   line-height: var(--mantine-line-height-sm);
   font-weight: 600;
 }
+
+/* ============================ */
+/* Search Result Hover Styles   */
+/* ============================ */
+.search-result-hover:hover {
+  background-color: var(--mantine-color-gray-1);
+}
+
+[data-mantine-color-scheme="dark"] .search-result-hover:hover {
+  background-color: var(--mantine-color-dark-6);
+}
