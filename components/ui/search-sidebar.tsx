@@ -108,7 +108,7 @@ export function SearchSidebar() {
 
       <TextInput
         placeholder="Search devotionals..."
-        leftSection={<IconSearch size="0.9rem" />}
+        leftSection={<IconSearch size={16} />}
         value={searchQuery}
         onChange={(event) => handleSearch(event.currentTarget.value)}
       />

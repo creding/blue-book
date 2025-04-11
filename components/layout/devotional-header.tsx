@@ -18,13 +18,14 @@ function ColorSchemeToggle() {
         setColorScheme(computedColorScheme === "light" ? "dark" : "light")
       }
       variant="light"
-      size="sm"
+      size="lg"
+      radius="xl"
       aria-label="Toggle color scheme"
     >
       {computedColorScheme === "dark" ? (
-        <IconSun size="1rem" stroke={1.5} />
+        <IconSun size={16} stroke={1.5} />
       ) : (
-        <IconMoonStars size="1rem" stroke={1.5} />
+        <IconMoonStars size={16} stroke={1.5} />
       )}
     </ActionIcon>
   );

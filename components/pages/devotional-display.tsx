@@ -23,6 +23,7 @@ import {
   IconAlertCircle,
   IconHeartFilled,
   IconHeart,
+  IconQuote,
 } from "@tabler/icons-react";
 import FavoriteButton from "@/components/FavoriteButton";
 
@@ -98,7 +99,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.opening_prayer && (
           <Stack gap="sm">
             <Group gap="xs" mb={4}>
-              <IconBook size="1.1rem" color={theme.colors.gray[7]} />
+              <IconBook size={24} color={theme.colors.gray[7]} />
               <Title order={4}>Opening Prayer</Title>
             </Group>
             <Text lh="md">{devotional.opening_prayer}</Text>
@@ -115,7 +116,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.psalm?.text && (
           <Stack gap="sm">
             <Group gap="xs" mb={4}>
-              <IconBook size="1.1rem" color={theme.colors.gray[7]} />
+              <IconBook size={24} color={theme.colors.gray[7]} />
               <Title order={4}>{devotional.psalm.reference || "Psalm"}</Title>
             </Group>
             <div
@@ -132,11 +133,8 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.scriptures?.[0]?.text && (
           <Stack gap="sm">
             <Group gap="xs" mb={4}>
-              <IconBook size="1.1rem" color={theme.colors.gray[7]} />
-              <Title order={4}>
-                {/* Consider formatting day outside component */}
-                Scripture Reading: {devotional.scriptures[0].reference}
-              </Title>
+              <IconBook size={24} color={theme.colors.gray[7]} />
+              <Title order={4}>{devotional.scriptures[0].reference}</Title>
             </Group>
             <div
               className="scripture-container"
@@ -154,10 +152,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.readings && devotional.readings.length > 0 && (
           <Stack gap="md">
             <Group gap="xs" mb={4}>
-              <IconMessageCircleHeart
-                size="1.1rem"
-                color={theme.colors.gray[7]}
-              />
+              <IconMessageCircleHeart size={24} color={theme.colors.gray[7]} />
               <Title order={4}>For Reflection</Title>
             </Group>
             <Stack gap="lg">
@@ -166,15 +161,12 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
               {devotional.readings.map((reading) => (
                 <Blockquote
                   key={reading.id}
-                  cite={`— ${reading.source}`}
-                  // Removed hardcoded color, use theme's default styling (gold border)
-                  // Mantine v7 Blockquote doesn't need explicit color prop for theme border
-                  p="md" // Adjusted padding slightly if needed
-                  radius="md" // Inherits default radius
-                  // icon={<IconQuote size="1.2rem"/>} // Optional: add quote icon
+                  cite={reading.source}
+                  p="md"
+                  radius="md"
                 >
                   <div
-                    className="reading-container" // Use specific class if needed
+                    className="reading-container"
                     dangerouslySetInnerHTML={{ __html: reading.text || "" }}
                   />
                 </Blockquote>
@@ -190,7 +182,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.closing_prayer && (
           <Stack gap="sm">
             <Group gap="xs" mb={4}>
-              <IconBook size="1.1rem" color={theme.colors.gray[7]} />
+              <IconBook size={24} color={theme.colors.gray[7]} />
               <Title order={4}>Closing Prayer</Title>
             </Group>
             <Text lh="md">{devotional.closing_prayer}</Text>
@@ -207,7 +199,7 @@ export function DevotionalDisplay({ devotional, day }: DevotionalDisplayProps) {
         {devotional.song_title && (
           <Stack gap="sm">
             <Group gap="xs" mb={4}>
-              <IconMusic size="1.1rem" color={theme.colors.gray[7]} />
+              <IconMusic size={24} color={theme.colors.gray[7]} />
               <Title order={4}>Suggested Song</Title>
             </Group>
             <Text>{devotional.song_title}</Text>
