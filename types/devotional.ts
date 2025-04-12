@@ -53,8 +53,10 @@ export interface Reading {
   text: string;
   source?: string;
   title?: string;
-  day: string;
+  day?: string;
 }
+
+import { Note } from "./note";
 
 export interface Devotional {
   id: number;
@@ -69,7 +71,13 @@ export interface Devotional {
   song_title?: string;
   scriptures: Scripture[];
   readings: Reading[];
-  isFavorited?: boolean;
+  isFavorited: boolean;
+  notes: {
+    devotion: Note[];
+    psalm: Note[];
+    scripture: Note[];
+    readings: Note[][];
+  };
 }
 
 export interface DayContent {

@@ -16,6 +16,44 @@ export async function getDevotionals(): Promise<Devotional[]> {
   return data || [];
 }
 
+export async function getDevotionIdByWeekAndDay(
+  week: number,
+  day: string
+): Promise<number | null> {
+  // First, get the devotion by week
+  const { data: devotion, error: devotionError } = await supabase
+    .from("devotions")
+    .select("id")
+    .eq("week", week)
+    .maybeSingle();
+
+  if (devotionError) {
+    console.error("Error fetching devotion by week:", devotionError);
+    return null;
+  }
+
+  if (!devotion) {
+    console.log(`No devotion found for week ${week}`);
+    return null;
+  }
+
+  // Then verify it has a scripture for the given day
+  const { data: scripture, error: scriptureError } = await supabase
+    .from("devotion_scriptures")
+    .select("devotion_id")
+    .eq("devotion_id", devotion.id)
+    .eq("day_of_week", day.toLowerCase()) // Ensure consistent case
+    .maybeSingle();
+
+  if (scriptureError) {
+    console.error("Error verifying scripture for day:", scriptureError);
+    return null;
+  }
+
+  // Only return the devotion ID if we found a matching scripture for the day
+  return scripture ? devotion.id : null;
+}
+
 interface SearchFilters {
   title?: boolean;
   prayers?: boolean;
@@ -88,10 +126,10 @@ export async function searchDevotionals(
   }
 
   // Fetch full devotion data for all matches
-  const { data: devotions, error } = await supabase
+  const { data: devotionals, error } = await supabase
     .from("devotions")
     .select("*")
-    .in("id", Array.from(devotionIds));
+    .returns<Devotional[]>();
 
   if (error) {
     console.error("Error searching devotionals:", error);
@@ -100,7 +138,7 @@ export async function searchDevotionals(
 
   const result = [];
 
-  for (const devotion of devotions || []) {
+  for (const devotion of devotionals || []) {
     // Get scriptures for this devotion
     const { data: devotionScriptures } = await supabase
       .from("devotion_scriptures")
@@ -145,6 +183,13 @@ export async function searchDevotionals(
           title: r.title,
           day: "monday",
         })) || [],
+      isFavorited: false,
+      notes: {
+        devotion: [],
+        psalm: [],
+        scripture: [],
+        readings: [],
+      },
     });
   }
 
@@ -167,81 +212,60 @@ export async function updateDevotionalSlug(
   }
 }
 
-export async function getDevotionalByWeekAndDay(
-  week: number,
-  day: string,
-  userId?: string
-): Promise<Devotional | null> {
-  // Get the devotional
-  const { data: devotional, error: devotionalError } = await supabase
-    .from("devotions")
-    .select("*")
-    .eq("id", week)
-    .single();
+import { createClient } from "@/lib/supabaseServerClient";
 
-  if (devotionalError || !devotional) {
-    console.error("Error fetching devotional:", devotionalError);
-    return null;
-  }
+import { Note } from "@/types/note";
 
-  // Get scriptures for this devotion
-  const { data: devotionScriptures } = await supabase
-    .from("devotion_scriptures")
-    .select("*, scriptures(*)")
-    .eq("devotion_id", devotional.id);
+type DevotionNote = {
+  id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  user_id: string;
+  reference_type: string;
+  reference_id: string;
+};
 
-  // Get readings for this devotion
-  const { data: readings } = await supabase
-    .from("readings")
-    .select("*")
-    .eq("devotion_id", devotional.id);
-
-  const psalm =
-    devotionScriptures?.find((ds) => ds.is_psalm)?.scriptures || null;
-  const scriptures =
-    devotionScriptures
-      ?.filter(
-        (ds) =>
-          !ds.is_psalm && ds.day_of_week?.toLowerCase() === day.toLowerCase()
-      )
-      ?.map((ds) => ({
-        id: ds.scriptures.id,
-        reference: ds.scriptures.reference,
-        text: ds.scriptures.text,
-        day: ds.day_of_week,
-      })) || [];
-
-  let isFavorited = false;
-  if (userId) {
-    const { data: favorite } = await supabase
-      .from("favorites")
-      .select("id")
-      .eq("user_id", userId)
-      .eq("devotional_id", devotional.id)
-      .single();
-    isFavorited = !!favorite;
-  }
-
-  return {
-    id: devotional.id,
-    devotion_id: devotional.id,
-    title: devotional.title,
-    slug: devotional.slug,
-    opening_prayer: devotional.opening_prayer || "",
-    opening_prayer_source: devotional.opening_prayer_source,
-    closing_prayer: devotional.closing_prayer || "",
-    closing_prayer_source: devotional.closing_prayer_source,
-    song_title: devotional.song_title,
-    psalm,
-    scriptures,
-    readings:
-      readings?.map((r) => ({
-        id: r.id,
-        text: r.text,
-        source: r.source,
-        title: r.title,
-        day: day,
-      })) || [],
-    isFavorited,
-  };
-}
+type DevotionWithNotes = {
+  id: number;
+  title: string;
+  week: number;
+  opening_prayer: string;
+  opening_prayer_source: string;
+  closing_prayer: string;
+  closing_prayer_source: string;
+  song_title: string;
+  notes: Array<DevotionNote>;
+  devotion_scriptures: Array<{
+    id: number;
+    devotion_id: number;
+    scripture_id: number;
+    day_of_week?: string;
+    is_psalm: boolean;
+    scriptures: {
+      id: number;
+      reference: string;
+      text: string;
+    };
+    notes: Array<{
+      id: string;
+      content: string;
+      created_at: string;
+      updated_at: string;
+    }>;
+  }>;
+  readings: Array<{
+    id: number;
+    devotion_id: number;
+    text: string;
+    source?: string;
+    title?: string;
+    day: string;
+    notes: Array<{
+      id: string;
+      content: string;
+      created_at: string;
+      updated_at: string;
+    }>;
+  }>;
+};

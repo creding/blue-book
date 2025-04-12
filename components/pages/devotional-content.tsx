@@ -2,9 +2,8 @@ import { Container, Group } from "@mantine/core";
 import { DevotionalDisplay } from "./devotional-display";
 import { DaySelector } from "../ui/day-selector";
 import { WeekSelector } from "../ui/week-selector";
-import { getDevotionalByWeekAndDay } from "@/data-access/devotion";
+import { getDevotionalDetails } from "@/data-access/getDevotionalDetails";
 import { createClient } from "@/lib/supabaseServerClient";
-import { getNotesByReference } from "@/data-access/notes";
 
 export async function DevotionalContent({
   week,
@@ -13,12 +12,12 @@ export async function DevotionalContent({
   week: number;
   day: string;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const devotional = await getDevotionalByWeekAndDay(week, day, user?.id);
-  const notes = devotional ? await getNotesByReference("devotion", String(devotional.id)) : [];
+  // --- Step 1: Get the devotion ID based on week and day ---
+
+  // --- Step 2: Get devotional details using the ID ---
+  // Note: userId is now handled *inside* getDevotionalDetails
+  const devotional = await getDevotionalDetails(week);
+  console.log(devotional);
 
   return (
     <Container size="md">
@@ -26,7 +25,18 @@ export async function DevotionalContent({
         <WeekSelector week={week} day={day} />
         <DaySelector week={week} day={day} />
       </Group>
-      <DevotionalDisplay devotional={devotional} day={day} notes={notes} />
+      <DevotionalDisplay
+        devotional={devotional}
+        day={day}
+        notes={
+          devotional?.notes || {
+            devotion: [],
+            psalm: [],
+            scripture: [],
+            readings: [],
+          }
+        }
+      />
     </Container>
   );
 }

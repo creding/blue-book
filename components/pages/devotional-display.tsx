@@ -30,17 +30,28 @@ import { Notes } from "@/components/Notes";
 
 import { Devotional } from "@/types/devotional";
 import { Note } from "@/types/note";
+import { NotesButton } from "@/components/NotesButton";
 
 export interface DevotionalDisplayProps {
   devotional: Devotional | null;
   day: string | null;
-  notes: Note[];
+  notes: {
+    devotion: Note[];
+    psalm: Note[];
+    scripture: Note[];
+    readings: Note[][];
+  };
 }
 
 export function DevotionalDisplay({
   devotional,
   day,
-  notes,
+  notes = {
+    devotion: [],
+    psalm: [],
+    scripture: [],
+    readings: [],
+  },
 }: DevotionalDisplayProps) {
   const theme = useMantineTheme();
 
@@ -89,6 +100,11 @@ export function DevotionalDisplay({
             devotionalId={devotional.id}
             initialFavorited={devotional.isFavorited}
           />
+          <NotesButton
+            referenceType="devotion"
+            referenceId={String(devotional.id)}
+            initialNotes={devotional.notes.devotion || []}
+          />
           <Tooltip label="Share">
             <ActionIcon variant="subtle" onClick={handleShare}>
               <IconShare style={{ width: "70%", height: "70%" }} />
@@ -122,9 +138,17 @@ export function DevotionalDisplay({
         {/* Psalm */}
         {devotional.psalm?.text && (
           <Stack gap="sm">
-            <Group gap="xs" mb={4}>
-              <IconBook size={24} color={theme.colors.gray[7]} />
-              <Title order={4}>{devotional.psalm.reference || "Psalm"}</Title>
+            <Group justify="space-between" align="center" mb={4}>
+              <Group gap="xs">
+                <IconBook size={24} color={theme.colors.gray[7]} />
+                <Title order={4}>{devotional.psalm.reference || "Psalm"}</Title>
+              </Group>
+              <NotesButton
+                referenceType="scripture"
+                referenceId={String(devotional.psalm?.id)}
+                initialNotes={notes.psalm || []}
+                size="sm"
+              />
             </Group>
             <div
               className="scripture-container"
@@ -139,9 +163,17 @@ export function DevotionalDisplay({
         {/* Main Scripture */}
         {devotional.scriptures?.[0]?.text && (
           <Stack gap="sm">
-            <Group gap="xs" mb={4}>
-              <IconBook size={24} color={theme.colors.gray[7]} />
-              <Title order={4}>{devotional.scriptures[0].reference}</Title>
+            <Group justify="space-between" align="center" mb={4}>
+              <Group gap="xs">
+                <IconBook size={24} color={theme.colors.gray[7]} />
+                <Title order={4}>{devotional.scriptures[0].reference}</Title>
+              </Group>
+              <NotesButton
+                referenceType="scripture"
+                referenceId={String(devotional.scriptures[0].id)}
+                initialNotes={devotional.notes.scripture || []}
+                size="sm"
+              />
             </Group>
             <div
               className="scripture-container"
@@ -158,25 +190,35 @@ export function DevotionalDisplay({
         {/* Readings / Reflection */}
         {devotional.readings && devotional.readings.length > 0 && (
           <Stack gap="md">
-            <Group gap="xs" mb={4}>
-              <IconMessageCircleHeart size={24} color={theme.colors.gray[7]} />
-              <Title order={4}>For Reflection</Title>
+            <Group justify="space-between" align="center" mb={4}>
+              <Group gap="xs">
+                <IconMessageCircleHeart size={24} color={theme.colors.gray[7]} />
+                <Title order={4}>For Reflection</Title>
+              </Group>
             </Group>
             <Stack gap="lg">
-              {" "}
               {/* Gap between multiple reading blockquotes */}
-              {devotional.readings.map((reading) => (
-                <Blockquote
-                  key={reading.id}
-                  cite={reading.source}
-                  p="md"
-                  radius="md"
-                >
-                  <div
-                    className="reading-container"
-                    dangerouslySetInnerHTML={{ __html: reading.text || "" }}
-                  />
-                </Blockquote>
+              {devotional.readings.map((reading, index) => (
+                <div key={reading.id}>
+                  <Group justify="flex-end" mb="xs">
+                    <NotesButton
+                      referenceType="reading"
+                      referenceId={String(reading.id)}
+                      initialNotes={devotional.notes.readings[index] || []}
+                      size="sm"
+                    />
+                  </Group>
+                  <Blockquote
+                    cite={reading.source}
+                    p="md"
+                    radius="md"
+                  >
+                    <div
+                      className="reading-container"
+                      dangerouslySetInnerHTML={{ __html: reading.text || "" }}
+                    />
+                  </Blockquote>
+                </div>
               ))}
             </Stack>
           </Stack>
@@ -219,7 +261,7 @@ export function DevotionalDisplay({
 
         {/* Notes Section */}
         <Notes
-          notes={notes}
+          notes={devotional.notes.devotion || []}
           referenceType="devotion"
           referenceId={String(devotional.id)}
         />

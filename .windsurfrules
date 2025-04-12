@@ -7,9 +7,15 @@ database:
 
 # Project Structure
 structure:
+  - app: app/
   - data_access: data-access/
   - supabase_client: lib/supabase.ts
   - types: types/
+  - actions: actions/
+  - components: components/
+  - hooks: hooks/
+  - lib: lib/
+
 
 # Data Access Rules
 data_access:

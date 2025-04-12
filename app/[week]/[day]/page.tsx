@@ -1,10 +1,8 @@
 import { DevotionalLayout } from "@/components/layout/devotional-layout";
 import { DevotionalContent } from "@/components/pages/devotional-content";
 import { DevotionalSkeleton } from "@/components/skeletons/devotional-skeleton";
-import {
-  getDevotionalByWeekAndDay,
-  getDevotionals,
-} from "@/data-access/devotion";
+import { getDevotionals } from "@/data-access/devotion";
+import { getDevotionalByWeekAndDay } from "@/data-access/getDevotionWithNotes";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { TableOfContents } from "@/components/ui/table-of-contents";

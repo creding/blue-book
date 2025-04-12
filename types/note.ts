@@ -1,7 +1,7 @@
 export type ReferenceType = "devotion" | "scripture" | "reading";
 
 export interface Note {
-  id: string;
+  id: number;
   user_id: string;
   reference_type: ReferenceType;
   reference_id: string;
