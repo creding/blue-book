@@ -34,7 +34,7 @@ export function NotesSection({
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [newNoteContent, setNewNoteContent] = useState("");
   const [editingNote, setEditingNote] = useState<{
-    id: string;
+    id: number;
     content: string;
   } | null>(null);
   const [isAddingNote, { open: openAddNote, close: closeAddNote }] =
@@ -50,7 +50,6 @@ export function NotesSection({
       reference_id: referenceId,
       content: newNoteContent.trim(),
     });
-    console.log(note);
     if (note) {
       setNotes((prev) => [note, ...prev]);
       setNewNoteContent("");
@@ -59,11 +58,11 @@ export function NotesSection({
     setLoading(false);
   };
 
-  const handleUpdateNote = async (id: string) => {
+  const handleUpdateNote = async (id: number) => {
     if (!editingNote || !editingNote.content.trim()) return;
 
     setLoading(true);
-    const updated = await updateNoteAction(id, {
+    const updated = await updateNoteAction(String(id), {
       content: editingNote.content.trim(),
     });
 
@@ -74,9 +73,9 @@ export function NotesSection({
     setLoading(false);
   };
 
-  const handleDeleteNote = async (id: string) => {
+  const handleDeleteNote = async (id: number) => {
     setLoading(true);
-    const success = await deleteNoteAction(id);
+    const success = await deleteNoteAction(String(id));
 
     if (success) {
       setNotes((prev) => prev.filter((note) => note.id !== id));
@@ -85,7 +84,7 @@ export function NotesSection({
   };
 
   return (
-    <Paper w="100%" withBorder p="md" pos="relative">
+    <>
       <LoadingOverlay visible={loading} />
       <Stack gap="md">
         <Group justify="space-between">
@@ -98,31 +97,29 @@ export function NotesSection({
         </Group>
 
         {isAddingNote && (
-          <Card withBorder>
-            <Stack gap="sm">
-              <Textarea
-                placeholder="Write your note here..."
-                value={newNoteContent}
-                onChange={(e) => setNewNoteContent(e.currentTarget.value)}
-                minRows={3}
-                autosize
-                maxRows={10}
-              />
-              <Group justify="flex-end" gap="xs">
-                <Button
-                  variant="subtle"
-                  color="gray"
-                  onClick={() => {
-                    setNewNoteContent("");
-                    closeAddNote();
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleCreateNote}>Save Note</Button>
-              </Group>
-            </Stack>
-          </Card>
+          <Stack gap="lg">
+            <Textarea
+              placeholder="Write your note here..."
+              value={newNoteContent}
+              onChange={(e) => setNewNoteContent(e.currentTarget.value)}
+              minRows={3}
+              autosize
+              maxRows={10}
+            />
+            <Group justify="flex-end" gap="xs">
+              <Button
+                variant="subtle"
+                color="gray"
+                onClick={() => {
+                  setNewNoteContent("");
+                  closeAddNote();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleCreateNote}>Save Note</Button>
+            </Group>
+          </Stack>
         )}
 
         <Stack gap="md">
@@ -195,6 +192,6 @@ export function NotesSection({
           )}
         </Stack>
       </Stack>
-    </Paper>
+    </>
   );
 }

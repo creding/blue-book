@@ -58,7 +58,6 @@ export async function getNotesByReference(
  * Create a new note
  */
 export async function createNote(params: CreateNoteParams) {
-  console.log(params);
   const supabase = await createClient();
   const {
     data: { user },

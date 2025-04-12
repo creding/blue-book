@@ -10,15 +10,17 @@ import {
 } from "@mantine/core";
 import { IconNotes } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
-import { NotesSection } from "./NotesSection";
+import { NotesSection } from "../notes/NotesSection";
 import { Note, ReferenceType } from "@/types/note";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/providers/AuthProvider";
 
-interface NotesButtonProps {
+type NotesButtonProps = {
   referenceType: ReferenceType;
   referenceId: string;
   initialNotes: Note[];
-  size?: "sm" | "md" | "lg";
-}
+  size?: string;
+};
 
 export function NotesButton({
   referenceType,
@@ -28,6 +30,17 @@ export function NotesButton({
 }: NotesButtonProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const theme = useMantineTheme();
+  const router = useRouter();
+  const { user } = useAuth();
+
+  const handleClick = () => {
+    if (!user) {
+      const currentPath = window.location.pathname;
+      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      return;
+    }
+    open();
+  };
 
   return (
     <>
@@ -43,11 +56,11 @@ export function NotesButton({
           <ActionIcon
             size={size}
             variant="subtle"
-            onClick={open}
+            onClick={handleClick}
             pos="relative"
             color="blue"
           >
-            <IconNotes />
+            <IconNotes size="80%" />
           </ActionIcon>
         </Tooltip>
       </Indicator>
@@ -57,7 +70,7 @@ export function NotesButton({
         onClose={close}
         position="right"
         size="md"
-        title="Notes"
+        title=""
       >
         <NotesSection
           referenceType={referenceType}

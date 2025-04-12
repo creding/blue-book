@@ -8,12 +8,12 @@ export function DevotionalSkeleton() {
         <Skeleton height={36} width={120} radius="sm" />
       </Group>
 
-      <Paper withBorder p="md">
+      <Paper p="md">
         <Skeleton height={32} width="40%" mb="xl" />
-        
+
         {/* Scripture reference skeleton */}
         <Skeleton height={24} width="30%" mb="lg" />
-        
+
         {/* Scripture content skeleton */}
         <Group mb="xl">
           <Skeleton height={16} width="100%" />

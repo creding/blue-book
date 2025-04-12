@@ -44,7 +44,11 @@ export default function FavoriteButton({
         size={size}
         aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
       >
-        {isFavorited ? <IconHeartFilled /> : <IconHeart />}
+        {isFavorited ? (
+          <IconHeartFilled color="red" size="80%" />
+        ) : (
+          <IconHeart size="80%" />
+        )}
       </ActionIcon>
     </Tooltip>
   );
