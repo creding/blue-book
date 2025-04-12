@@ -13,6 +13,8 @@ export async function toggleFavoriteAction(devotionalId: number) {
   if (!user) return false;
 
   const isFavorite = await toggleFavorite(user.id, devotionalId);
+  // Revalidate both the home page and the specific devotional page
   revalidatePath("/");
+  revalidatePath(`/${devotionalId}`);
   return isFavorite;
 }

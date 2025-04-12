@@ -110,7 +110,9 @@ export async function getDevotionalDetails(
   const readingIds = (readingsData || []).map((r) => r.id);
 
   // 4. Get user info and check if they're logged in
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const userId = user?.id;
 
   // 5. Initialize empty notes arrays
@@ -123,7 +125,11 @@ export async function getDevotionalDetails(
       .from("notes")
       .select("*")
       .eq("user_id", userId)
-      .or(`devotion_id.eq.${devotionId},scripture_id.in.(${devotionScriptureIds.join(",")}),reading_id.in.(${readingIds.join(",")})`)
+      .or(
+        `devotion_id.eq.${devotionId},scripture_id.in.(${devotionScriptureIds.join(
+          ","
+        )}),reading_id.in.(${readingIds.join(",")})`
+      )
       .order("created_at", { ascending: false });
 
     if (notesError) {
@@ -140,7 +146,7 @@ export async function getDevotionalDetails(
       .from("favorites")
       .select("*")
       .eq("user_id", userId)
-      .eq("devotion_id", devotionId)
+      .eq("devotional_id", devotionId)
       .maybeSingle();
     isFavorited = !!favorite;
   }
@@ -278,7 +284,7 @@ export async function getDevotionalDetails(
     scriptures: mainScriptures,
     readings: processedReadings,
     notes: processedNotes,
-    isFavorited: false, // Needs to be determined elsewhere
+    isFavorited, // Use the favorite status we determined earlier
   };
 
   return finalDevotional;
