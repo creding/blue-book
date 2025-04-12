@@ -1,7 +1,8 @@
 import type React from "react";
 import "@mantine/core/styles.css";
 import { ColorSchemeScript } from "@mantine/core";
-import { ThemeProvider } from "@/providers/ThemeProvider";
+import { MantineProvider } from "@mantine/core";
+import { theme } from "@/theme";
 
 export const metadata = {
   title: "Daily Devotional",
@@ -9,7 +10,7 @@ export const metadata = {
   generator: "v0.dev",
 };
 
-import AuthProvider from '@/providers/AuthProvider'
+import AuthProvider from "@/providers/AuthProvider";
 
 export default function RootLayout({
   children,
@@ -26,11 +27,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ThemeProvider>
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </ThemeProvider>
+        <MantineProvider theme={theme}>
+          <AuthProvider>{children}</AuthProvider>
+        </MantineProvider>
       </body>
     </html>
   );
