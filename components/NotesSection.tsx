@@ -50,7 +50,7 @@ export function NotesSection({
       reference_id: referenceId,
       content: newNoteContent.trim(),
     });
-
+    console.log(note);
     if (note) {
       setNotes((prev) => [note, ...prev]);
       setNewNoteContent("");
@@ -68,9 +68,7 @@ export function NotesSection({
     });
 
     if (updated) {
-      setNotes((prev) =>
-        prev.map((note) => (note.id === id ? updated : note))
-      );
+      setNotes((prev) => prev.map((note) => (note.id === id ? updated : note)));
       setEditingNote(null);
     }
     setLoading(false);

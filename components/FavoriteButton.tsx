@@ -10,11 +10,13 @@ import { useState, useEffect } from "react";
 interface FavoriteButtonProps {
   devotionalId: number;
   initialFavorited?: boolean;
+  size?: "sm" | "md" | "lg";
 }
 
 export default function FavoriteButton({
   devotionalId,
   initialFavorited = false,
+  size = "md",
 }: FavoriteButtonProps) {
   const router = useRouter();
   const { user } = useAuth();
@@ -39,13 +41,10 @@ export default function FavoriteButton({
         variant="subtle"
         color="blue"
         onClick={handleClick}
+        size={size}
         aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
       >
-        {isFavorited ? (
-          <IconHeartFilled style={{ width: "70%", height: "70%" }} />
-        ) : (
-          <IconHeart style={{ width: "70%", height: "70%" }} />
-        )}
+        {isFavorited ? <IconHeartFilled /> : <IconHeart />}
       </ActionIcon>
     </Tooltip>
   );

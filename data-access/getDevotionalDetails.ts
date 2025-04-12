@@ -9,6 +9,8 @@ type RawNote = {
   created_at: string;
   updated_at: string;
   user_id: string;
+  reference_type: ReferenceType;
+  reference_id: string;
   devotion_id: number | null;
   scripture_id: number | null;
   reading_id: number | null;
@@ -166,6 +168,9 @@ export async function getDevotionalDetails(
         updated_at: note.updated_at,
         reference_type,
         reference_id,
+        devotion_id: note.devotion_id,
+        scripture_id: note.scripture_id,
+        reading_id: note.reading_id,
       });
     } else if (note.scripture_id && note.scripture_id === psalm?.id) {
       reference_type = "scripture";
@@ -178,6 +183,9 @@ export async function getDevotionalDetails(
         updated_at: note.updated_at,
         reference_type,
         reference_id,
+        devotion_id: note.devotion_id,
+        scripture_id: note.scripture_id,
+        reading_id: note.reading_id,
       });
     } else if (
       note.scripture_id &&
@@ -193,6 +201,9 @@ export async function getDevotionalDetails(
         updated_at: note.updated_at,
         reference_type,
         reference_id,
+        devotion_id: note.devotion_id,
+        scripture_id: note.scripture_id,
+        reading_id: note.reading_id,
       });
     } else if (note.reading_id) {
       const readingIndex = processedReadings.findIndex(
@@ -209,6 +220,9 @@ export async function getDevotionalDetails(
           updated_at: note.updated_at,
           reference_type,
           reference_id,
+          devotion_id: note.devotion_id,
+          scripture_id: note.scripture_id,
+          reading_id: note.reading_id,
         });
       }
     }

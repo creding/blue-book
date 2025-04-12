@@ -17,7 +17,6 @@ export async function DevotionalContent({
   // --- Step 2: Get devotional details using the ID ---
   // Note: userId is now handled *inside* getDevotionalDetails
   const devotional = await getDevotionalDetails(week);
-  console.log(devotional);
 
   return (
     <Container size="md">

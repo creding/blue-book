@@ -1,6 +1,13 @@
 "use client";
 
-import { ActionIcon, Badge, Drawer, useMantineTheme } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Drawer,
+  Indicator,
+  Tooltip,
+  useMantineTheme,
+} from "@mantine/core";
 import { IconNotes } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { NotesSection } from "./NotesSection";
@@ -24,32 +31,26 @@ export function NotesButton({
 
   return (
     <>
-      <ActionIcon
-        variant="subtle"
-        onClick={open}
-        pos="relative"
-        size={size}
-        color="blue"
+      <Indicator
+        label={initialNotes.length}
+        radius="xl"
+        size={16}
+        variant="filled"
+        disabled={initialNotes.length === 0}
+        color="red"
       >
-        <IconNotes style={{ width: "70%", height: "70%" }} />
-        {initialNotes?.length > 0 && (
-          <Badge
-            size="sm"
-            variant="filled"
-            pos="absolute"
-            top={-6}
-            right={-6}
-            radius="xl"
-            p={4}
-            h={16}
-            style={{
-              pointerEvents: "none",
-            }}
+        <Tooltip label="Notes">
+          <ActionIcon
+            size={size}
+            variant="subtle"
+            onClick={open}
+            pos="relative"
+            color="blue"
           >
-            {initialNotes.length}
-          </Badge>
-        )}
-      </ActionIcon>
+            <IconNotes />
+          </ActionIcon>
+        </Tooltip>
+      </Indicator>
 
       <Drawer
         opened={opened}

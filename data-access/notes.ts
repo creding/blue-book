@@ -6,7 +6,9 @@ import { Note, CreateNoteParams, UpdateNoteParams } from "@/types/note";
  */
 export async function getNotes() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return [];
 
   const { data, error } = await supabase
@@ -31,7 +33,9 @@ export async function getNotesByReference(
   referenceId: string
 ) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return [];
 
   const { data, error } = await supabase
@@ -54,17 +58,34 @@ export async function getNotesByReference(
  * Create a new note
  */
 export async function createNote(params: CreateNoteParams) {
+  console.log(params);
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
+
+  // Convert reference_id and reference_type to specific columns
+  const { reference_type, reference_id, content } = params;
+  const insertData: any = {
+    user_id: user.id,
+    reference_type,
+    reference_id,
+    content,
+  };
+
+  // Set the specific ID column based on reference_type
+  if (reference_type === "devotion") {
+    insertData.devotion_id = parseInt(reference_id, 10);
+  } else if (reference_type === "scripture") {
+    insertData.scripture_id = parseInt(reference_id, 10);
+  } else if (reference_type === "reading") {
+    insertData.reading_id = parseInt(reference_id, 10);
+  }
 
   const { data, error } = await supabase
     .from("notes")
-    .insert({
-      id: crypto.randomUUID(),
-      user_id: user.id,
-      ...params,
-    })
+    .insert(insertData)
     .select()
     .single();
 
@@ -81,7 +102,9 @@ export async function createNote(params: CreateNoteParams) {
  */
 export async function updateNote(id: string, params: UpdateNoteParams) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return null;
 
   const { data, error } = await supabase
@@ -105,7 +128,9 @@ export async function updateNote(id: string, params: UpdateNoteParams) {
  */
 export async function deleteNote(id: string) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return false;
 
   const { error } = await supabase

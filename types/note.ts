@@ -8,6 +8,9 @@ export interface Note {
   content: string;
   created_at: string;
   updated_at: string;
+  devotion_id: number | null;
+  scripture_id: number | null;
+  reading_id: number | null;
 }
 
 export interface CreateNoteParams {

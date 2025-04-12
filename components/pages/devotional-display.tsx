@@ -95,26 +95,30 @@ export function DevotionalDisplay({
     <Paper p="lg" className="devotional-content">
       <Group justify="space-between" align="flex-start" mb="md">
         <Title order={2}>{devotional.title}</Title>
-        <Group gap="xs">
+        <Group gap="xs" align="flex-start">
           <FavoriteButton
             devotionalId={devotional.id}
             initialFavorited={devotional.isFavorited}
+            size="sm"
           />
+
+          <Tooltip label="Share">
+            <ActionIcon variant="subtle" onClick={handleShare} size="sm">
+              <IconShare />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Print">
+            <ActionIcon variant="subtle" onClick={handlePrint} size="sm">
+              <IconPrinter />
+            </ActionIcon>
+          </Tooltip>
+
           <NotesButton
             referenceType="devotion"
             referenceId={String(devotional.id)}
             initialNotes={devotional.notes.devotion || []}
+            size="sm"
           />
-          <Tooltip label="Share">
-            <ActionIcon variant="subtle" onClick={handleShare}>
-              <IconShare style={{ width: "70%", height: "70%" }} />
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label="Print">
-            <ActionIcon variant="subtle" onClick={handlePrint}>
-              <IconPrinter style={{ width: "70%", height: "70%" }} />
-            </ActionIcon>
-          </Tooltip>
         </Group>
       </Group>
       <Stack gap="xl">
@@ -192,7 +196,10 @@ export function DevotionalDisplay({
           <Stack gap="md">
             <Group justify="space-between" align="center" mb={4}>
               <Group gap="xs">
-                <IconMessageCircleHeart size={24} color={theme.colors.gray[7]} />
+                <IconMessageCircleHeart
+                  size={24}
+                  color={theme.colors.gray[7]}
+                />
                 <Title order={4}>For Reflection</Title>
               </Group>
             </Group>
@@ -208,11 +215,7 @@ export function DevotionalDisplay({
                       size="sm"
                     />
                   </Group>
-                  <Blockquote
-                    cite={reading.source}
-                    p="md"
-                    radius="md"
-                  >
+                  <Blockquote cite={reading.source} p="md" radius="md">
                     <div
                       className="reading-container"
                       dangerouslySetInnerHTML={{ __html: reading.text || "" }}
