@@ -2,7 +2,6 @@ import { createClient } from "@/lib/supabaseServerClient";
 import { Devotional, Reading, Scripture } from "@/types/devotional";
 import { Note, ReferenceType } from "@/types/note";
 
-// Type for raw note data fetched from DB
 type RawNote = {
   id: number;
   content: string;
