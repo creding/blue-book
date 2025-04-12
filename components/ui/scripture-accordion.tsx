@@ -35,7 +35,7 @@ export function ScriptureAccordion({
   return (
     <Accordion>
       {sortedScriptures.map((scripture) => (
-        <Accordion.Item key={scripture.id} value={scripture.day || ""}>
+        <Accordion.Item key={scripture.id} value={scripture.day || String(scripture.id)}>
           <Accordion.Control>
             <Group align="center">
               <Group gap="sm">

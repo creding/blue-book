@@ -16,7 +16,6 @@ export default async function DevotionalPage({
   const weekNum = Number.parseInt(week, 10);
   if (isNaN(weekNum)) {
     redirect("/");
-    return null;
   }
 
   return (

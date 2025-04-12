@@ -27,7 +27,7 @@ export async function toggleFavorite(userId: string, devotionalId: number) {
     .from("favorites")
     .select("id")
     .eq("user_id", userId)
-    .eq("devotional_id", devotionalId)
+    .eq("devotion_id", devotionalId)
     .single();
 
   if (existing) {
@@ -49,7 +49,7 @@ export async function toggleFavorite(userId: string, devotionalId: number) {
     const { data, error } = await supabase.from("favorites").insert({
       id: crypto.randomUUID(), // Add explicit UUID for id
       user_id: userId,
-      devotional_id: devotionalId,
+      devotion_id: devotionalId,
     });
 
     if (error) {

@@ -145,7 +145,7 @@ export async function getDevotionalDetails(
       .from("favorites")
       .select("*")
       .eq("user_id", userId)
-      .eq("devotional_id", devotionId)
+      .eq("devotion_id", devotionId)
       .maybeSingle();
     isFavorited = !!favorite;
   }

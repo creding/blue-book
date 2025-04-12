@@ -1,19 +1,13 @@
 "use client";
 
-import {
-  ActionIcon,
-  Badge,
-  Drawer,
-  Indicator,
-  Tooltip,
-  useMantineTheme,
-} from "@mantine/core";
+import { ActionIcon, Drawer, Indicator, Tooltip } from "@mantine/core";
 import { IconNotes } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { NotesSection } from "../notes/NotesSection";
 import { Note, ReferenceType } from "@/types/note";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/providers/AuthProvider";
+import { getURL } from "@/utils/getUrl";
 
 type NotesButtonProps = {
   referenceType: ReferenceType;
@@ -29,13 +23,13 @@ export function NotesButton({
   size = "md",
 }: NotesButtonProps) {
   const [opened, { open, close }] = useDisclosure(false);
-  const theme = useMantineTheme();
   const router = useRouter();
   const { user } = useAuth();
-
+  const pathname = usePathname();
   const handleClick = () => {
     if (!user) {
-      const currentPath = window.location.pathname;
+      const url = getURL();
+      const currentPath = `${url}${pathname}`;
       router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
       return;
     }
