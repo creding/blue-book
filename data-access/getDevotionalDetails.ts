@@ -60,23 +60,38 @@ export async function getDevotionalDetails(
   // 2. Fetch DevotionScriptures (including psalm)
   const { data: devotionScriptures, error: dsError } = await supabase
     .from("devotion_scriptures")
-    .select(
-      `
-      id,
-      scripture_id,
-      day_of_week,
-      is_psalm,
-      scripture:scriptures!scripture_id (*)
-    `
-    )
-    .eq("devotion_id", devotionId)
-    .returns<DevotionScriptureRow[]>();
+    .select("id, scripture_id, day_of_week, is_psalm")
+    .eq("devotion_id", devotionId);
 
   if (dsError) {
     console.error("Error fetching devotion scriptures:", dsError);
-    // Continue without scriptures? Or return null?
     return null;
   }
+
+  // 2b. Fetch associated scriptures
+  const devotionScriptureIds = (devotionScriptures || []).map(ds => ds.scripture_id);
+  const { data: scripturesData, error: scripturesError } = devotionScriptureIds.length > 0 ? await supabase
+    .from("scriptures")
+    .select("id, reference, text")
+    .in("id", devotionScriptureIds) : { data: [], error: null };
+
+  if (scripturesError) {
+    console.error("Error fetching scriptures:", scripturesError);
+    return null;
+  }
+
+  // Combine the data
+  const combinedDevotionScriptures = (devotionScriptures || []).map(ds => {
+    const scripture = scripturesData?.find(s => s.id === ds.scripture_id);
+    return {
+      ...ds,
+      scripture: scripture ? {
+        id: scripture.id,
+        reference: scripture.reference,
+        text: scripture.text
+      } : null
+    };
+  }) as DevotionScriptureRow[];
 
   // 3. Fetch Readings
   const { data: readingsData, error: readingsError } = await supabase
@@ -86,49 +101,65 @@ export async function getDevotionalDetails(
 
   if (readingsError) {
     console.error("Error fetching readings:", readingsError);
-    // Continue without readings? Or return null?
     return null;
   }
 
   // Prepare IDs for note fetching
-  const scriptureIds = (devotionScriptures || []).map((ds) => ds.scripture_id);
   const readingIds = (readingsData || []).map((r) => r.id);
 
   // 4. Fetch all relevant Notes for the user
-  const { data: notesData, error: notesError } = await supabase
+  // 4a. Fetch devotion notes
+  const { data: devotionNotes, error: devotionNotesError } = await supabase
     .from("notes")
     .select("*")
     .eq("user_id", userId)
-    .or(
-      [
-        `devotion_id.eq.${devotionId}`,
-        scriptureIds.length > 0 ? `scripture_id.in.(${scriptureIds.join(",")})` : "scripture_id.is.null",
-        readingIds.length > 0 ? `reading_id.in.(${readingIds.join(",")})` : "reading_id.is.null"
-      ].filter(Boolean).join(",")
-    );
+    .eq("devotion_id", devotionId);
 
-  if (notesError) {
-    console.error("Error fetching notes:", notesError);
-    // Continue without notes? Or return null?
+  if (devotionNotesError) {
+    console.error("Error fetching devotion notes:", devotionNotesError);
     return null;
   }
+
+  // 4b. Fetch scripture notes
+  const { data: scriptureNotes, error: scriptureNotesError } = devotionScriptureIds.length > 0 ? await supabase
+    .from("notes")
+    .select("*")
+    .eq("user_id", userId)
+    .in("scripture_id", devotionScriptureIds) : { data: [], error: null };
+
+  if (scriptureNotesError) {
+    console.error("Error fetching scripture notes:", scriptureNotesError);
+    return null;
+  }
+
+  // 4c. Fetch reading notes
+  const { data: readingNotes, error: readingNotesError } = readingIds.length > 0 ? await supabase
+    .from("notes")
+    .select("*")
+    .eq("user_id", userId)
+    .in("reading_id", readingIds) : { data: [], error: null };
+
+  if (readingNotesError) {
+    console.error("Error fetching reading notes:", readingNotesError);
+    return null;
+  }
+
+  const notesData = [...(devotionNotes || []), ...(scriptureNotes || []), ...(readingNotes || [])];
 
   // 5. Process and combine data
 
   // Find the psalm in devotionScriptures
-  const psalmEntry = (devotionScriptures || []).find((ds: DevotionScriptureRow) => ds.is_psalm);
-  const psalm: Scripture | null = psalmEntry
-    ? {
-        id: psalmEntry.scripture.id,
-        reference: psalmEntry.scripture.reference,
-        text: psalmEntry.scripture.text,
-      }
-    : null;
+  const psalmEntry = (combinedDevotionScriptures || []).find((ds) => ds.is_psalm && ds.scripture);
+  const psalm: Scripture | null = psalmEntry?.scripture ? {
+    id: psalmEntry.scripture.id,
+    reference: psalmEntry.scripture.reference,
+    text: psalmEntry.scripture.text,
+  } : null;
 
-  const mainScriptures: Scripture[] = (devotionScriptures || [])
-    .filter((ds: DevotionScriptureRow) => !ds.is_psalm) // Exclude psalm from main scriptures
-    .map((ds: DevotionScriptureRow) => {
-      const scriptureData = ds.scripture;
+  const mainScriptures: Scripture[] = (combinedDevotionScriptures || [])
+    .filter((ds) => !ds.is_psalm && ds.scripture) // Exclude psalm and null scriptures
+    .map((ds) => {
+      const scriptureData = ds.scripture!; // We know it's not null from the filter
       const scripture: Scripture = {
         id: scriptureData.id,
         reference: scriptureData.reference,
@@ -138,7 +169,7 @@ export async function getDevotionalDetails(
         scripture.day = ds.day_of_week;
       }
       return scripture;
-    }); // Type predicate filter to remove nulls
+    });
 
   const processedReadings: Reading[] = (readingsData || []).map((r) => ({
     // Keep existing reading processing
