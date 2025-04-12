@@ -26,7 +26,6 @@ import { ScriptureAccordion } from "../ui/scripture-accordion";
 
 export interface DevotionalDisplayProps {
   devotional: Devotional | null;
-  day: string | null;
   notes: {
     devotion: Note[];
     psalm: Note[];
@@ -37,7 +36,6 @@ export interface DevotionalDisplayProps {
 
 export function DevotionalDisplay({
   devotional,
-  day,
   notes = {
     devotion: [],
     psalm: [],
@@ -150,7 +148,6 @@ export function DevotionalDisplay({
         {devotional.scriptures?.length > 0 && (
           <ScriptureAccordion
             scriptures={devotional.scriptures}
-            currentDay={day || "monday"}
             notes={devotional.notes.scripture || []}
           />
         )}

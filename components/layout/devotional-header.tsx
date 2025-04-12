@@ -36,8 +36,6 @@ interface DevotionalHeaderProps {
   rightOpened: boolean;
   toggleLeft: () => void;
   toggleRight: () => void;
-  week: number;
-  day: string;
 }
 
 export function DevotionalHeader({
@@ -45,8 +43,6 @@ export function DevotionalHeader({
   rightOpened,
   toggleLeft,
   toggleRight,
-  week,
-  day,
 }: DevotionalHeaderProps) {
   return (
     <Group h="100%" px="md" justify="space-between">

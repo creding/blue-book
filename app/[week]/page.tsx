@@ -8,9 +8,9 @@ import { TableOfContents } from "@/components/ui/table-of-contents";
 export default async function DevotionalPage({
   params,
 }: {
-  params: Promise<{ week: string; day: string }>;
+  params: Promise<{ week: string }>;
 }) {
-  const { week, day } = await params;
+  const { week } = await params;
 
   // Handle invalid week parameter
   const weekNum = Number.parseInt(week, 10);
@@ -20,13 +20,9 @@ export default async function DevotionalPage({
   }
 
   return (
-    <DevotionalLayout
-      week={weekNum}
-      day={day}
-      toc={<TableOfContents week={weekNum} />}
-    >
+    <DevotionalLayout toc={<TableOfContents week={weekNum} />}>
       <Suspense fallback={<DevotionalSkeleton />}>
-        <DevotionalContent week={weekNum} day={day} />
+        <DevotionalContent week={weekNum} />
       </Suspense>
     </DevotionalLayout>
   );

@@ -7,7 +7,6 @@ import { useMantineTheme } from "@mantine/core";
 
 interface ScriptureAccordionProps {
   scriptures: Scripture[];
-  currentDay: string;
   notes: Note[];
 }
 
@@ -23,7 +22,6 @@ const dayOrder = [
 
 export function ScriptureAccordion({
   scriptures,
-  currentDay,
   notes,
 }: ScriptureAccordionProps) {
   const theme = useMantineTheme();
@@ -35,7 +33,7 @@ export function ScriptureAccordion({
   });
 
   return (
-    <Accordion defaultValue={currentDay}>
+    <Accordion>
       {sortedScriptures.map((scripture) => (
         <Accordion.Item key={scripture.id} value={scripture.day || ""}>
           <Accordion.Control>
