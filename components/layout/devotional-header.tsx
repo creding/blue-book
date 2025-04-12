@@ -36,8 +36,6 @@ interface DevotionalHeaderProps {
   rightOpened: boolean;
   toggleLeft: () => void;
   toggleRight: () => void;
-  week: number;
-  day: string;
 }
 
 export function DevotionalHeader({
@@ -45,8 +43,6 @@ export function DevotionalHeader({
   rightOpened,
   toggleLeft,
   toggleRight,
-  week,
-  day,
 }: DevotionalHeaderProps) {
   return (
     <Group h="100%" px="md" justify="space-between">
@@ -58,16 +54,12 @@ export function DevotionalHeader({
           size="sm"
         />
         <Anchor component={Link} href="/">
-          <Title td="none" c="gray.8" order={3}>
+          <Title td="none" order={3}>
             The Blue Book
           </Title>
         </Anchor>
       </Group>
       <Group>
-        <Group visibleFrom="sm">
-          <WeekSelector week={week} day={day} />
-          <DaySelector week={week} day={day} />
-        </Group>
         <Group gap="sm">
           <LoginButton />
           <ActionIcon

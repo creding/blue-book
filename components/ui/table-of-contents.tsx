@@ -16,7 +16,7 @@ export async function TableOfContents({ week }: { week: number }) {
               <NavLink
                 active={devotional.id === week}
                 component={Link}
-                href={`/${devotional.id}/monday`}
+                href={`/${devotional.id}`}
                 key={devotional.id}
                 p="sm"
                 rightSection={

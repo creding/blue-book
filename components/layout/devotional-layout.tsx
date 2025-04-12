@@ -10,16 +10,9 @@ import { useDisclosure } from "@mantine/hooks";
 interface DevotionalLayoutProps {
   children: React.ReactNode;
   toc: React.ReactNode;
-  week: number;
-  day: string;
 }
 
-export function DevotionalLayout({
-  children,
-  week,
-  day,
-  toc,
-}: DevotionalLayoutProps) {
+export function DevotionalLayout({ children, toc }: DevotionalLayoutProps) {
   const [leftOpened, { toggle: toggleLeft }] = useDisclosure();
   const [rightOpened, { toggle: toggleRight }] = useDisclosure(false);
 
@@ -44,8 +37,6 @@ export function DevotionalLayout({
           rightOpened={rightOpened}
           toggleLeft={toggleLeft}
           toggleRight={toggleRight}
-          week={week}
-          day={day}
         />
       </AppShell.Header>
 

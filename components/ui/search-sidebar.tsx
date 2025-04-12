@@ -23,7 +23,7 @@ import {
   IconAlertCircle,
   IconChevronRight,
 } from "@tabler/icons-react";
-import { searchDevotionals } from "@/data-access/devotion";
+import { searchDevotionals } from "@/data-access/searchDevotionals";
 import { useRouter } from "next/navigation";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Devotional } from "@/types/devotional";
@@ -152,7 +152,7 @@ export function SearchSidebar({
         p="md"
         withBorder
         style={{ cursor: "pointer" }}
-        onClick={() => router.push(`/devotional/${result.id}`)}
+        onClick={() => router.push(`/${result.id}`)}
         radius="md"
         className="search-result-hover"
       >
@@ -237,7 +237,12 @@ export function SearchSidebar({
               {filters.scripture &&
                 result.scriptures?.map((scripture, idx) =>
                   checkMatch(scripture.text, true) ? (
-                    <Text key={`scripture-${idx}`} component="span" size="sm" lineClamp={2}>
+                    <Text
+                      key={`scripture-${idx}`}
+                      component="span"
+                      size="sm"
+                      lineClamp={2}
+                    >
                       <Text span fw={800} c="dimmed.9">
                         {scripture.reference}:{" "}
                       </Text>
