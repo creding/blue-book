@@ -23,7 +23,7 @@ import {
   IconAlertCircle,
   IconChevronRight,
 } from "@tabler/icons-react";
-import { searchDevotionals } from "@/data-access/searchDevotionals";
+import { searchDevotionals } from "@/data-access/graphql/search";
 import { useRouter } from "next/navigation";
 import { useDebouncedValue } from "@mantine/hooks";
 import { Devotional } from "@/types/devotional";
@@ -87,13 +87,13 @@ export function SearchSidebar({
   }, []);
 
   const performSearch = useCallback(async () => {
-    // ... (search logic remains the same) ...
     if (!debouncedSearchQuery.trim()) {
       setSearchResults([]);
       setIsSearching(false);
       setSearchError(null);
       return;
     }
+
     const isAnyFilterActive = Object.values(filters).some((active) => active);
     if (!isAnyFilterActive) {
       setSearchResults([]);
@@ -101,8 +101,10 @@ export function SearchSidebar({
       setSearchError("Please select at least one filter category.");
       return;
     }
+
     setIsSearching(true);
     setSearchError(null);
+
     try {
       const results = await searchDevotionals(debouncedSearchQuery, filters);
       setSearchResults(results);
@@ -146,51 +148,96 @@ export function SearchSidebar({
 
   // --- RENDER SEARCH RESULT ITEM ---
   const renderSingleResult = (result: DevotionalSearchResult) => {
-    return (
-      <Paper
-        key={`search-result-${result.id}`}
-        p="md"
-        withBorder
-        style={{ cursor: "pointer" }}
-        onClick={() => router.push(`/${result.id}`)}
-        radius="md"
-        className="search-result-hover"
-      >
-        <Stack gap="xs">
-          {/* 1. Title */}
-          <Text fw={600} size="lg" lineClamp={2}>
-            {renderHighlight(result.title)}
-          </Text>
+    // Extract psalm and scriptures from devotion_scripturesCollection
+    const psalm = result.devotion_scripturesCollection?.edges?.find(
+      (e) => e.node.scriptures.is_psalm
+    )?.node.scriptures;
+    const scriptures =
+      result.devotion_scripturesCollection?.edges
+        ?.filter((e) => !e.node.scriptures.is_psalm)
+        ?.map((e) => ({
+          id: e.node.scriptures.id,
+          reference: e.node.scriptures.reference,
+          text: e.node.scriptures.text,
+          day: e.node.day_of_week,
+        })) || [];
 
-          {/* 2. Badges */}
-          <Group gap="xs">
-            <Badge size="sm" variant="light" color="gray">
-              Week {result.devotion_id}
+    // Extract readings from readingsCollection
+    const readings =
+      result.readingsCollection?.edges?.map((e) => ({
+        id: e.node.id,
+        text: e.node.text,
+        source: e.node.source,
+        title: e.node.title,
+      })) || [];
+
+    // Skip this result if no part of it matched the search query
+    const titleMatches = filters.title && checkMatch(result.title);
+    const prayerMatches =
+      filters.prayers &&
+      (checkMatch(result.opening_prayer) || checkMatch(result.closing_prayer));
+    const scriptureMatches =
+      filters.scripture &&
+      (psalm
+        ? checkMatch(psalm.text, true) || checkMatch(psalm.reference)
+        : false ||
+          scriptures.some(
+            (s) => checkMatch(s.text, true) || checkMatch(s.reference)
+          ));
+    const readingMatches =
+      filters.readings &&
+      readings.some(
+        (r) =>
+          checkMatch(r.text, true) ||
+          checkMatch(r.title) ||
+          checkMatch(r.source)
+      );
+
+    if (
+      !titleMatches &&
+      !prayerMatches &&
+      !scriptureMatches &&
+      !readingMatches
+    ) {
+      return null;
+    }
+
+    return (
+      <Paper key={result.id} shadow="xs" p="md" withBorder component="article">
+        <Stack gap="xs">
+          {/* Title & Link */}
+          <Group justify="space-between" align="flex-start">
+            <Box style={{ flex: 1 }}>
+              {titleMatches ? (
+                <Text fw={500} size="lg" style={{ wordBreak: "break-word" }}>
+                  {renderHighlight(result.title)}
+                </Text>
+              ) : (
+                <Text fw={500} size="lg" style={{ wordBreak: "break-word" }}>
+                  {result.title}
+                </Text>
+              )}
+            </Box>
+            <Badge
+              component="a"
+              href={`/devotions/${result.slug}`}
+              variant="light"
+              color="blue"
+              style={{ cursor: "pointer", textDecoration: "none" }}
+              onClick={(e) => {
+                e.preventDefault();
+                router.push(`/devotions/${result.slug}`);
+              }}
+            >
+              View
             </Badge>
-            {result.opening_prayer && (
-              <Badge size="sm" variant="outline" color="blue">
-                Prayer
-              </Badge>
-            )}
-            {result.readings && result.readings.length > 0 && (
-              <Badge size="sm" variant="outline" color="green">
-                Reading
-              </Badge>
-            )}
-            {(result.psalm ||
-              (result.scriptures && result.scriptures.length > 0)) && (
-              <Badge size="sm" variant="outline" color="violet">
-                Scripture
-              </Badge>
-            )}
           </Group>
 
-          {/* --- 3. Conditional Snippets --- */}
-          <Box mt="xs">
-            <Stack gap="xs">
-              {/* Prayers (Plain Text) */}
-              {filters.prayers && checkMatch(result.opening_prayer) && (
-                <Text component="div" size="sm" lineClamp={2}>
+          {/* Prayers */}
+          {filters.prayers && (
+            <Box>
+              {checkMatch(result.opening_prayer) && (
+                <Text size="sm" lineClamp={2}>
                   <Text span fw={800} c="dimmed.9">
                     Opening Prayer:{" "}
                   </Text>
@@ -199,127 +246,121 @@ export function SearchSidebar({
                   </Text>
                 </Text>
               )}
-              {filters.prayers && checkMatch(result.closing_prayer) && (
-                <Text component="div" size="sm" lineClamp={2}>
-                  {!checkMatch(result.opening_prayer) && (
-                    <Text span fw={800} c="dimmed.9">
-                      Closing Prayer:{" "}
-                    </Text>
-                  )}
+              {checkMatch(result.closing_prayer) && (
+                <Text size="sm" lineClamp={2}>
+                  <Text span fw={800} c="dimmed.9">
+                    Closing Prayer:{" "}
+                  </Text>
                   <Text span size="xs">
                     {renderHighlight(result.closing_prayer)}
                   </Text>
                 </Text>
               )}
+            </Box>
+          )}
 
-              {/* Psalm (Handles HTML Text) */}
-              {filters.scripture && checkMatch(result.psalm?.text, true) && (
+          {/* Psalm and Scriptures */}
+          {filters.scripture && (
+            <Box>
+              {/* Psalm matches */}
+              {psalm && checkMatch(psalm.text, true) && (
                 <Text component="div" size="sm" lineClamp={2}>
                   <Text span fw={800} c="dimmed.9">
-                    {result.psalm?.reference}{" "}
+                    {psalm.reference}{" "}
                   </Text>
                   <Text span size="xs">
-                    {renderHighlight(stripHtml(result.psalm?.text))}
+                    {renderHighlight(stripHtml(psalm.text))}
                   </Text>
                 </Text>
               )}
-              {filters.scripture &&
-                !checkMatch(result.psalm?.text, true) &&
-                checkMatch(result.psalm?.reference) && (
+              {psalm &&
+                !checkMatch(psalm.text, true) &&
+                checkMatch(psalm.reference) && (
                   <Text size="sm" lineClamp={1}>
                     <Text span fw={800} c="dimmed.9">
-                      {result.psalm?.reference}:{" "}
+                      {renderHighlight(psalm.reference)}
                     </Text>
                   </Text>
                 )}
 
-              {/* Scriptures (Handles HTML Text) */}
-              {filters.scripture &&
-                result.scriptures?.map((scripture, idx) =>
-                  checkMatch(scripture.text, true) ? (
+              {/* Scripture matches */}
+              {scriptures.map((scripture, idx) =>
+                checkMatch(scripture.text, true) ? (
+                  <Text
+                    key={`scripture-${idx}`}
+                    component="div"
+                    size="sm"
+                    lineClamp={2}
+                  >
+                    <Text span fw={800} c="dimmed.9">
+                      {scripture.reference}:{" "}
+                    </Text>
+                    <Text span size="xs">
+                      {renderHighlight(stripHtml(scripture.text))}
+                    </Text>
+                  </Text>
+                ) : null
+              )}
+              {!scriptures.some((s) => checkMatch(s.text, true)) &&
+                scriptures.map((scripture, idx) =>
+                  checkMatch(scripture.reference) ? (
+                    <Text key={`scr-ref-${idx}`} size="sm" lineClamp={1}>
+                      <Text span fw={800} c="dimmed.9">
+                        {renderHighlight(scripture.reference)}
+                      </Text>
+                    </Text>
+                  ) : null
+                )}
+            </Box>
+          )}
+
+          {/* Readings */}
+          {filters.readings && (
+            <Box>
+              {readings.map((reading, idx) => {
+                const textMatches = checkMatch(reading.text, true);
+                const sourceMatches = checkMatch(reading.source);
+                const titleMatches = checkMatch(reading.title);
+
+                if (textMatches || sourceMatches || titleMatches) {
+                  return (
                     <Text
-                      key={`scripture-${idx}`}
-                      component="span"
+                      key={`reading-${idx}`}
+                      component="div"
                       size="sm"
                       lineClamp={2}
                     >
-                      <Text span fw={800} c="dimmed.9">
-                        {scripture.reference}:{" "}
-                      </Text>
-                      <Text span size="xs">
-                        {renderHighlight(stripHtml(scripture.text))}
-                      </Text>
-                    </Text>
-                  ) : null
-                )}
-              {filters.scripture &&
-                !result.scriptures?.some((s) => checkMatch(s.text, true)) &&
-                result.scriptures?.map((scripture, idx) =>
-                  checkMatch(scripture.reference) ? (
-                    <Text key={`scr-ref-${idx}`} size="sm" lineClamp={1}>
-                      {!(
-                        !checkMatch(result.psalm?.text, true) &&
-                        checkMatch(result.psalm?.reference)
-                      ) && (
-                        <Text span fw={500} c="dimmed.9">
-                          Scripture:{" "}
+                      {(reading.title || titleMatches) && (
+                        <Text span fw={800} c="dimmed.9">
+                          {titleMatches
+                            ? renderHighlight(reading.title || "")
+                            : reading.title}
+                          :{" "}
                         </Text>
                       )}
-                      {renderHighlight(scripture.reference)}
+                      {textMatches && (
+                        <Text span size="xs">
+                          {renderHighlight(stripHtml(reading.text))}
+                        </Text>
+                      )}
+                      {sourceMatches && (
+                        <Text span size="xs" c="dimmed.7">
+                          {textMatches ? " - " : ""}
+                          {renderHighlight(reading.source || "")}
+                        </Text>
+                      )}
                     </Text>
-                  ) : null
-                )}
-
-              {/* Readings (Handles HTML Text, uses Source as identifier) */}
-              {filters.readings &&
-                result.readings?.map((reading, idx) => {
-                  // Removed check for reading.title
-                  const sourceMatch = checkMatch(reading.source);
-                  const textMatch = checkMatch(reading.text, true); // Check stripped text
-
-                  // Render snippet if source or the *stripped text* matches
-                  if (sourceMatch || textMatch) {
-                    const strippedText = stripHtml(reading.text); // Strip for display
-
-                    return (
-                      <Box key={`read-${idx}`}>
-                        {/* Show Source info - Highlight if it matched */}
-                        {reading.source && ( // Check if source exists
-                          <Text size="sm" lineClamp={1}>
-                            {/* Use source in the label */}
-                            <Text span fw={800} c="dimmed.9">
-                              {renderHighlight(reading.source)}:{" "}
-                            </Text>
-                          </Text>
-                        )}
-
-                        {/* Show stripped text if it exists AND (source matched OR text matched) */}
-                        {strippedText && (sourceMatch || textMatch) && (
-                          <Text
-                            key={`reading-text-${idx}`}
-                            size="xs"
-                            lineClamp={2}
-                            c="dimmed.2"
-                            // Add margin only if source label was also displayed above
-                            mt={reading.source ? "xxs" : 0}
-                          >
-                            {/* Apply highlighting to the plain, stripped text */}
-                            {renderHighlight(strippedText)}
-                          </Text>
-                        )}
-                      </Box>
-                    );
-                  }
-                  return null; // Don't render this reading if no part of it matched
-                })}
-            </Stack>
-          </Box>
+                  );
+                }
+                return null;
+              })}
+            </Box>
+          )}
         </Stack>
       </Paper>
     );
   };
 
-  // --- Determine overall content for the results area ---
   const renderResultsContent = () => {
     // ... (Loading, Error, No Query states logic remains the same) ...
     if (isSearching) {

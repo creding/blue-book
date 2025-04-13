@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.7",
     "@mantine/core": "latest",
     "@mantine/hooks": "latest",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
@@ -19,6 +20,9 @@
     "@tabler/icons-react": "latest",
     "date-fns": "^3.3.1",
     "embla-carousel-react": "8.5.1",
+    "gql": "^1.1.2",
+    "graphql": "^16.10.0",
+    "graphql-tag": "^2.12.6",
     "next": "15.2.4",
     "react": "^19",
     "react-dom": "^19",

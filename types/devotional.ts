@@ -35,6 +35,16 @@ export interface DbReading {
   devotion_id: number | null;
   text: string;
   source: string | null;
+  notesCollection: {
+    edges: Array<{
+      node: {
+        id: number;
+        content: string;
+        created_at: string;
+        updated_at: string;
+      };
+    }>;
+  };
   title: string | null;
   created_at?: Date;
   updated_at?: Date;
@@ -60,23 +70,72 @@ import { Note } from "./note";
 
 export interface Devotional {
   id: number;
-  devotion_id: number;
   title: string;
   slug: string;
-  psalm: Scripture | null;
   opening_prayer: string;
-  opening_prayer_source?: string;
+  opening_prayer_source: string | null;
   closing_prayer: string;
-  closing_prayer_source?: string;
-  song_title?: string;
-  scriptures: Scripture[];
-  readings: Reading[];
-  isFavorited: boolean;
-  notes: {
-    devotion: Note[];
-    psalm: Note[];
-    scripture: Note[];
-    readings: Note[][];
+  closing_prayer_source: string | null;
+  song_title: string | null;
+  devotion_scripturesCollection: {
+    edges: Array<{
+      node: {
+        scriptures: {
+          id: number;
+          reference: string;
+          text: string;
+          is_psalm: boolean;
+          notesCollection: {
+            edges: Array<{
+              node: {
+                id: number;
+                content: string;
+                created_at: string;
+                updated_at: string;
+              };
+            }>;
+          };
+        };
+        day_of_week: string;
+      };
+    }>;
+  };
+  readingsCollection: {
+    edges: Array<{
+      node: {
+        id: number;
+        title: string | null;
+        text: string;
+        source: string | null;
+        notesCollection: {
+          edges: Array<{
+            node: {
+              id: number;
+              content: string;
+              created_at: string;
+              updated_at: string;
+            };
+          }>;
+        };
+      };
+    }>;
+  };
+  notesCollection: {
+    edges: Array<{
+      node: {
+        id: number;
+        content: string;
+        created_at: string;
+        updated_at: string;
+      };
+    }>;
+  };
+  favoritesCollection: {
+    edges: Array<{
+      node: {
+        id: string;
+      };
+    }>;
   };
 }
 

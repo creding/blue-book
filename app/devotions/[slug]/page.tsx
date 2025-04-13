@@ -8,21 +8,19 @@ import { TableOfContents } from "@/components/ui/table-of-contents";
 export default async function DevotionalPage({
   params,
 }: {
-  params: Promise<{ week: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { week } = await params;
+  const { slug } = await params;
 
-  // Handle invalid week parameter
-  const weekNum = Number.parseInt(week, 10);
-  if (isNaN(weekNum)) {
+  // Handle invalid slug parameter
+  if (!slug) {
     redirect("/");
-    return null;
   }
 
   return (
-    <DevotionalLayout toc={<TableOfContents week={weekNum} />}>
+    <DevotionalLayout toc={<TableOfContents slug={slug} />}>
       <Suspense fallback={<DevotionalSkeleton />}>
-        <DevotionalContent week={weekNum} />
+        <DevotionalContent slug={slug} />
       </Suspense>
     </DevotionalLayout>
   );

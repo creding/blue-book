@@ -45,13 +45,16 @@ export function NotesSection({
     if (!newNoteContent.trim()) return;
 
     setLoading(true);
-    const note = await createNoteAction({
-      reference_type: referenceType,
-      reference_id: referenceId,
-      content: newNoteContent.trim(),
-    });
+    const note = await createNoteAction(
+      parseInt(referenceId),
+      newNoteContent.trim()
+    );
     if (note) {
-      setNotes((prev) => [note, ...prev]);
+      const convertedNote: Note = {
+        ...note,
+        id: parseInt(note.id)
+      };
+      setNotes((prev) => [convertedNote, ...prev]);
       setNewNoteContent("");
       closeAddNote();
     }
@@ -62,12 +65,17 @@ export function NotesSection({
     if (!editingNote || !editingNote.content.trim()) return;
 
     setLoading(true);
-    const updated = await updateNoteAction(String(id), {
-      content: editingNote.content.trim(),
-    });
+    const updated = await updateNoteAction(
+      String(id),
+      editingNote.content.trim()
+    );
 
     if (updated) {
-      setNotes((prev) => prev.map((note) => (note.id === id ? updated : note)));
+      const convertedNote: Note = {
+        ...updated,
+        id: parseInt(updated.id)
+      };
+      setNotes((prev) => prev.map((note) => (note.id === id ? convertedNote : note)));
       setEditingNote(null);
     }
     setLoading(false);

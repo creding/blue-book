@@ -1,23 +1,14 @@
 import { Container } from "@mantine/core";
 import { DevotionalDisplay } from "./devotional-display";
-import { getDevotionalDetails } from "@/data-access/getDevotionalDetails";
+import { getDevotionalDetailsGql } from "@/data-access/graphql/getDevotionalDetails";
 
-export async function DevotionalContent({ week }: { week: number }) {
-  const devotional = await getDevotionalDetails(week);
+export async function DevotionalContent({ slug }: { slug: string }) {
+  const response = await getDevotionalDetailsGql(slug);
+  const devotion = response?.devotionsCollection?.edges?.[0]?.node;
 
   return (
     <Container size="md">
-      <DevotionalDisplay
-        devotional={devotional}
-        notes={
-          devotional?.notes || {
-            devotion: [],
-            psalm: [],
-            scripture: [],
-            readings: [],
-          }
-        }
-      />
+      <DevotionalDisplay devotional={devotion || null} />
     </Container>
   );
 }

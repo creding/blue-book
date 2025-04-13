@@ -1,9 +1,11 @@
 import { Text, Title, Stack, ScrollArea, NavLink } from "@mantine/core";
 import Link from "next/link";
-import { getDevotionals } from "@/data-access/devotion";
+import { getDevotions } from "@/data-access/graphql/getDevotions";
 
-export async function TableOfContents({ week }: { week: number }) {
-  const devotionals = await getDevotionals();
+export async function TableOfContents({ slug }: { slug: string }) {
+  const response = await getDevotions();
+  const devotionals =
+    response?.devotionsCollection?.edges?.map((edge) => edge.node) || [];
 
   return (
     <Stack gap="md" h="100%">
@@ -14,9 +16,9 @@ export async function TableOfContents({ week }: { week: number }) {
           {devotionals.length > 0 ? (
             devotionals.map((devotional) => (
               <NavLink
-                active={devotional.id === week}
+                active={devotional.slug === slug}
                 component={Link}
-                href={`/${devotional.id}`}
+                href={`/devotions/${devotional.slug}`}
                 key={devotional.id}
                 p="sm"
                 rightSection={

@@ -6,17 +6,12 @@ import { Suspense } from "react";
 import { TableOfContents } from "@/components/ui/table-of-contents";
 
 export default function HomePage() {
-  const { week, day } = getCurrentWeekAndDay();
-
+  const { week } = getCurrentWeekAndDay();
   return (
     <>
-      <DevotionalLayout
-        week={week}
-        day={day}
-        toc={<TableOfContents week={week} />}
-      >
+      <DevotionalLayout toc={<TableOfContents week={week} />}>
         <Suspense fallback={<DevotionalSkeleton />}>
-          <DevotionalContent week={week} day={day} />
+          <DevotionalContent week={week} />
         </Suspense>
       </DevotionalLayout>
     </>

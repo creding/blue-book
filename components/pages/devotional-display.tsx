@@ -20,29 +20,15 @@ import FavoriteButton from "@/components/ui/buttons/FavoriteButton";
 import ShareButton from "@/components/ui/buttons/ShareButton";
 import PrintButton from "@/components/ui/buttons/PrintButton";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
-import { Devotional } from "@/types/devotional";
-import { Note } from "@/types/note";
+import { Devotion } from "@/types/graphql";
+import { ReferenceType } from "@/types/note";
 import { ScriptureAccordion } from "../ui/scripture-accordion";
 
 export interface DevotionalDisplayProps {
-  devotional: Devotional | null;
-  notes: {
-    devotion: Note[];
-    psalm: Note[];
-    scripture: Note[];
-    readings: Note[][];
-  };
+  devotional: Devotion | null;
 }
 
-export function DevotionalDisplay({
-  devotional,
-  notes = {
-    devotion: [],
-    psalm: [],
-    scripture: [],
-    readings: [],
-  },
-}: DevotionalDisplayProps) {
+export function DevotionalDisplay({ devotional }: DevotionalDisplayProps) {
   const theme = useMantineTheme();
 
   const handleShare = () => {
@@ -88,7 +74,7 @@ export function DevotionalDisplay({
         <Group gap="xs" align="flex-start">
           <FavoriteButton
             devotionalId={devotional.id}
-            initialFavorited={devotional.isFavorited}
+            initialFavorited={devotional.favoritesCollection.edges.length > 0}
             size="sm"
           />
           <ShareButton onClick={handleShare} size="sm" />
@@ -96,7 +82,18 @@ export function DevotionalDisplay({
           <NotesButton
             referenceType="devotion"
             referenceId={String(devotional.id)}
-            initialNotes={devotional.notes.devotion || []}
+            initialNotes={devotional.notesCollection.edges.map((edge) => ({
+              id: edge.node.id,
+              content: edge.node.content,
+              created_at: edge.node.created_at,
+              updated_at: edge.node.updated_at,
+              user_id: "",
+              reference_type: "devotion" as ReferenceType,
+              reference_id: String(devotional.id),
+              devotion_id: devotional.id,
+              scripture_id: null,
+              reading_id: null,
+            }))}
             size="sm"
           />
         </Group>
@@ -118,42 +115,106 @@ export function DevotionalDisplay({
           </Stack>
         )}
         {/* Optional Divider */}
-        {devotional.opening_prayer && devotional.psalm?.text && <Divider />}
+        {devotional.opening_prayer &&
+          devotional.devotion_scripturesCollection.edges.some(
+            (edge) => edge.node.scriptures.is_psalm
+          ) && <Divider />}
         {/* Psalm */}
-        {devotional.psalm?.text && (
+        {devotional.devotion_scripturesCollection.edges.some(
+          (edge) => edge.node.scriptures.is_psalm
+        ) && (
           <Stack gap="sm">
             <Group justify="space-between" align="center" mb={4}>
               <Group gap="sm">
                 <IconBook size={22} color={theme.colors.gray[7]} />
-                <Title order={4}>{devotional.psalm.reference || "Psalm"}</Title>
+                <Title order={4}>
+                  {devotional.devotion_scripturesCollection.edges.find(
+                    (edge) => edge.node.scriptures.is_psalm
+                  )?.node.scriptures.reference || "Psalm"}
+                </Title>
               </Group>
               <NotesButton
                 referenceType="scripture"
-                referenceId={String(devotional.psalm?.id)}
-                initialNotes={notes.psalm || []}
+                referenceId={String(
+                  devotional.devotion_scripturesCollection.edges.find(
+                    (edge) => edge.node.scriptures.is_psalm
+                  )?.node.scriptures.id
+                )}
+                initialNotes={devotional.devotion_scripturesCollection.edges
+                  .filter((edge) => edge.node.scriptures.is_psalm)
+                  .flatMap((edge) =>
+                    edge.node.scriptures.notesCollection.edges.map(
+                      (noteEdge) => ({
+                        id: noteEdge.node.id,
+                        content: noteEdge.node.content,
+                        created_at: noteEdge.node.created_at,
+                        updated_at: noteEdge.node.updated_at,
+                        user_id: "",
+                        reference_type: "scripture" as ReferenceType,
+                        reference_id: String(edge.node.scriptures.id),
+                        devotion_id: devotional.id,
+                        scripture_id: edge.node.scriptures.id,
+                        reading_id: null,
+                      })
+                    )
+                  )}
                 size="sm"
               />
             </Group>
             <div
               className="scripture-container"
-              dangerouslySetInnerHTML={{ __html: devotional.psalm.text }}
+              dangerouslySetInnerHTML={{
+                __html:
+                  devotional.devotion_scripturesCollection.edges.find(
+                    (edge) => edge.node.scriptures.is_psalm
+                  )?.node.scriptures.text || "",
+              }}
             />
           </Stack>
         )}
         {/* Optional Divider */}
-        {devotional.psalm?.text && devotional.scriptures[0]?.text && (
-          <Divider />
-        )}
+        {devotional.devotion_scripturesCollection.edges.some(
+          (edge) => edge.node.scriptures.is_psalm
+        ) &&
+          devotional.devotion_scripturesCollection.edges.some(
+            (edge) => !edge.node.scriptures.is_psalm
+          ) && <Divider />}
         {/* Daily Scriptures */}
-        {devotional.scriptures?.length > 0 && (
+        {devotional.devotion_scripturesCollection.edges.some(
+          (edge) => !edge.node.scriptures.is_psalm
+        ) && (
           <ScriptureAccordion
-            scriptures={devotional.scriptures}
-            notes={devotional.notes.scripture || []}
+            scriptures={devotional.devotion_scripturesCollection.edges
+              .filter((edge) => !edge.node.scriptures.is_psalm)
+              .map((edge) => ({
+                id: edge.node.scriptures.id,
+                reference: edge.node.scriptures.reference,
+                text: edge.node.scriptures.text,
+                is_psalm: edge.node.scriptures.is_psalm,
+                notesCollection: edge.node.scriptures.notesCollection,
+                day_of_week: edge.node.day_of_week,
+              }))}
+            notes={devotional.devotion_scripturesCollection.edges
+              .filter((edge) => !edge.node.scriptures.is_psalm)
+              .flatMap((edge) =>
+                edge.node.scriptures.notesCollection.edges.map((noteEdge) => ({
+                  id: noteEdge.node.id,
+                  content: noteEdge.node.content,
+                  created_at: noteEdge.node.created_at,
+                  updated_at: noteEdge.node.updated_at,
+                  user_id: "",
+                  reference_type: "scripture" as ReferenceType,
+                  reference_id: String(edge.node.scriptures.id),
+                  devotion_id: devotional.id,
+                  scripture_id: edge.node.scriptures.id,
+                  reading_id: null,
+                }))
+              )}
           />
         )}
 
         {/* Readings / Reflection */}
-        {devotional.readings && devotional.readings.length > 0 && (
+        {devotional.readingsCollection.edges.length > 0 && (
           <Stack gap="md">
             <Group justify="space-between" align="center" mb={4}>
               <Group gap="sm">
@@ -166,34 +227,50 @@ export function DevotionalDisplay({
             </Group>
             <Stack gap="lg">
               {/* Gap between multiple reading blockquotes */}
-              {devotional.readings.map((reading, index) => (
-                <div key={reading.id}>
-                  <Blockquote cite={reading.source} p="md" radius="md">
-                    <Group
-                      justify="space-between"
-                      align="stretch"
-                      wrap="nowrap"
-                    >
-                      <div
-                        className="reading-container"
-                        dangerouslySetInnerHTML={{ __html: reading.text || "" }}
-                      />
-                      <NotesButton
-                        referenceType="reading"
-                        referenceId={String(reading.id)}
-                        initialNotes={devotional.notes.readings[index] || []}
-                        size="sm"
-                      />
-                    </Group>
-                  </Blockquote>
-                </div>
-              ))}
+              {devotional.readingsCollection.edges.map(
+                ({ node: reading }, index) => (
+                  <div key={reading.id}>
+                    <Blockquote cite={reading.source} p="md" radius="md">
+                      <Group
+                        justify="space-between"
+                        align="stretch"
+                        wrap="nowrap"
+                      >
+                        <div
+                          className="reading-container"
+                          dangerouslySetInnerHTML={{
+                            __html: reading.text || "",
+                          }}
+                        />
+                        <NotesButton
+                          referenceType="reading"
+                          referenceId={String(reading.id)}
+                          initialNotes={reading.notesCollection.edges.map(
+                            (edge) => ({
+                              id: edge.node.id,
+                              content: edge.node.content,
+                              created_at: edge.node.created_at,
+                              updated_at: edge.node.updated_at,
+                              user_id: "",
+                              reference_type: "reading" as ReferenceType,
+                              reference_id: String(reading.id),
+                              devotion_id: devotional.id,
+                              scripture_id: null,
+                              reading_id: reading.id,
+                            })
+                          )}
+                          size="sm"
+                        />
+                      </Group>
+                    </Blockquote>
+                  </div>
+                )
+              )}
             </Stack>
           </Stack>
         )}
         {/* Optional Divider */}
-        {devotional.readings &&
-          devotional.readings.length > 0 &&
+        {devotional.readingsCollection.edges.length > 0 &&
           devotional.closing_prayer && <Divider />}
         {/* Closing Prayer */}
         {devotional.closing_prayer && (
