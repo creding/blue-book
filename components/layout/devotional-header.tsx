@@ -1,6 +1,11 @@
 import { ActionIcon, Burger, Group, Title, Anchor } from "@mantine/core";
 import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
-import { IconSun, IconMoonStars, IconSearch } from "@tabler/icons-react";
+import {
+  IconSun,
+  IconMoonStars,
+  IconSearch,
+  IconMenu2,
+} from "@tabler/icons-react";
 import { WeekSelector } from "../ui/week-selector";
 import { DaySelector } from "../ui/day-selector";
 import { LoginButton } from "../auth/login-button";
@@ -47,12 +52,17 @@ export function DevotionalHeader({
   return (
     <Group h="100%" px="md" justify="space-between">
       <Group>
-        <Burger
-          opened={leftOpened}
+        <ActionIcon
           onClick={toggleLeft}
+          variant="light"
+          size="lg"
+          radius="xl"
           hiddenFrom="sm"
-          size="sm"
-        />
+          aria-label="Toggle table of contents"
+        >
+          <IconMenu2 size={16} stroke={1.5} />
+        </ActionIcon>
+
         <Anchor component={Link} href="/">
           <Title td="none" order={3}>
             The Blue Book
@@ -68,7 +78,6 @@ export function DevotionalHeader({
             size="lg"
             radius="xl"
             aria-label="Toggle search"
-            display={rightOpened ? "none" : "block"}
           >
             <IconSearch size={16} stroke={1.5} />
           </ActionIcon>
