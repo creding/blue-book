@@ -14,6 +14,17 @@ export function createApolloClient(
   }
   const httpLink = createHttpLink({
     uri: `${supabaseUrl}/graphql/v1`,
+    fetch: function (uri, options) {
+      return fetch(uri, {
+        ...(options ?? {}),
+        headers: {
+          ...(options?.headers ?? {}),
+        },
+        next: {
+          revalidate: 0,
+        },
+      });
+    },
   });
 
   const authLink = setContext((_, { headers }) => {
@@ -34,10 +45,10 @@ export function createApolloClient(
     cache: new InMemoryCache(),
     defaultOptions: {
       watchQuery: {
-        fetchPolicy: "network-only",
+        fetchPolicy: "no-cache",
       },
       query: {
-        fetchPolicy: "network-only",
+        fetchPolicy: "no-cache",
       },
     },
   });

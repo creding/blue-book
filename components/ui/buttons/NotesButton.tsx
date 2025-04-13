@@ -6,7 +6,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { NotesSection } from "../notes/NotesSection";
 import { Note, ReferenceType } from "@/types/note";
 import { usePathname, useRouter } from "next/navigation";
-import { getURL } from "@/utils/getUrl";
 import { User } from "@supabase/supabase-js";
 
 type NotesButtonProps = {
@@ -29,9 +28,7 @@ export function NotesButton({
   const pathname = usePathname();
   const handleClick = () => {
     if (!user) {
-      const url = getURL();
-      const currentPath = `${url}${pathname}`;
-      router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+      router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
       return;
     }
     open();

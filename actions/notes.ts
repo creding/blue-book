@@ -24,7 +24,7 @@ export async function createNoteAction(
     readingId
   );
   if (note) {
-    revalidatePath(`/`);
+    revalidatePath("/", "layout");
   }
   return note;
 }
@@ -33,7 +33,7 @@ export async function updateNoteAction(id: string, content: string) {
   const note = await updateNote(id, content);
   if (note) {
     // We don't know the devotionId here, so revalidate all pages
-    revalidatePath("/");
+    revalidatePath("/", "layout");
   }
   return note;
 }
@@ -42,7 +42,7 @@ export async function deleteNoteAction(id: string) {
   const success = await deleteNote(id);
   if (success) {
     // We don't know the devotionId here, so revalidate all pages
-    revalidatePath("/");
+    revalidatePath("/", "layout");
   }
   return success;
 }
