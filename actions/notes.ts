@@ -3,10 +3,24 @@
 import { createNote, updateNote, deleteNote } from "@/data-access/graphql/notes";
 import { revalidatePath } from "next/cache";
 
-export async function createNoteAction(devotionId: number, content: string) {
-  const note = await createNote(devotionId, content);
+export async function createNoteAction(
+  referenceType: "devotion" | "scripture" | "reading",
+  referenceId: string,
+  content: string,
+  devotionId?: number,
+  scriptureId?: number,
+  readingId?: number
+) {
+  const note = await createNote(
+    referenceType,
+    referenceId,
+    content,
+    devotionId,
+    scriptureId,
+    readingId
+  );
   if (note) {
-    revalidatePath(`/${devotionId}`);
+    revalidatePath(`/devotions/${devotionId}`);
   }
   return note;
 }

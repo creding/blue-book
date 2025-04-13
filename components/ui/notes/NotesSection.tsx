@@ -46,8 +46,12 @@ export function NotesSection({
 
     setLoading(true);
     const note = await createNoteAction(
-      parseInt(referenceId),
-      newNoteContent.trim()
+      referenceType,
+      referenceId,
+      newNoteContent.trim(),
+      referenceType === "devotion" ? parseInt(referenceId) : undefined,
+      referenceType === "scripture" ? parseInt(referenceId) : undefined,
+      referenceType === "reading" ? parseInt(referenceId) : undefined
     );
     if (note) {
       const convertedNote: Note = {

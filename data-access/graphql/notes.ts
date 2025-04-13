@@ -2,11 +2,18 @@ import { CREATE_NOTE, UPDATE_NOTE, DELETE_NOTE, CreateNoteResponse, UpdateNoteRe
 import { createApolloClient } from "@/lib/apollo";
 import { createClient } from "@/lib/supabaseServerClient";
 
-export async function createNote(devotionId: number, content: string): Promise<NoteRecord | null> {
+export async function createNote(
+  referenceType: "devotion" | "scripture" | "reading",
+  referenceId: string,
+  content: string,
+  devotionId?: number,
+  scriptureId?: number,
+  readingId?: number
+): Promise<NoteRecord | null> {
   const supabase = await createClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   
-  if (error || !user?.id || !devotionId || !content) {
+  if (error || !user?.id || !content) {
     console.error("Error creating note:", { error });
     return null;
   }
@@ -22,10 +29,13 @@ export async function createNote(devotionId: number, content: string): Promise<N
     const { data } = await client.mutate<CreateNoteResponse>({
       mutation: CREATE_NOTE,
       variables: {
-        devotionId,
         userId: user.id,
         content,
-        referenceId: devotionId.toString(),
+        referenceType,
+        referenceId,
+        devotionId: devotionId || null,
+        scriptureId: scriptureId || null,
+        readingId: readingId || null,
       },
     });
 

@@ -1,14 +1,24 @@
 import { gql } from "graphql-tag";
 
 export const CREATE_NOTE = gql`
-  mutation CreateNote($devotionId: Int!, $userId: UUID!, $content: String!, $referenceId: String!) {
+  mutation CreateNote(
+    $userId: UUID!, 
+    $content: String!, 
+    $referenceType: String!, 
+    $referenceId: String!, 
+    $devotionId: Int, 
+    $scriptureId: Int, 
+    $readingId: Int
+  ) {
     insertIntonotesCollection(
       objects: [{
-        devotion_id: $devotionId,
         user_id: $userId,
         content: $content,
-        reference_type: "devotion",
-        reference_id: $referenceId
+        reference_type: $referenceType,
+        reference_id: $referenceId,
+        devotion_id: $devotionId,
+        scripture_id: $scriptureId,
+        reading_id: $readingId
       }]
     ) {
       affectedCount
