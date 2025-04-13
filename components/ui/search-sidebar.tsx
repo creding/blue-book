@@ -402,6 +402,7 @@ export function SearchSidebar({
 
         {/* Search Input */}
         <TextInput
+          fz={16}
           placeholder="Enter search term..."
           leftSection={<IconSearch size={18} stroke={1.5} />}
           rightSection={
