@@ -1,7 +1,13 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 
+let apolloClient: ApolloClient<any> | null = null;
+
 export function createApolloClient(supabaseUrl: string, supabaseKey: string, accessToken?: string) {
+  // Return existing client if it exists
+  if (apolloClient) {
+    return apolloClient;
+  }
   const httpLink = createHttpLink({
     uri: `${supabaseUrl}/graphql/v1`,
   });
@@ -17,8 +23,16 @@ export function createApolloClient(supabaseUrl: string, supabaseKey: string, acc
     };
   });
 
-  return new ApolloClient({
+  apolloClient = new ApolloClient({
     link: authLink.concat(httpLink),
     cache: new InMemoryCache(),
   });
+
+  return apolloClient;
+}
+
+export function resetApolloCache() {
+  if (apolloClient) {
+    apolloClient.resetStore();
+  }
 }
