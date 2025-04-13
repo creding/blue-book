@@ -1,4 +1,4 @@
-import { GET_DEVOTIONS, DevotionsResponse } from "./querries/getDevotions";
+import { GET_DEVOTIONS, DevotionsResponse } from "./queries/devotions";
 import { createApolloClient } from "@/lib/apollo";
 import { createClient } from "@/lib/supabaseServerClient";
 

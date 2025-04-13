@@ -1,4 +1,4 @@
-import { GET_DEVOTIONAL_DETAILS } from "./querries/devotions";
+import { GET_DEVOTIONAL_DETAILS } from "./queries/devotions";
 import { createApolloClient } from "@/lib/apollo";
 import { createClient } from "@/lib/supabaseServerClient";
 import { DevotionResponse } from "@/types/graphql";
