@@ -11,8 +11,7 @@ export default function AuthForm({ redirectPath }: { redirectPath: string }) {
   const redirectTo = `${url}/auth/callback?redirect=${encodeURIComponent(
     redirectPath
   )}`;
-  console.log("URL:", url);
-  console.log("Redirecting to:", redirectTo);
+
   const supabase = createClientComponentClient();
 
   return (
