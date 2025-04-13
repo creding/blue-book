@@ -45,7 +45,7 @@ export function NotesButton({
         offset={2}
         variant="filled"
         disabled={initialNotes.length === 0}
-        zIndex={100}
+        zIndex={50}
       >
         <Tooltip label="Notes">
           <ActionIcon
