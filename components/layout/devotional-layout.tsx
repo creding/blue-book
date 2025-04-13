@@ -40,11 +40,13 @@ export function DevotionalLayout({ children, toc }: DevotionalLayoutProps) {
         />
       </AppShell.Header>
 
-      <AppShell.Navbar p="md">{toc}</AppShell.Navbar>
+      <AppShell.Navbar p="md" style={{ zIndex: 300 }}>
+        {toc}
+      </AppShell.Navbar>
 
       <AppShell.Main>{children}</AppShell.Main>
 
-      <AppShell.Aside>
+      <AppShell.Aside style={{ zIndex: 300 }}>
         <SearchSidebar rightOpened={rightOpened} toggleRight={toggleRight} />
       </AppShell.Aside>
     </AppShell>
