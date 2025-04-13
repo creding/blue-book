@@ -66,6 +66,7 @@ export function NotesButton({
         title=""
       >
         <NotesSection
+          closeSidebar={close}
           referenceType={referenceType}
           referenceId={referenceId}
           initialNotes={initialNotes}

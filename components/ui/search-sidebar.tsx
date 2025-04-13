@@ -33,6 +33,7 @@ import {
   IconPray, // Example icons for snippets
   IconBook,
   IconBible,
+  IconX,
 } from "@tabler/icons-react";
 import { searchDevotionals } from "@/data-access/graphql/search";
 import { useRouter } from "next/navigation";
@@ -390,19 +391,12 @@ export function SearchSidebar({
             }
           >
             {/* Using IconX when opened might be clearer */}
-            <IconChevronRight
-              size={20}
-              style={{
-                transform: rightOpened ? "rotate(180deg)" : "rotate(0deg)", // Adjust rotation if needed
-                transition: "transform 200ms ease",
-              }}
-            />
+            <IconX size={20} />
           </ActionIcon>
         </Group>
 
         {/* Search Input */}
         <TextInput
-          fz={16}
           placeholder="Enter search term..."
           leftSection={<IconSearch size={18} stroke={1.5} />}
           rightSection={
@@ -419,6 +413,11 @@ export function SearchSidebar({
           aria-label="Search Devotionals Input"
           disabled={isSearching} // Keep input disabled during search
           radius="md"
+          styles={{
+            input: {
+              fontSize: "16px",
+            },
+          }}
         />
 
         {/* Filters */}

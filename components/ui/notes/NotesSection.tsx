@@ -24,12 +24,14 @@ interface NotesSectionProps {
   referenceType: ReferenceType;
   referenceId: string;
   initialNotes?: Note[];
+  closeSidebar: () => void;
 }
 
 export function NotesSection({
   referenceType,
   referenceId,
   initialNotes = [],
+  closeSidebar,
 }: NotesSectionProps) {
   const [notes, setNotes] = useState<Note[]>(initialNotes);
   const [newNoteContent, setNewNoteContent] = useState("");
@@ -55,7 +57,7 @@ export function NotesSection({
     if (note) {
       const convertedNote: Note = {
         ...note,
-        id: parseInt(note.id)
+        id: parseInt(note.id),
       };
       setNotes((prev) => [convertedNote, ...prev]);
       setNewNoteContent("");
@@ -75,9 +77,11 @@ export function NotesSection({
     if (updated) {
       const convertedNote: Note = {
         ...updated,
-        id: parseInt(updated.id)
+        id: parseInt(updated.id),
       };
-      setNotes((prev) => prev.map((note) => (note.id === id ? convertedNote : note)));
+      setNotes((prev) =>
+        prev.map((note) => (note.id === id ? convertedNote : note))
+      );
       setEditingNote(null);
     }
     setLoading(false);
@@ -98,26 +102,31 @@ export function NotesSection({
       <LoadingOverlay visible={loading} />
       <Stack gap="md">
         <Title order={3}>Notes</Title>
-          <Stack gap="lg">
-            <Textarea
-              placeholder="Write your note here..."
-              value={newNoteContent}
-              onChange={(e) => setNewNoteContent(e.currentTarget.value)}
-              minRows={3}
-              autosize
-              maxRows={10}
-            />
-            <Group justify="flex-end" gap="xs">
-              <Button
-                variant="subtle"
-                color="gray"
-                onClick={() => setNewNoteContent("")}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleCreateNote}>Save Note</Button>
-            </Group>
-          </Stack>
+        <Stack gap="lg">
+          <Textarea
+            placeholder="Write your note here..."
+            value={newNoteContent}
+            onChange={(e) => setNewNoteContent(e.currentTarget.value)}
+            minRows={3}
+            autosize
+            maxRows={10}
+            styles={{
+              input: {
+                fontSize: "16px",
+              },
+            }}
+          />
+          <Group justify="flex-end" gap="xs">
+            <Button
+              variant="subtle"
+              color="gray"
+              onClick={() => closeSidebar()}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleCreateNote}>Save Note</Button>
+          </Group>
+        </Stack>
 
         <Stack gap="md">
           {notes.length === 0 ? (
@@ -140,6 +149,11 @@ export function NotesSection({
                       minRows={3}
                       autosize
                       maxRows={10}
+                      styles={{
+                        input: {
+                          fontSize: "16px",
+                        },
+                      }}
                     />
                     <Group justify="flex-end" gap="xs">
                       <ActionIcon
