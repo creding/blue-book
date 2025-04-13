@@ -10,29 +10,203 @@ import {
   Group,
   Badge,
   ScrollArea,
-  Checkbox,
+  Chip, // Use Chip instead of Checkbox
   Divider,
   Loader,
   Highlight,
   Box,
   Alert,
   ActionIcon,
+  Center, // For centering states
+  Skeleton, // For loading state
+  CloseButton, // For clearing input
+  useMantineTheme,
+  Button, // To access theme colors/spacing
 } from "@mantine/core";
+import { useDebouncedValue } from "@mantine/hooks";
 import {
   IconSearch,
   IconAlertCircle,
   IconChevronRight,
+  IconMoodSad, // Icon for no results
+  IconInfoCircle, // Icon for initial state
+  IconPray, // Example icons for snippets
+  IconBook,
+  IconBible,
 } from "@tabler/icons-react";
 import { searchDevotionals } from "@/data-access/graphql/search";
 import { useRouter } from "next/navigation";
-import { useDebouncedValue } from "@mantine/hooks";
 import { Devotional } from "@/types/devotional";
 
-// Use the Devotional type directly
 type DevotionalSearchResult = Devotional;
+type FilterKeys = "title" | "prayers" | "readings" | "scripture";
+
+// --- Helper: Strip HTML --- (Keep this utility, maybe move outside component if used elsewhere)
+const stripHtml = (html: string | undefined | null): string => {
+  if (!html) return "";
+  // Basic regex fallback for server or if DOM fails
+  return html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+// --- Result Snippet Component --- (Refactored for clarity)
+interface SnippetProps {
+  label: string;
+  text: string | null | undefined;
+  query: string;
+  isHtml?: boolean;
+  icon?: React.ReactNode; // Optional icon
+}
+
+function ResultSnippet({
+  label,
+  text,
+  query,
+  isHtml = false,
+  icon,
+}: SnippetProps) {
+  if (!text || !query.trim()) return null;
+
+  const cleanedText = isHtml ? stripHtml(text) : text;
+  const textLower = cleanedText.toLowerCase();
+  const queryLower = query.toLowerCase();
+
+  if (!textLower.includes(queryLower)) {
+    return null; // Don't render if query isn't in the cleaned text
+  }
+
+  return (
+    <Group gap="xs" wrap="nowrap" align="flex-start">
+      {icon && <Box pt={4}>{icon}</Box>}
+      <Text size="xs" lineClamp={2}>
+        <Text span fw={600} c="dimmed.9">
+          {label}:{" "}
+        </Text>
+        <Highlight highlight={query} component="span">
+          {cleanedText}
+        </Highlight>
+      </Text>
+    </Group>
+  );
+}
+
+// --- Search Result Item Component --- (Refactored Card)
+interface SearchResultItemProps {
+  result: DevotionalSearchResult;
+  query: string;
+  filters: Record<FilterKeys, boolean>;
+  onView: (slug: string) => void; // Callback for navigation
+}
+
+function SearchResultItem({
+  result,
+  query,
+  filters,
+  onView,
+}: SearchResultItemProps) {
+  const theme = useMantineTheme();
+
+  // Extract data (simplified)
+  const psalm = result.devotion_scripturesCollection?.edges?.find(
+    (e) => e.node.scriptures.is_psalm
+  )?.node.scriptures;
+  const scriptures =
+    result.devotion_scripturesCollection?.edges
+      ?.filter((e) => !e.node.scriptures.is_psalm)
+      ?.map((e) => e.node.scriptures) || [];
+  const readings = result.readingsCollection?.edges?.map((e) => e.node) || [];
+
+  return (
+    <Paper shadow="xs" p="sm" withBorder radius="md">
+      <Stack gap="sm">
+        {/* Header: Title & View Button */}
+        <Group justify="space-between" align="flex-start" wrap="nowrap">
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <Text fw={500} size="md" truncate="end">
+              {" "}
+              {/* Use truncate */}
+              <Highlight highlight={query}>
+                {result.title || "Untitled Devotional"}
+              </Highlight>
+            </Text>
+          </Box>
+          <Button
+            variant="light"
+            color="blue"
+            size="xs"
+            radius="xl"
+            onClick={() => onView(result.slug)}
+            aria-label={`View devotional: ${result.title}`}
+            rightSection={<IconChevronRight size={14} />}
+          >
+            View
+          </Button>
+        </Group>
+
+        {/* Snippets Area */}
+        <Stack gap="xs">
+          {/* Prayers */}
+          {filters.prayers && (
+            <>
+              <ResultSnippet
+                label="Opening Prayer"
+                text={result.opening_prayer}
+                query={query}
+                icon={<IconPray size={16} color={theme.colors.gray[6]} />}
+              />
+              <ResultSnippet
+                label="Closing Prayer"
+                text={result.closing_prayer}
+                query={query}
+                icon={<IconPray size={16} color={theme.colors.gray[6]} />}
+              />
+            </>
+          )}
+          {/* Scripture */}
+          {filters.scripture && (
+            <>
+              {psalm && (
+                <ResultSnippet
+                  label={psalm.reference || "Psalm"}
+                  text={psalm.text}
+                  query={query}
+                  isHtml
+                  icon={<IconBible size={16} color={theme.colors.gray[6]} />}
+                />
+              )}
+              {scriptures.map((s) => (
+                <ResultSnippet
+                  key={s.id}
+                  label={s.reference || "Scripture"}
+                  text={s.text}
+                  query={query}
+                  isHtml
+                  icon={<IconBible size={16} color={theme.colors.gray[6]} />}
+                />
+              ))}
+            </>
+          )}
+          {/* Readings */}
+          {filters.readings &&
+            readings.map((r) => (
+              <ResultSnippet
+                key={r.id}
+                label={r.title || r.source || "Reading"}
+                text={r.text}
+                query={query}
+                isHtml
+                icon={<IconBook size={16} color={theme.colors.gray[6]} />}
+              />
+            ))}
+        </Stack>
+      </Stack>
+    </Paper>
+  );
+}
 
 // --- SearchSidebar Component ---
-
 interface SearchSidebarProps {
   rightOpened: boolean;
   toggleRight: () => void;
@@ -42,52 +216,40 @@ export function SearchSidebar({
   rightOpened,
   toggleRight,
 }: SearchSidebarProps) {
-  // --- State Variables ---
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 600);
+  const [debouncedSearchQuery] = useDebouncedValue(searchQuery, 500); // Slightly faster debounce
   const [searchResults, setSearchResults] = useState<DevotionalSearchResult[]>(
     []
   );
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<FilterKeys, boolean>>({
     title: true,
     prayers: true,
     readings: true,
     scripture: true,
   });
   const router = useRouter();
+  const theme = useMantineTheme();
 
-  // --- Helper: Strip HTML Tags ---
-  const stripHtml = (html: string | undefined | null): string => {
-    if (!html) return "";
-    if (typeof window !== "undefined" && typeof document !== "undefined") {
-      try {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = html;
-        return tempDiv.textContent || tempDiv.innerText || "";
-      } catch (e) {
-        console.error("Error stripping HTML with DOM:", e);
-        return html
-          .replace(/<[^>]*>/g, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-      }
-    } else {
-      return html
-        .replace(/<[^>]*>/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
-  };
-
-  // --- Callbacks ---
-  const handleFilterChange = useCallback((field: keyof typeof filters) => {
+  const handleFilterChange = useCallback((field: FilterKeys) => {
     setFilters((prev) => ({ ...prev, [field]: !prev[field] }));
   }, []);
 
+  const handleViewClick = useCallback(
+    (slug: string) => {
+      router.push(`/devotions/${slug}`);
+      // Optionally close the sidebar on navigation
+      // if (rightOpened) {
+      //   toggleRight();
+      // }
+    },
+    [router]
+  ); // Add dependencies if toggleRight/rightOpened are used
+
   const performSearch = useCallback(async () => {
-    if (!debouncedSearchQuery.trim()) {
+    const query = debouncedSearchQuery.trim();
+    if (!query) {
       setSearchResults([]);
       setIsSearching(false);
       setSearchError(null);
@@ -98,7 +260,8 @@ export function SearchSidebar({
     if (!isAnyFilterActive) {
       setSearchResults([]);
       setIsSearching(false);
-      setSearchError("Please select at least one filter category.");
+      // Don't set an error, just show a specific message
+      setSearchError(null);
       return;
     }
 
@@ -106,7 +269,9 @@ export function SearchSidebar({
     setSearchError(null);
 
     try {
-      const results = await searchDevotionals(debouncedSearchQuery, filters);
+      // *** Assumption: searchDevotionals API filters based on the 'filters' object ***
+      // *** and only returns devotionals where query matches AT LEAST ONE active filter field ***
+      const results = await searchDevotionals(query, filters);
       setSearchResults(results);
     } catch (error) {
       console.error("Error searching devotionals:", error);
@@ -115,371 +280,189 @@ export function SearchSidebar({
     } finally {
       setIsSearching(false);
     }
-  }, [debouncedSearchQuery, filters]);
+  }, [debouncedSearchQuery, filters]); // Removed performSearch from its own deps
 
-  // --- Effects ---
   useEffect(() => {
     performSearch();
-  }, [performSearch]);
+  }, [debouncedSearchQuery, filters, performSearch]); // Include performSearch if its definition might change (though unlikely here)
 
-  // --- Helper Functions ---
-
-  // Render text with highlighting (always renders as a span)
-  const renderHighlight = (text: string | undefined | null) => {
-    if (!text || !debouncedSearchQuery.trim()) return text;
-    return (
-      <Highlight highlight={debouncedSearchQuery} component="span">
-        {text}
-      </Highlight>
-    );
-  };
-
-  // Check if text contains the query (strips HTML if needed)
-  const checkMatch = useCallback(
-    (text: string | undefined | null, isHtml: boolean = false): boolean => {
-      if (!text || !debouncedSearchQuery.trim()) return false;
-      const textToSearch = isHtml ? stripHtml(text) : text; // Strip if HTML flag is true
-      return textToSearch
-        .toLowerCase()
-        .includes(debouncedSearchQuery.toLowerCase());
-    },
-    [debouncedSearchQuery]
-  );
-
-  // --- RENDER SEARCH RESULT ITEM ---
-  const renderSingleResult = (result: DevotionalSearchResult) => {
-    // Extract psalm and scriptures from devotion_scripturesCollection
-    const psalm = result.devotion_scripturesCollection?.edges?.find(
-      (e) => e.node.scriptures.is_psalm
-    )?.node.scriptures;
-    const scriptures =
-      result.devotion_scripturesCollection?.edges
-        ?.filter((e) => !e.node.scriptures.is_psalm)
-        ?.map((e) => ({
-          id: e.node.scriptures.id,
-          reference: e.node.scriptures.reference,
-          text: e.node.scriptures.text,
-          day: e.node.day_of_week,
-        })) || [];
-
-    // Extract readings from readingsCollection
-    const readings =
-      result.readingsCollection?.edges?.map((e) => ({
-        id: e.node.id,
-        text: e.node.text,
-        source: e.node.source,
-        title: e.node.title,
-      })) || [];
-
-    // Skip this result if no part of it matched the search query
-    const titleMatches = filters.title && checkMatch(result.title);
-    const prayerMatches =
-      filters.prayers &&
-      (checkMatch(result.opening_prayer) || checkMatch(result.closing_prayer));
-    const scriptureMatches =
-      filters.scripture &&
-      (psalm
-        ? checkMatch(psalm.text, true) || checkMatch(psalm.reference)
-        : false ||
-          scriptures.some(
-            (s) => checkMatch(s.text, true) || checkMatch(s.reference)
-          ));
-    const readingMatches =
-      filters.readings &&
-      readings.some(
-        (r) =>
-          checkMatch(r.text, true) ||
-          checkMatch(r.title) ||
-          checkMatch(r.source)
-      );
-
-    if (
-      !titleMatches &&
-      !prayerMatches &&
-      !scriptureMatches &&
-      !readingMatches
-    ) {
-      return null;
-    }
-
-    return (
-      <Paper key={result.id} shadow="xs" p="md" withBorder component="article">
-        <Stack gap="xs">
-          {/* Title & Link */}
-          <Group justify="space-between" align="flex-start">
-            <Box style={{ flex: 1 }}>
-              {titleMatches ? (
-                <Text fw={500} size="lg" style={{ wordBreak: "break-word" }}>
-                  {renderHighlight(result.title)}
-                </Text>
-              ) : (
-                <Text fw={500} size="lg" style={{ wordBreak: "break-word" }}>
-                  {result.title}
-                </Text>
-              )}
-            </Box>
-            <Badge
-              component="a"
-              href={`/devotions/${result.slug}`}
-              variant="light"
-              color="blue"
-              style={{ cursor: "pointer", textDecoration: "none" }}
-              onClick={(e) => {
-                e.preventDefault();
-                router.push(`/devotions/${result.slug}`);
-              }}
-            >
-              View
-            </Badge>
-          </Group>
-
-          {/* Prayers */}
-          {filters.prayers && (
-            <Box>
-              {checkMatch(result.opening_prayer) && (
-                <Text size="sm" lineClamp={2}>
-                  <Text span fw={800} c="dimmed.9">
-                    Opening Prayer:{" "}
-                  </Text>
-                  <Text span size="xs">
-                    {renderHighlight(result.opening_prayer)}
-                  </Text>
-                </Text>
-              )}
-              {checkMatch(result.closing_prayer) && (
-                <Text size="sm" lineClamp={2}>
-                  <Text span fw={800} c="dimmed.9">
-                    Closing Prayer:{" "}
-                  </Text>
-                  <Text span size="xs">
-                    {renderHighlight(result.closing_prayer)}
-                  </Text>
-                </Text>
-              )}
-            </Box>
-          )}
-
-          {/* Psalm and Scriptures */}
-          {filters.scripture && (
-            <Box>
-              {/* Psalm matches */}
-              {psalm && checkMatch(psalm.text, true) && (
-                <Text component="div" size="sm" lineClamp={2}>
-                  <Text span fw={800} c="dimmed.9">
-                    {psalm.reference}{" "}
-                  </Text>
-                  <Text span size="xs">
-                    {renderHighlight(stripHtml(psalm.text))}
-                  </Text>
-                </Text>
-              )}
-              {psalm &&
-                !checkMatch(psalm.text, true) &&
-                checkMatch(psalm.reference) && (
-                  <Text size="sm" lineClamp={1}>
-                    <Text span fw={800} c="dimmed.9">
-                      {renderHighlight(psalm.reference)}
-                    </Text>
-                  </Text>
-                )}
-
-              {/* Scripture matches */}
-              {scriptures.map((scripture, idx) =>
-                checkMatch(scripture.text, true) ? (
-                  <Text
-                    key={`scripture-${idx}`}
-                    component="div"
-                    size="sm"
-                    lineClamp={2}
-                  >
-                    <Text span fw={800} c="dimmed.9">
-                      {scripture.reference}:{" "}
-                    </Text>
-                    <Text span size="xs">
-                      {renderHighlight(stripHtml(scripture.text))}
-                    </Text>
-                  </Text>
-                ) : null
-              )}
-              {!scriptures.some((s) => checkMatch(s.text, true)) &&
-                scriptures.map((scripture, idx) =>
-                  checkMatch(scripture.reference) ? (
-                    <Text key={`scr-ref-${idx}`} size="sm" lineClamp={1}>
-                      <Text span fw={800} c="dimmed.9">
-                        {renderHighlight(scripture.reference)}
-                      </Text>
-                    </Text>
-                  ) : null
-                )}
-            </Box>
-          )}
-
-          {/* Readings */}
-          {filters.readings && (
-            <Box>
-              {readings.map((reading, idx) => {
-                const textMatches = checkMatch(reading.text, true);
-                const sourceMatches = checkMatch(reading.source);
-                const titleMatches = checkMatch(reading.title);
-
-                if (textMatches || sourceMatches || titleMatches) {
-                  return (
-                    <Text
-                      key={`reading-${idx}`}
-                      component="div"
-                      size="sm"
-                      lineClamp={2}
-                    >
-                      {(reading.title || titleMatches) && (
-                        <Text span fw={800} c="dimmed.9">
-                          {titleMatches
-                            ? renderHighlight(reading.title || "")
-                            : reading.title}
-                          :{" "}
-                        </Text>
-                      )}
-                      {textMatches && (
-                        <Text span size="xs">
-                          {renderHighlight(stripHtml(reading.text))}
-                        </Text>
-                      )}
-                      {sourceMatches && (
-                        <Text span size="xs" c="dimmed.7">
-                          {textMatches ? " - " : ""}
-                          {renderHighlight(reading.source || "")}
-                        </Text>
-                      )}
-                    </Text>
-                  );
-                }
-                return null;
-              })}
-            </Box>
-          )}
-        </Stack>
-      </Paper>
-    );
-  };
-
+  // --- RENDER STATES ---
   const renderResultsContent = () => {
-    // ... (Loading, Error, No Query states logic remains the same) ...
+    const query = debouncedSearchQuery.trim();
+    const isAnyFilterActive = Object.values(filters).some((f) => f);
+
     if (isSearching) {
+      // Option 1: Centered Loader
       return (
-        <Group justify="center" p="md">
-          <Loader size="sm" />
-          <Text size="sm" c="dimmed">
-            Searching...
-          </Text>
-        </Group>
+        <Center h={200}>
+          <Loader />
+        </Center>
       );
+      // Option 2: Skeleton Loaders (more UX work but better feel)
+      // return (
+      //   <Stack gap="md">
+      //     <Skeleton height={80} radius="md" />
+      //     <Skeleton height={80} radius="md" />
+      //     <Skeleton height={80} radius="md" />
+      //   </Stack>
+      // );
     }
+
     if (searchError) {
       return (
-        <Alert
-          icon={<IconAlertCircle size={22} />}
-          title="Error"
-          color="red"
-          variant="light"
-          m="md"
-        >
-          {searchError}
-        </Alert>
+        <Center h={200} px="md">
+          <Alert
+            icon={<IconAlertCircle size={22} />}
+            title="Search Error"
+            color="red"
+            variant="light"
+            radius="md"
+          >
+            {searchError}
+          </Alert>
+        </Center>
       );
     }
-    if (!debouncedSearchQuery.trim()) {
+
+    if (!query) {
       return (
-        <Text c="dimmed" ta="center" p="md">
-          Enter a search term above.
-        </Text>
+        <Center h={200}>
+          <Stack align="center" gap="xs" c="dimmed">
+            <IconSearch size={40} stroke={1.5} />
+            <Text size="sm">Enter a term above to search devotionals.</Text>
+          </Stack>
+        </Center>
       );
     }
-    if (!Object.values(filters).some((active) => active)) {
+
+    if (!isAnyFilterActive) {
       return (
-        <Text c="dimmed" ta="center" p="md">
-          Please select at least one filter category.
-        </Text>
+        <Center h={200}>
+          <Stack align="center" gap="xs" c="dimmed">
+            <IconInfoCircle size={40} stroke={1.5} />
+            <Text size="sm">
+              Please select at least one category to search within.
+            </Text>
+          </Stack>
+        </Center>
       );
     }
 
-    const displayedResults = searchResults
-      .map(renderSingleResult)
-      .filter(Boolean);
-
-    if (displayedResults.length > 0) {
-      return displayedResults;
+    if (searchResults.length > 0) {
+      return searchResults.map((result) => (
+        <SearchResultItem
+          key={result.id}
+          result={result}
+          query={query}
+          filters={filters}
+          onView={handleViewClick}
+        />
+      ));
     }
 
+    // No results found state
     return (
-      <Text c="dimmed" ta="center" p="md">
-        No matching text found for "{debouncedSearchQuery}".
-      </Text>
+      <Center h={200}>
+        <Stack align="center" gap="xs" c="dimmed">
+          <IconMoodSad size={40} stroke={1.5} />
+          <Text size="sm">No results found for "{query}".</Text>
+          <Text size="xs">Try broadening your search or checking filters.</Text>
+        </Stack>
+      </Center>
     );
   };
 
   // --- Component JSX ---
   return (
     <Box style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      {/* Top section */}
+      {/* Top section - Search Input and Filters */}
       <Stack gap="md" p="md">
+        {/* Header */}
         <Group justify="space-between" align="center">
-          <Title order={4}>Search</Title>
+          <Title order={4}>Search Devotionals</Title>
           <ActionIcon
-            variant="subtle"
+            variant="subtle" // Consider "light" or "filled" for more visibility
             color="gray"
-            size="sm"
+            size="lg" // Slightly larger for easier click target
             onClick={toggleRight}
-            aria-label="Toggle search sidebar"
+            aria-label={
+              rightOpened ? "Close search sidebar" : "Open search sidebar"
+            }
           >
+            {/* Using IconX when opened might be clearer */}
             <IconChevronRight
+              size={20}
               style={{
-                transform: rightOpened ? "rotate(0deg)" : "rotate(180deg)",
+                transform: rightOpened ? "rotate(180deg)" : "rotate(0deg)", // Adjust rotation if needed
                 transition: "transform 200ms ease",
               }}
             />
           </ActionIcon>
         </Group>
+
+        {/* Search Input */}
         <TextInput
           placeholder="Enter search term..."
-          leftSection={<IconSearch size={22} stroke={1.5} />}
+          leftSection={<IconSearch size={18} stroke={1.5} />}
+          rightSection={
+            searchQuery ? (
+              <CloseButton
+                size="sm"
+                onClick={() => setSearchQuery("")}
+                aria-label="Clear search input"
+              />
+            ) : null
+          }
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.currentTarget.value)}
           aria-label="Search Devotionals Input"
-          disabled={isSearching}
+          disabled={isSearching} // Keep input disabled during search
+          radius="md"
         />
+
         {/* Filters */}
         <Stack gap="xs">
           <Text size="sm" fw={500}>
             Search within:
           </Text>
-          <Group gap="sm">
-            <Checkbox
-              label="Title"
+          {/* Use Chip.Group for potentially single selection, or just individual Chips */}
+          <Group gap="xs">
+            <Chip
               checked={filters.title}
               onChange={() => handleFilterChange("title")}
               size="xs"
+              radius="sm"
               disabled={isSearching}
-            />
-            <Checkbox
-              label="Prayers"
+            >
+              Title
+            </Chip>
+            <Chip
               checked={filters.prayers}
               onChange={() => handleFilterChange("prayers")}
               size="xs"
+              radius="sm"
               disabled={isSearching}
-            />
-            <Checkbox
-              label="Readings"
+            >
+              Prayers
+            </Chip>
+            <Chip
               checked={filters.readings}
               onChange={() => handleFilterChange("readings")}
               size="xs"
+              radius="sm"
               disabled={isSearching}
-            />
-            <Checkbox
-              label="Scripture"
+            >
+              Readings
+            </Chip>
+            <Chip
               checked={filters.scripture}
               onChange={() => handleFilterChange("scripture")}
               size="xs"
+              radius="sm"
               disabled={isSearching}
-            />
+            >
+              Scripture
+            </Chip>
           </Group>
         </Stack>
       </Stack>
@@ -487,8 +470,11 @@ export function SearchSidebar({
       <Divider />
 
       {/* Scrollable Results Area */}
-      <ScrollArea style={{ flexGrow: 1 }} type="auto" offsetScrollbars p="md">
-        <Stack gap="md">{renderResultsContent()}</Stack>
+      <ScrollArea style={{ flexGrow: 1 }} type="auto" offsetScrollbars>
+        {/* Add padding within the ScrollArea content */}
+        <Stack gap="md" p="md">
+          {renderResultsContent()}
+        </Stack>
       </ScrollArea>
     </Box>
   );
