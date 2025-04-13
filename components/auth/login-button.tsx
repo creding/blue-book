@@ -1,22 +1,21 @@
 "use client";
 
 import { Button, Menu, ActionIcon } from "@mantine/core";
-import { useAuth } from "@/providers/AuthProvider";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { IconUser } from "@tabler/icons-react";
 import { logout } from "@/actions/logout";
 import { User } from "@supabase/supabase-js";
 
 export function LoginButton({ user }: { user: User | null }) {
   const router = useRouter();
-
+  const pathname = usePathname();
   const handleLogin = () => {
-    const currentPath = window.location.pathname;
-    router.push(`/login?redirect=${encodeURIComponent(currentPath)}`);
+    router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
   };
 
   const handleLogout = async () => {
     await logout();
+    window.location.reload();
   };
 
   if (user) {
@@ -40,7 +39,7 @@ export function LoginButton({ user }: { user: User | null }) {
   }
 
   return (
-    <Button variant="light" size="sm" onClick={handleLogin}>
+    <Button variant="light" size="sm" radius="xl" onClick={handleLogin}>
       Login
     </Button>
   );

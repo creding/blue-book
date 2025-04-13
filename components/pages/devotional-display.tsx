@@ -69,7 +69,7 @@ export function DevotionalDisplay({
       </Paper>
     );
   }
-
+  console.log("favorites", devotional.favoritesCollection.edges);
   // --- Main Devotional Display ---
   return (
     // Use theme's Paper default shadow and radius

@@ -10,8 +10,6 @@ export const metadata = {
   generator: "v0.dev",
 };
 
-import AuthProvider from "@/providers/AuthProvider";
-
 export default function RootLayout({
   children,
 }: {
@@ -27,9 +25,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>
-          <AuthProvider>{children}</AuthProvider>
-        </MantineProvider>
+        <MantineProvider theme={theme}>{children}</MantineProvider>
       </body>
     </html>
   );

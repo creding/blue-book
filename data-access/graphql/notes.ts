@@ -1,5 +1,4 @@
 import { CREATE_NOTE, UPDATE_NOTE, DELETE_NOTE, CreateNoteResponse, UpdateNoteResponse, DeleteNoteResponse, NoteRecord } from "./mutations/notes";
-import { createApolloClient } from "@/lib/apollo";
 import { createClient } from "@/lib/supabaseServerClient";
 
 export async function createNote(
@@ -19,26 +18,44 @@ export async function createNote(
   }
 
   const { data: { session } } = await supabase.auth.getSession();
-  const client = createApolloClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    session!.access_token
-  );
+  const accessToken = session?.access_token;
 
   try {
-    const { data } = await client.mutate<CreateNoteResponse>({
-      mutation: CREATE_NOTE,
-      variables: {
-        userId: user.id,
-        content,
-        referenceType,
-        referenceId,
-        devotionId: devotionId || null,
-        scriptureId: scriptureId || null,
-        readingId: readingId || null,
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/graphql/v1`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          Authorization: accessToken
+            ? `Bearer ${accessToken}`
+            : `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+          "X-Client-Info": "supabase-js/2.21.0",
+        },
+        body: JSON.stringify({
+          query: CREATE_NOTE.loc?.source.body,
+          variables: {
+            userId: user.id,
+            content,
+            referenceType,
+            referenceId,
+            devotionId: devotionId || null,
+            scriptureId: scriptureId || null,
+            readingId: readingId || null,
+          },
+        }),
+        next: {
+          revalidate: 0,
+        },
+      }
+    );
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const { data } = await response.json();
     return data?.insertIntonotesCollection.records[0] ?? null;
   } catch (error) {
     console.error("Error creating note:", error);
@@ -56,22 +73,40 @@ export async function updateNote(id: string, content: string): Promise<NoteRecor
   }
 
   const { data: { session } } = await supabase.auth.getSession();
-  const client = createApolloClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    session!.access_token
-  );
+  const accessToken = session?.access_token;
 
   try {
-    const { data } = await client.mutate<UpdateNoteResponse>({
-      mutation: UPDATE_NOTE,
-      variables: {
-        id: parseInt(id),
-        userId: user.id,
-        content,
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/graphql/v1`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          Authorization: accessToken
+            ? `Bearer ${accessToken}`
+            : `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+          "X-Client-Info": "supabase-js/2.21.0",
+        },
+        body: JSON.stringify({
+          query: UPDATE_NOTE.loc?.source.body,
+          variables: {
+            id: parseInt(id),
+            userId: user.id,
+            content,
+          },
+        }),
+        next: {
+          revalidate: 0,
+        },
+      }
+    );
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const { data } = await response.json();
     return data?.updatenotesCollection.records[0] ?? null;
   } catch (error) {
     console.error("Error updating note:", error);
@@ -89,21 +124,39 @@ export async function deleteNote(id: string): Promise<boolean> {
   }
 
   const { data: { session } } = await supabase.auth.getSession();
-  const client = createApolloClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    session!.access_token
-  );
+  const accessToken = session?.access_token;
 
   try {
-    const { data } = await client.mutate<DeleteNoteResponse>({
-      mutation: DELETE_NOTE,
-      variables: {
-        id: parseInt(id),
-        userId: user.id,
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/graphql/v1`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          Authorization: accessToken
+            ? `Bearer ${accessToken}`
+            : `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
+          "X-Client-Info": "supabase-js/2.21.0",
+        },
+        body: JSON.stringify({
+          query: DELETE_NOTE.loc?.source.body,
+          variables: {
+            id: parseInt(id),
+            userId: user.id,
+          },
+        }),
+        next: {
+          revalidate: 0,
+        },
+      }
+    );
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const { data } = await response.json();
     return (data?.deleteFromnotesCollection.affectedCount ?? 0) > 0;
   } catch (error) {
     console.error("Error deleting note:", error);

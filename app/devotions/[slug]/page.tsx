@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { TableOfContents } from "@/components/ui/table-of-contents";
 import { createClient } from "@/lib/supabaseServerClient";
-
+export const dynamic = "force-dynamic";
 export default async function DevotionalPage({
   params,
 }: {
