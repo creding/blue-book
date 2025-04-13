@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabaseServerClient";
 import { DevotionResponse } from "@/types/graphql";
 
 export async function getDevotionalDetailsGql(
-  devotionId: number
+  slug: string
 ): Promise<DevotionResponse | null> {
   const supabase = await createClient();
   const {
@@ -22,7 +22,7 @@ export async function getDevotionalDetailsGql(
     const { data } = await client.query<DevotionResponse>({
       query: GET_DEVOTIONAL_DETAILS,
       variables: {
-        devotionId,
+        slug,
       },
     });
 

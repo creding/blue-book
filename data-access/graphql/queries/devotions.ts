@@ -1,8 +1,8 @@
 import { gql } from "graphql-tag";
 
 export const GET_DEVOTIONAL_DETAILS = gql`
-  query GetDevotionDetails($devotionId: Int!) {
-    devotionsCollection(filter: { id: { eq: $devotionId } }) {
+  query GetDevotionDetails($slug: String!) {
+    devotionsCollection(filter: { slug: { eq: $slug } }) {
       edges {
         node {
           id
