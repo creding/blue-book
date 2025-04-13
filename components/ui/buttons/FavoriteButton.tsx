@@ -3,23 +3,24 @@
 import { ActionIcon, Tooltip } from "@mantine/core";
 import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/providers/AuthProvider";
 import { toggleFavoriteAction } from "@/actions/favorites";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { User } from "@supabase/supabase-js";
 
 interface FavoriteButtonProps {
   devotionalId: number;
   initialFavorited?: boolean;
   size?: "sm" | "md" | "lg";
+  user: User | null;
 }
 
 export default function FavoriteButton({
   devotionalId,
   initialFavorited = false,
   size = "md",
+  user,
 }: FavoriteButtonProps) {
   const router = useRouter();
-  const { user } = useAuth();
   const [isFavorited, setIsFavorited] = useState(initialFavorited);
 
   const handleClick = async () => {

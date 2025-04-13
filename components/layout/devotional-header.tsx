@@ -6,10 +6,9 @@ import {
   IconSearch,
   IconMenu2,
 } from "@tabler/icons-react";
-import { WeekSelector } from "../ui/week-selector";
-import { DaySelector } from "../ui/day-selector";
 import { LoginButton } from "../auth/login-button";
 import Link from "next/link";
+import { User } from "@supabase/supabase-js";
 
 function ColorSchemeToggle() {
   const { setColorScheme } = useMantineColorScheme();
@@ -41,6 +40,7 @@ interface DevotionalHeaderProps {
   rightOpened: boolean;
   toggleLeft: () => void;
   toggleRight: () => void;
+  user: User | null;
 }
 
 export function DevotionalHeader({
@@ -48,6 +48,7 @@ export function DevotionalHeader({
   rightOpened,
   toggleLeft,
   toggleRight,
+  user,
 }: DevotionalHeaderProps) {
   return (
     <Group h="100%" px="md" justify="space-between">
@@ -71,7 +72,7 @@ export function DevotionalHeader({
       </Group>
       <Group>
         <Group gap="sm">
-          <LoginButton />
+          <LoginButton user={user} />
           <ActionIcon
             onClick={toggleRight}
             variant="light"

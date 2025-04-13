@@ -3,7 +3,11 @@ import { setContext } from "@apollo/client/link/context";
 
 let apolloClient: ApolloClient<any> | null = null;
 
-export function createApolloClient(supabaseUrl: string, supabaseKey: string, accessToken?: string) {
+export function createApolloClient(
+  supabaseUrl: string,
+  supabaseKey: string,
+  accessToken?: string
+) {
   // Return existing client if it exists
   if (apolloClient) {
     return apolloClient;
@@ -17,7 +21,9 @@ export function createApolloClient(supabaseUrl: string, supabaseKey: string, acc
       headers: {
         ...headers,
         apikey: supabaseKey,
-        Authorization: accessToken ? `Bearer ${accessToken}` : `Bearer ${supabaseKey}`,
+        Authorization: accessToken
+          ? `Bearer ${accessToken}`
+          : `Bearer ${supabaseKey}`,
         "X-Client-Info": "supabase-js/2.21.0",
       },
     };
@@ -26,6 +32,14 @@ export function createApolloClient(supabaseUrl: string, supabaseKey: string, acc
   apolloClient = new ApolloClient({
     link: authLink.concat(httpLink),
     cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: "network-only",
+      },
+      query: {
+        fetchPolicy: "network-only",
+      },
+    },
   });
 
   return apolloClient;

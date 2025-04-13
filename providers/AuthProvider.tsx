@@ -1,9 +1,8 @@
 "use client";
 
+import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
-import type { User, Session } from "@supabase/supabase-js";
-import type { AuthChangeEvent } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase";
 
 export const AuthContext = createContext<{
   user: User | null;
@@ -12,6 +11,8 @@ export const AuthContext = createContext<{
   user: null,
   loading: true,
 });
+
+const supabase = createClient();
 
 export default function AuthProvider({
   children,

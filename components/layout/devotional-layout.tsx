@@ -1,18 +1,22 @@
 "use client";
 
 import { AppShell } from "@mantine/core";
-
-import { TableOfContents } from "../ui/table-of-contents";
 import { DevotionalHeader } from "./devotional-header";
 import { SearchSidebar } from "../ui/search-sidebar";
 import { useDisclosure } from "@mantine/hooks";
+import { User } from "@supabase/supabase-js";
 
 interface DevotionalLayoutProps {
   children: React.ReactNode;
   toc: React.ReactNode;
+  user: User | null;
 }
 
-export function DevotionalLayout({ children, toc }: DevotionalLayoutProps) {
+export function DevotionalLayout({
+  children,
+  toc,
+  user,
+}: DevotionalLayoutProps) {
   const [leftOpened, { toggle: toggleLeft }] = useDisclosure();
   const [rightOpened, { toggle: toggleRight }] = useDisclosure(false);
 
@@ -37,6 +41,7 @@ export function DevotionalLayout({ children, toc }: DevotionalLayoutProps) {
           rightOpened={rightOpened}
           toggleLeft={toggleLeft}
           toggleRight={toggleRight}
+          user={user}
         />
       </AppShell.Header>
 

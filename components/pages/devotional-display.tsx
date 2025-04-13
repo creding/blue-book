@@ -23,12 +23,17 @@ import { NotesButton } from "@/components/ui/buttons/NotesButton";
 import { Devotion } from "@/types/graphql";
 import { ReferenceType } from "@/types/note";
 import { ScriptureAccordion } from "../ui/scripture-accordion";
+import { User } from "@supabase/supabase-js";
 
 export interface DevotionalDisplayProps {
   devotional: Devotion | null;
+  user: User | null;
 }
 
-export function DevotionalDisplay({ devotional }: DevotionalDisplayProps) {
+export function DevotionalDisplay({
+  devotional,
+  user,
+}: DevotionalDisplayProps) {
   const theme = useMantineTheme();
 
   const handleShare = () => {
@@ -76,10 +81,12 @@ export function DevotionalDisplay({ devotional }: DevotionalDisplayProps) {
             devotionalId={devotional.id}
             initialFavorited={devotional.favoritesCollection.edges.length > 0}
             size="sm"
+            user={user}
           />
           <ShareButton onClick={handleShare} size="sm" />
           <PrintButton onClick={handlePrint} size="sm" />
           <NotesButton
+            user={user}
             referenceType="devotion"
             referenceId={String(devotional.id)}
             initialNotes={devotional.notesCollection.edges.map((edge) => ({
@@ -134,6 +141,7 @@ export function DevotionalDisplay({ devotional }: DevotionalDisplayProps) {
                 </Title>
               </Group>
               <NotesButton
+                user={user}
                 referenceType="scripture"
                 referenceId={String(
                   devotional.devotion_scripturesCollection.edges.find(
@@ -243,6 +251,7 @@ export function DevotionalDisplay({ devotional }: DevotionalDisplayProps) {
                           }}
                         />
                         <NotesButton
+                          user={user}
                           referenceType="reading"
                           referenceId={String(reading.id)}
                           initialNotes={reading.notesCollection.edges.map(

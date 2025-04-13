@@ -4,10 +4,10 @@ import { Button, Menu, ActionIcon } from "@mantine/core";
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
 import { IconUser } from "@tabler/icons-react";
-import { supabase } from "@/lib/supabase";
+import { logout } from "@/actions/logout";
+import { User } from "@supabase/supabase-js";
 
-export function LoginButton() {
-  const { user } = useAuth();
+export function LoginButton({ user }: { user: User | null }) {
   const router = useRouter();
 
   const handleLogin = () => {
@@ -16,8 +16,7 @@ export function LoginButton() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.reload(); // Refresh the page to update auth state
+    await logout();
   };
 
   if (user) {
