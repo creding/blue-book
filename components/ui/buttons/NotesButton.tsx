@@ -41,10 +41,11 @@ export function NotesButton({
       <Indicator
         label={initialNotes.length}
         radius="xl"
-        size={16}
+        size={14}
+        offset={2}
         variant="filled"
         disabled={initialNotes.length === 0}
-        color="red"
+        zIndex={100}
       >
         <Tooltip label="Notes">
           <ActionIcon
