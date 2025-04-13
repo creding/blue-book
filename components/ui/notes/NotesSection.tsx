@@ -37,8 +37,7 @@ export function NotesSection({
     id: number;
     content: string;
   } | null>(null);
-  const [isAddingNote, { open: openAddNote, close: closeAddNote }] =
-    useDisclosure(false);
+
   const [loading, setLoading] = useState(false);
 
   const handleCreateNote = async () => {
@@ -60,7 +59,6 @@ export function NotesSection({
       };
       setNotes((prev) => [convertedNote, ...prev]);
       setNewNoteContent("");
-      closeAddNote();
     }
     setLoading(false);
   };
@@ -99,16 +97,7 @@ export function NotesSection({
     <>
       <LoadingOverlay visible={loading} />
       <Stack gap="md">
-        <Group justify="space-between">
-          <Title order={3}>Notes</Title>
-          {!isAddingNote && (
-            <Button variant="light" onClick={openAddNote}>
-              Add Note
-            </Button>
-          )}
-        </Group>
-
-        {isAddingNote && (
+        <Title order={3}>Notes</Title>
           <Stack gap="lg">
             <Textarea
               placeholder="Write your note here..."
@@ -122,17 +111,13 @@ export function NotesSection({
               <Button
                 variant="subtle"
                 color="gray"
-                onClick={() => {
-                  setNewNoteContent("");
-                  closeAddNote();
-                }}
+                onClick={() => setNewNoteContent("")}
               >
                 Cancel
               </Button>
               <Button onClick={handleCreateNote}>Save Note</Button>
             </Group>
           </Stack>
-        )}
 
         <Stack gap="md">
           {notes.length === 0 ? (
