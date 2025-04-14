@@ -28,21 +28,18 @@ import { Devotion } from "@/types/graphql"; // Assuming path is correct
 import { ReferenceType } from "@/types/note"; // Assuming path is correct
 import { ScriptureAccordion } from "@/components/ui/scripture-accordion"; // Assuming path is correct
 import { User } from "@supabase/supabase-js";
+import { useMediaQuery } from "@mantine/hooks";
 
 export interface DevotionalDisplayProps {
   devotional: Devotion | null;
   user: User | null;
 }
 
-// NOTE: Add styles for these classes in your global CSS or a relevant CSS module
-// .scripture-container p, .reading-container p { margin-bottom: 0.5em; }
-// .scripture-container sup { font-size: 0.75em; vertical-align: super; }
-// etc.
-
 export function DevotionalDisplay({
   devotional,
   user,
 }: DevotionalDisplayProps) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const handleShare = () => {
     if (devotional) {
       navigator
@@ -62,7 +59,7 @@ export function DevotionalDisplay({
   // --- Error State: No Devotional Found ---
   if (!devotional) {
     return (
-      <Paper p="xl" withBorder radius="md">
+      <Paper p="xl" withBorder={!isMobile} radius="md">
         {" "}
         {/* Use theme default radius/shadow */}
         <Stack align="center" gap="md">
