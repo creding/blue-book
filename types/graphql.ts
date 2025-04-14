@@ -25,6 +25,7 @@ export interface Reading {
   title: string | null;
   text: string;
   source: string | null;
+  author: string | null;
   notesCollection: {
     edges: Edge<Note>[];
   };
@@ -34,6 +35,7 @@ export interface Devotion {
   id: number;
   title: string;
   slug: string;
+  week: number;
   opening_prayer: string;
   opening_prayer_source: string | null;
   closing_prayer: string;

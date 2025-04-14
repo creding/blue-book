@@ -6,7 +6,8 @@ import {
   NavLink,
   Center, // For centering states
   Alert, // For error display
-  Box, // For layout control
+  Box,
+  ActionIcon, // For layout control
 } from "@mantine/core";
 import {
   IconListSearch, // Icon for empty state
@@ -49,7 +50,7 @@ export async function TableOfContents({ slug }: { slug: string }) {
   // --- Render Error State ---
   if (fetchError) {
     return (
-      <Stack gap="md" h="100%" p="md">
+      <Stack gap="md" h="100%">
         <Title order={4}>Table of Contents</Title>
         <Alert
           icon={<IconAlertCircle size={18} />}
@@ -92,11 +93,11 @@ export async function TableOfContents({ slug }: { slug: string }) {
                   label={devotional.title || "Untitled"} // Fallback title
                   p="sm" // Adjust padding for desired density
                   fz="sm" // Adjust font size if needed
-                  rightSection={
-                    <Text span c="dimmed" size="xs">
+                  leftSection={
+                    <ActionIcon size="sm" variant="light" radius="xl">
                       {/* Ensure 'id' is user-friendly here, or use another field like week_number */}
-                      Week {devotional.id}
-                    </Text>
+                      <Text size="xs">{devotional.week}</Text>
+                    </ActionIcon>
                   }
                 />
               ))

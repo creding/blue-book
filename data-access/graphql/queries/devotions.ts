@@ -47,6 +47,7 @@ export const GET_DEVOTIONAL_DETAILS = gql`
                 title
                 text
                 source
+                author
                 # Get notes for this reading
                 notesCollection {
                   edges {
@@ -129,6 +130,7 @@ export interface DevotionalDetailsResponse {
               title: string | null;
               text: string;
               source: string | null;
+              author: string | null;
               notesCollection: {
                 edges: Array<{
                   node: {
@@ -166,12 +168,13 @@ export interface DevotionalDetailsResponse {
 
 export const GET_DEVOTIONS = gql`
   query GetDevotions {
-    devotionsCollection {
+    devotionsCollection(orderBy: [{ week: AscNullsLast }]) {
       edges {
         node {
           id
           title
           slug
+          week
         }
       }
     }
@@ -185,6 +188,7 @@ export interface DevotionsResponse {
         id: number;
         title: string;
         slug: string;
+        week: number;
       };
     }>;
   };

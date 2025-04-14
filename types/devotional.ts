@@ -62,6 +62,7 @@ export interface Reading {
   id: number;
   text: string;
   source?: string;
+  author?: string;
   title?: string;
   day?: string;
 }
@@ -77,6 +78,7 @@ export interface Devotional {
   closing_prayer: string;
   closing_prayer_source: string | null;
   song_title: string | null;
+  week: number;
   devotion_scripturesCollection: {
     edges: Array<{
       node: {

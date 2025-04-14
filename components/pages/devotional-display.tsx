@@ -236,44 +236,49 @@ export function DevotionalDisplay({
             <Stack gap="lg">
               {/* Gap between multiple reading blockquotes */}
               {devotional.readingsCollection.edges.map(
-                ({ node: reading }, index) => (
-                  <div key={reading.id}>
-                    <Blockquote cite={reading.source} p="md" radius="md">
-                      <Group
-                        justify="space-between"
-                        align="stretch"
-                        wrap="nowrap"
-                      >
-                        <div
-                          className="reading-container"
-                          dangerouslySetInnerHTML={{
-                            __html: reading.text || "",
-                          }}
-                        />
-                        <NotesButton
-                          user={user}
-                          referenceType="reading"
-                          referenceId={String(reading.id)}
-                          initialNotes={reading.notesCollection.edges.map(
-                            (edge) => ({
-                              id: edge.node.id,
-                              content: edge.node.content,
-                              created_at: edge.node.created_at,
-                              updated_at: edge.node.updated_at,
-                              user_id: "",
-                              reference_type: "reading" as ReferenceType,
-                              reference_id: String(reading.id),
-                              devotion_id: devotional.id,
-                              scripture_id: null,
-                              reading_id: reading.id,
-                            })
-                          )}
-                          size="sm"
-                        />
-                      </Group>
-                    </Blockquote>
-                  </div>
-                )
+                ({ node: reading }, index) => {
+                  const cite = `${reading.source} ${
+                    reading.author ? ` - ${reading.author}` : ""
+                  }`;
+                  return (
+                    <div key={reading.id}>
+                      <Blockquote cite={cite} p="md" radius="md">
+                        <Group
+                          justify="space-between"
+                          align="stretch"
+                          wrap="nowrap"
+                        >
+                          <div
+                            className="reading-container"
+                            dangerouslySetInnerHTML={{
+                              __html: reading.text || "",
+                            }}
+                          />
+                          <NotesButton
+                            user={user}
+                            referenceType="reading"
+                            referenceId={String(reading.id)}
+                            initialNotes={reading.notesCollection.edges.map(
+                              (edge) => ({
+                                id: edge.node.id,
+                                content: edge.node.content,
+                                created_at: edge.node.created_at,
+                                updated_at: edge.node.updated_at,
+                                user_id: "",
+                                reference_type: "reading" as ReferenceType,
+                                reference_id: String(reading.id),
+                                devotion_id: devotional.id,
+                                scripture_id: null,
+                                reading_id: reading.id,
+                              })
+                            )}
+                            size="sm"
+                          />
+                        </Group>
+                      </Blockquote>
+                    </div>
+                  );
+                }
               )}
             </Stack>
           </Stack>
