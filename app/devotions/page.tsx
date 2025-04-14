@@ -5,26 +5,18 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { TableOfContents } from "@/components/ui/table-of-contents";
 import { createClient } from "@/lib/supabaseServerClient";
+import { PrefaceIntroPage } from "@/components/pages/PrefaceIntroPage";
 export const dynamic = "force-dynamic";
-export default async function DevotionalPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
+export default async function DevotionalPage() {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  // Handle invalid slug parameter
-  if (!slug) {
-    redirect("/");
-  }
 
   return (
-    <DevotionalLayout toc={<TableOfContents slug={slug} />} user={user}>
+    <DevotionalLayout toc={<TableOfContents slug={""} />} user={user}>
       <Suspense fallback={<DevotionalSkeleton />}>
-        <DevotionalContent slug={slug} user={user} />
+        <PrefaceIntroPage />
       </Suspense>
     </DevotionalLayout>
   );

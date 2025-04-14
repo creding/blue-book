@@ -1,5 +1,5 @@
 import { Container } from "@mantine/core";
-import { DevotionalDisplay } from "./devotional-display";
+import { DevotionalDisplay } from "./components/DevotionDisplay";
 import { getDevotionalDetailsGql } from "@/data-access/graphql/getDevotionalDetails";
 import { User } from "@supabase/supabase-js";
 

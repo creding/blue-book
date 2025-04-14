@@ -22,7 +22,7 @@ import PrintButton from "@/components/ui/buttons/PrintButton";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
 import { Devotion } from "@/types/graphql";
 import { ReferenceType } from "@/types/note";
-import { ScriptureAccordion } from "../ui/scripture-accordion";
+import { ScriptureAccordion } from "@/components/ui/scripture-accordion";
 import { User } from "@supabase/supabase-js";
 
 export interface DevotionalDisplayProps {

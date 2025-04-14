@@ -5,9 +5,9 @@ import { MantineProvider } from "@mantine/core";
 import { theme } from "@/theme";
 
 export const metadata = {
-  title: "Daily Devotional",
-  description: "A modern devotional website with daily content",
-  generator: "v0.dev",
+  title: "The Blue Book - A Devotional Guide by Jim Branch",
+  description:
+    "Discover The Blue Book, a devotional guide by Jim Branch to deepen your journey with Jesus through scriptures, prayers, and reflections.",
 };
 
 export default function RootLayout({
@@ -19,11 +19,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <ColorSchemeScript />
-
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
         <MantineProvider theme={theme}>{children}</MantineProvider>
