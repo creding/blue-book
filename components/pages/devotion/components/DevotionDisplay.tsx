@@ -59,7 +59,7 @@ export function DevotionalDisplay({
   // --- Error State: No Devotional Found ---
   if (!devotional) {
     return (
-      <Paper p="xl" withBorder={!isMobile} radius="md">
+      <Paper p="xl" withBorder={isMobile ? false : true} radius="md">
         {" "}
         {/* Use theme default radius/shadow */}
         <Stack align="center" gap="md">
