@@ -52,6 +52,10 @@ body {
 .scripture-container p {
   margin-bottom: var(--mantine-spacing-sm);
 }
+
+.scripture-container p:first-child, .scripture-container p:first-of-type, .scripture-container h3:first-of-type {
+  margin-top: 0;
+}
 /* Remove margin from the last paragraph within the container */
 .scripture-container p:last-of-type {
     margin-bottom: 0;
@@ -119,6 +123,10 @@ body {
 
 .reading-container p {
   margin-bottom: var(--mantine-spacing-md);
+}
+
+.reading-container p:first-child {
+  margin-top: 0;
 }
 
 .reading-container p:last-child {
