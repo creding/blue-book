@@ -364,7 +364,7 @@ export function DevotionalDisplay({
                       {/* Ensure reading-container class is styled */}
                       <Group
                         justify="space-between"
-                        align="flex-start"
+                        align="stretch"
                         wrap="nowrap"
                         gap="sm"
                       >
