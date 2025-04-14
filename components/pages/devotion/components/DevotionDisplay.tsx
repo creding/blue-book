@@ -59,7 +59,7 @@ export function DevotionalDisplay({
   // --- Error State: No Devotional Found ---
   if (!devotional) {
     return (
-      <Paper p="xl" withBorder={isMobile ? false : true} radius="md">
+      <Paper p="xl" withBorder radius="md">
         {" "}
         {/* Use theme default radius/shadow */}
         <Stack align="center" gap="md">
@@ -138,7 +138,7 @@ export function DevotionalDisplay({
     // Use theme's Paper default shadow and radius, increase padding
     <Paper
       p={{ base: "xs", xl: "xl" }}
-      withBorder
+      withBorder={!isMobile}
       className="devotional-content"
     >
       <Group justify="space-between" align="flex-start" mb="lg">
