@@ -1,7 +1,3 @@
-// components/LandingPage.tsx
-"use client"; // Assuming this is needed based on previous context
-
-import { useState } from "react";
 import {
   Container,
   Title,
@@ -18,8 +14,6 @@ import {
   SimpleGrid,
   Card,
   ThemeIcon,
-  useMantineTheme,
-  useMantineColorScheme, // Import color scheme hook
 } from "@mantine/core";
 // Assuming you have Tabler Icons installed
 import {
@@ -62,9 +56,6 @@ const featuresData = [
 ];
 
 export default function LandingPage() {
-  const theme = useMantineTheme();
-  const { colorScheme } = useMantineColorScheme();
-
   return (
     <>
       {/* Hero Section - Simplified to just clickable image */}
@@ -119,12 +110,7 @@ export default function LandingPage() {
             and transform your heart through being with Jesus.
           </Text>
           {/* Use primary theme color for divider */}
-          <Divider
-            w={100}
-            color={theme.colors.coverBlue[6]}
-            size="sm"
-            my="sm"
-          />
+          <Divider w={100} color="coverBlue.6" size="sm" my="sm" />
           {/* Use appropriate gray shade from theme */}
           <Text size="md" c="neutralGray.7" ta="center" fs="italic">
             “My deepest desire is that this book might be helpful in your
@@ -135,14 +121,7 @@ export default function LandingPage() {
 
       {/* Features Section */}
       {/* Use a background color from the theme */}
-      <Box
-        bg={
-          colorScheme === "dark"
-            ? theme.colors.dark[7]
-            : theme.colors.neutralGray[0]
-        }
-        py={{ base: "xl", md: "80px" }}
-      >
+      <Box bg="neutralGray.0" py={{ base: "xl", md: "80px" }}>
         <Container size="xl">
           {" "}
           {/* Consider 'lg' or 'xl' based on preference */}
@@ -165,10 +144,7 @@ export default function LandingPage() {
                   withBorder
                   // Style border with theme color
                   style={{
-                    borderColor:
-                      colorScheme === "dark"
-                        ? theme.colors.dark[4]
-                        : theme.colors.neutralGray[2],
+                    borderColor: "neutralGray.2",
                   }}
                 >
                   <Group gap="md" mb="md">
@@ -207,11 +183,7 @@ export default function LandingPage() {
           shadow="md"
           p="xl"
           radius="lg" // Keep larger radius for emphasis
-          bg={
-            colorScheme === "dark"
-              ? theme.colors.dark[6]
-              : theme.colors.coverBlue[0]
-          } // Use lightest shade of primary blue
+          bg="coverBlue.0"
         >
           <Stack gap="md" align="center">
             {/* Use primary theme color */}
@@ -219,16 +191,7 @@ export default function LandingPage() {
               Begin Your Devotional Journey
             </Title>
             {/* Use theme appropriate text color */}
-            <Text
-              size="lg"
-              c={
-                colorScheme === "dark"
-                  ? theme.colors.dark[1]
-                  : theme.colors.neutralGray[8]
-              }
-              ta="center"
-              maw={600}
-            >
+            <Text size="lg" c="coverBlue" ta="center" maw={600}>
               Join countless others in discovering the depths of God’s love
               through *The Blue Book*. Let it be your companion in every season
               of life.
@@ -238,8 +201,8 @@ export default function LandingPage() {
               variant="gradient"
               // Use theme colors for gradient
               gradient={{
-                from: theme.colors.coverBlue[6],
-                to: theme.colors.devotionalBlue[5],
+                from: "coverBlue.6",
+                to: "devotionalBlue.5",
               }} // Example: coverBlue to devotionalBlue
               radius="md" // Use theme default radius
               component="a"
