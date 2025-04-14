@@ -139,7 +139,11 @@ export function DevotionalDisplay({
   // --- Main Devotional Display ---
   return (
     // Use theme's Paper default shadow and radius, increase padding
-    <Paper p="xl" withBorder className="devotional-content">
+    <Paper
+      p={{ base: "xs", xl: "xl" }}
+      withBorder
+      className="devotional-content"
+    >
       <Group justify="space-between" align="flex-start" mb="lg">
         {" "}
         {/* Increased bottom margin */}

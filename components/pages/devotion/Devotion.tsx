@@ -14,7 +14,7 @@ export async function DevotionalContent({
   const devotion = response?.devotionsCollection?.edges?.[0]?.node;
 
   return (
-    <Container size="lg">
+    <Container size="lg" p={{ base: "xs", xl: "xl" }}>
       <DevotionalDisplay devotional={devotion || null} user={user} />
     </Container>
   );
