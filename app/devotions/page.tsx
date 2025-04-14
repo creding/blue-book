@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { TableOfContents } from "@/components/ui/table-of-contents";
 import { createClient } from "@/lib/supabaseServerClient";
 import { PrefaceIntroPage } from "@/components/pages/PrefaceIntroPage";
+
 export const dynamic = "force-dynamic";
 export default async function DevotionalPage() {
   const supabase = await createClient();

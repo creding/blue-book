@@ -4,10 +4,12 @@ import { NotesButton } from "@/components/ui/buttons/NotesButton";
 import { Scripture } from "@/types/devotional";
 import { Note } from "@/types/note";
 import { useMantineTheme } from "@mantine/core";
+import { User } from "@supabase/supabase-js";
 
 interface ScriptureAccordionProps {
   scriptures: Scripture[];
   notes: Note[];
+  user: User | null;
 }
 
 const dayOrder = [
@@ -23,6 +25,7 @@ const dayOrder = [
 export function ScriptureAccordion({
   scriptures,
   notes,
+  user,
 }: ScriptureAccordionProps) {
   const theme = useMantineTheme();
 
@@ -35,7 +38,10 @@ export function ScriptureAccordion({
   return (
     <Accordion>
       {sortedScriptures.map((scripture) => (
-        <Accordion.Item key={scripture.id} value={scripture.day || String(scripture.id)}>
+        <Accordion.Item
+          key={scripture.id}
+          value={scripture.day || String(scripture.id)}
+        >
           <Accordion.Control>
             <Group align="center">
               <Group gap="sm">
@@ -54,6 +60,7 @@ export function ScriptureAccordion({
                   }}
                 />
                 <NotesButton
+                  user={user}
                   referenceType="scripture"
                   referenceId={String(scripture.id)}
                   initialNotes={(notes || []).filter(

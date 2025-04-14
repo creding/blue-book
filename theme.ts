@@ -1,21 +1,33 @@
 import { createTheme, rem, MantineColorsTuple } from "@mantine/core";
 
-// Define custom color tuples
-// Softer Blue (slightly muted, calming)
+// --- NEW --- Define color tuple based on book cover blue (#1a5276 approximation)
+const coverBlue: MantineColorsTuple = [
+  "#eaf1f8", // Lightest
+  "#d1dde9",
+  "#b4c8db",
+  "#94b3cf",
+  "#789fc4",
+  "#5f8cb9",
+  "#4b7daf", // Index 6
+  "#21618C", // Primary Shade (Dark Mode Index 5 - Adjusted for visibility) - Similar to #21618C suggestion
+  "#1a5276", // Primary Shade (Light Mode Index 7 - approximates cover)
+  "#103e5e", // Darkest
+];
+
+// Define custom color tuples (Existing)
 const devotionalBlue: MantineColorsTuple = [
   "#e0f2f7", // Lightest
   "#b3e0ed",
   "#80cce2",
   "#4db9d7",
-  "#2aa8cf",
-  "#1398c8", // Primary Shade (Light Mode Index 6)
-  "#0d89bf", // Primary Shade (Dark Mode Index 5)
+  "#2aa8cf", // Index 4 (used for dark mode primary)
+  "#1398c8", // Index 5
+  "#0d89bf", // Index 6 (original light mode primary)
   "#0976a9",
   "#056494",
   "#025380", // Darkest
 ];
 
-// Warm Gold Accent (gentle, hopeful)
 const devotionalGold: MantineColorsTuple = [
   "#fff8e1", // Lightest
   "#ffecb3",
@@ -29,7 +41,6 @@ const devotionalGold: MantineColorsTuple = [
   "#ff6f00", // Darkest
 ];
 
-// Neutral Gray
 const neutralGray: MantineColorsTuple = [
   "#f8f9fa", // Very light gray (Body Background - Light)
   "#f1f3f5", // Paper Background - Light
@@ -55,21 +66,19 @@ const darkColors = {
 export const theme = createTheme({
   // --- Core ---
   fontFamily: "Inter, sans-serif",
-  primaryColor: "devotionalBlue", // Use the custom key
-  primaryShade: { light: 6, dark: 4 }, // Lighter shade in dark mode for better contrast
-  defaultRadius: "md", // Consistent radius (can be 'sm', 'md', 'lg' etc.)
+  primaryColor: "coverBlue", // --- UPDATED --- Use the new blue as primary
+  primaryShade: { light: 7, dark: 5 }, // --- UPDATED --- Use darker shade for light, lighter for dark
+  defaultRadius: "md",
 
   // --- Colors ---
   colors: {
-    devotionalBlue, // Register custom blue
-    devotionalGold, // Register custom gold
-    neutralGray, // Register custom gray
-    // You can add more custom colors here if needed
+    coverBlue, // --- NEW --- Register cover blue
+    devotionalBlue, // Keep original blue if needed elsewhere
+    devotionalGold,
+    neutralGray,
     // Keep Mantine's default colors if you might use them elsewhere
-    // blue: [...], etc.
   },
 
-  // Add white and black explicitly
   white: "#ffffff",
   black: "#000000",
 
@@ -77,20 +86,22 @@ export const theme = createTheme({
   fontSizes: {
     xs: rem(12),
     sm: rem(14),
-    md: rem(16), // Base size for body text
+    md: rem(16),
     lg: rem(18),
     xl: rem(20),
   },
   lineHeights: {
     xs: "1.4",
     sm: "1.45",
-    md: "1.55", // Good readability for body
+    md: "1.55",
     lg: "1.6",
     xl: "1.65",
   },
   headings: {
+    // NOTE: You apply heading colors directly on components (e.g., <Title c="coverBlue">)
+    // You can setfontWeight etc. here though.
     fontFamily: "Inter, sans-serif",
-    fontWeight: "600", // Slightly bolder headings
+    fontWeight: "600",
     sizes: {
       h1: { fontSize: rem(34), lineHeight: "1.3" },
       h2: { fontSize: rem(28), lineHeight: "1.35" },
@@ -114,7 +125,7 @@ export const theme = createTheme({
   radius: {
     xs: rem(2),
     sm: rem(4),
-    md: rem(8), // Default radius
+    md: rem(8),
     lg: rem(16),
     xl: rem(24),
   },
@@ -126,19 +137,19 @@ export const theme = createTheme({
       dark: darkColors.body,
     },
     paperBg: {
-      light: "#FFFFFF", // Pure white for paper in light mode
+      light: "#FFFFFF",
       dark: darkColors.paper,
     },
     textColor: {
-      light: "#1A1B1E", // Near black for light mode
-      dark: darkColors.text, // Light gray for dark mode
+      light: "#1A1B1E",
+      dark: darkColors.text,
     },
     borderColor: {
-      light: "#E9ECEF", // Subtle border for light mode
+      light: "#E9ECEF",
       dark: darkColors.border,
     },
     paperHover: {
-      light: "#F8F9FA", // Slight gray for hover in light mode
+      light: "#F8F9FA",
       dark: darkColors.paperHover,
     },
   },
