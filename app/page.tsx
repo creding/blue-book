@@ -1,5 +1,11 @@
 import LandingPage from "@/components/pages/landing/LandingPage";
+import { MantineProvider } from "@mantine/core";
+import { theme } from "@/theme";
 
 export default function HomePage() {
-  return <LandingPage />;
+  return (
+    <MantineProvider theme={theme}>
+      <LandingPage />
+    </MantineProvider>
+  );
 }
