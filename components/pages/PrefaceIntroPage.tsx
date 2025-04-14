@@ -1,13 +1,5 @@
-// components/PrefaceIntroPage.tsx
-import {
-  Container,
-  Title,
-  Text,
-  Paper,
-  Stack,
-  Divider,
-  Box,
-} from "@mantine/core";
+"use client";
+import { Container, Title, Text, Paper, Stack, Divider } from "@mantine/core";
 // Assuming you are wrapping your app in MantineProvider with the custom theme
 
 export function PrefaceIntroPage() {
@@ -151,14 +143,9 @@ export function PrefaceIntroPage() {
               <br />
               12 December 2002
             </Text>
-            {/* Optional: Add the blog links if desired, style appropriately */}
-            {/* <Text ta="right" fz="xs" c="dimmed">
-                 Follow my blogs: BlueBookBlog.com and jb-coreleadership.blogspot.com
-             </Text> */}
           </Stack>
         </Paper>
       </Stack>
     </Container>
-    // </Box>
   );
 }
