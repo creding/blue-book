@@ -14,7 +14,7 @@ export function PrefaceIntroPage() {
   return (
     // Use Box with background from theme's 'other' object if desired, or keep it simple
     // Example: <Box bg={theme.other.bodyBg.light} miw="100vh">
-    <Container size="sm" py="xl">
+    <Container size="lg" py="xl">
       {" "}
       {/* Optimal reading width */}
       <Stack gap="xl">
