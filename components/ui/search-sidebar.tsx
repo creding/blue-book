@@ -18,9 +18,7 @@ import {
   Alert,
   ActionIcon,
   Center, // For centering states
-  Skeleton, // For loading state
   CloseButton, // For clearing input
-  useMantineTheme,
   Button, // To access theme colors/spacing
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
@@ -107,8 +105,6 @@ function SearchResultItem({
   filters,
   onView,
 }: SearchResultItemProps) {
-  const theme = useMantineTheme();
-
   // Extract data (simplified)
   const psalm = result.devotion_scripturesCollection?.edges?.find(
     (e) => e.node.scriptures.is_psalm
@@ -155,13 +151,13 @@ function SearchResultItem({
                 label="Opening Prayer"
                 text={result.opening_prayer}
                 query={query}
-                icon={<IconPray size={16} color={theme.colors.gray[6]} />}
+                icon={<IconPray size={16} color="gray.6" />}
               />
               <ResultSnippet
                 label="Closing Prayer"
                 text={result.closing_prayer}
                 query={query}
-                icon={<IconPray size={16} color={theme.colors.gray[6]} />}
+                icon={<IconPray size={16} color="gray.6" />}
               />
             </>
           )}
@@ -174,7 +170,7 @@ function SearchResultItem({
                   text={psalm.text}
                   query={query}
                   isHtml
-                  icon={<IconBible size={16} color={theme.colors.gray[6]} />}
+                  icon={<IconBible size={16} color="gray.6" />}
                 />
               )}
               {scriptures.map((s) => (
@@ -184,7 +180,7 @@ function SearchResultItem({
                   text={s.text}
                   query={query}
                   isHtml
-                  icon={<IconBible size={16} color={theme.colors.gray[6]} />}
+                  icon={<IconBible size={16} color="gray.6" />}
                 />
               ))}
             </>
@@ -198,7 +194,7 @@ function SearchResultItem({
                 text={r.text}
                 query={query}
                 isHtml
-                icon={<IconBook size={16} color={theme.colors.gray[6]} />}
+                icon={<IconBook size={16} color="gray.6" />}
               />
             ))}
         </Stack>
@@ -231,7 +227,6 @@ export function SearchSidebar({
     scripture: true,
   });
   const router = useRouter();
-  const theme = useMantineTheme();
 
   const handleFilterChange = useCallback((field: FilterKeys) => {
     setFilters((prev) => ({ ...prev, [field]: !prev[field] }));

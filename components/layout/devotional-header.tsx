@@ -1,39 +1,10 @@
-import { ActionIcon, Burger, Group, Title, Anchor } from "@mantine/core";
-import { useComputedColorScheme, useMantineColorScheme } from "@mantine/core";
-import {
-  IconSun,
-  IconMoonStars,
-  IconSearch,
-  IconMenu2,
-} from "@tabler/icons-react";
+"use client";
+
+import { ActionIcon, Group, Title, Anchor } from "@mantine/core";
+import { IconSearch, IconMenu2 } from "@tabler/icons-react";
 import { LoginButton } from "../auth/login-button";
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
-
-function ColorSchemeToggle() {
-  const { setColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme("light", {
-    getInitialValueInEffect: true,
-  });
-
-  return (
-    <ActionIcon
-      onClick={() =>
-        setColorScheme(computedColorScheme === "light" ? "dark" : "light")
-      }
-      variant="light"
-      size="lg"
-      radius="xl"
-      aria-label="Toggle color scheme"
-    >
-      {computedColorScheme === "dark" ? (
-        <IconSun size={16} stroke={1.5} />
-      ) : (
-        <IconMoonStars size={16} stroke={1.5} />
-      )}
-    </ActionIcon>
-  );
-}
 
 interface DevotionalHeaderProps {
   leftOpened: boolean;
@@ -82,7 +53,6 @@ export function DevotionalHeader({
           >
             <IconSearch size={16} stroke={1.5} />
           </ActionIcon>
-          <ColorSchemeToggle />
         </Group>
       </Group>
     </Group>

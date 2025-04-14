@@ -3,7 +3,6 @@ import { IconBook } from "@tabler/icons-react";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
 import { Scripture } from "@/types/devotional";
 import { Note } from "@/types/note";
-import { useMantineTheme } from "@mantine/core";
 import { User } from "@supabase/supabase-js";
 
 interface ScriptureAccordionProps {
@@ -27,8 +26,6 @@ export function ScriptureAccordion({
   notes,
   user,
 }: ScriptureAccordionProps) {
-  const theme = useMantineTheme();
-
   // Sort scriptures by day order
   const sortedScriptures = [...scriptures].sort((a, b) => {
     if (!a.day || !b.day) return 0;
@@ -45,7 +42,7 @@ export function ScriptureAccordion({
           <Accordion.Control>
             <Group align="center">
               <Group gap="sm">
-                <IconBook size={22} color={theme.colors.gray[7]} />
+                <IconBook size={22} color="gray.7" />
                 <Title order={4}>{scripture.reference}</Title>
               </Group>
             </Group>
