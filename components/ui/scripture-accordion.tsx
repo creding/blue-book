@@ -5,7 +5,8 @@ import {
   Text,
   Box,
   // Removed useMantineTheme
-  Divider, // Optional divider
+  Divider,
+  ThemeIcon, // Optional divider
 } from "@mantine/core";
 import { IconBook } from "@tabler/icons-react";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
@@ -69,24 +70,22 @@ export function ScriptureAccordion({
           key={scripture.id}
           value={scripture.day || String(scripture.id)}
         >
-          {/* Control Section: Scripture Reference & Day */}
           <Accordion.Control>
             <Group justify="space-between" wrap="nowrap">
-              {/* Left side: Icon and Reference */}
               <Group gap="sm" align="center" wrap="nowrap">
-                {/* Use a neutral gray for the icon */}
-                <IconBook
-                  size={20}
-                  color="var(--mantine-color-neutralGray-6)"
-                />
-                {/* Text for Reference - fw/size props don't need theme */}
-                <Text fw={600} size="sm">
+                <ThemeIcon
+                  size="sm"
+                  variant="light"
+                  color="coverBlue"
+                  radius="md"
+                >
+                  <IconBook style={{ width: "70%", height: "70%" }} />
+                </ThemeIcon>
+                <Text fw={600} c="coverBlue" size="sm">
                   {scripture.reference}
                 </Text>
               </Group>
-              {/* Right side: Day (optional) */}
               {scripture.day && (
-                // Use a neutral gray shade for dimmed text
                 <Text size="xs" c="neutralGray.6">
                   {scripture.day}
                 </Text>
@@ -96,26 +95,16 @@ export function ScriptureAccordion({
 
           {/* Panel Section: Scripture Text & Notes */}
           <Accordion.Panel>
-            {/* Use theme spacing keys */}
             <Stack gap="md" p="xs">
-              {/* Wrap scripture text in Text component for easier styling */}
-              <Text component="div" size="sm" lh="lg">
-                {" "}
-                {/* Use size/lh keys */}
-                <Box
-                  className="scripture-container"
-                  // Inline styles removed, handled by Text props or CSS for .scripture-container
-                  dangerouslySetInnerHTML={{
-                    __html: scripture.text || "No text available.",
-                  }}
-                />
-              </Text>
-
-              {/* Optional Divider */}
-              {/* <Divider my="sm" /> */}
-
-              {/* Notes Button - Align to the right */}
-              <Group justify="flex-end">
+              <Group justify="space-between" align="stretch" wrap="nowrap">
+                <Text component="div" size="sm" lh="lg">
+                  <Box
+                    className="scripture-container"
+                    dangerouslySetInnerHTML={{
+                      __html: scripture.text || "No text available.",
+                    }}
+                  />
+                </Text>
                 <NotesButton
                   user={user}
                   referenceType="scripture"
@@ -123,7 +112,7 @@ export function ScriptureAccordion({
                   initialNotes={(notes || []).filter(
                     (note) => note.reference_id === String(scripture.id)
                   )}
-                  size="xs" // Use theme size key
+                  size="xs"
                 />
               </Group>
             </Stack>
