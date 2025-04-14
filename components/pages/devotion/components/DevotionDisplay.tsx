@@ -8,8 +8,6 @@ import {
   Title,
   Blockquote,
   Divider,
-  useMantineTheme,
-  useMantineColorScheme, // Add color scheme hook
   ThemeIcon, // Import ThemeIcon
   Box, // Import Box for styling Blockquote border
   rem, // Import rem for styling
@@ -45,9 +43,6 @@ export function DevotionalDisplay({
   devotional,
   user,
 }: DevotionalDisplayProps) {
-  const theme = useMantineTheme();
-  const { colorScheme } = useMantineColorScheme();
-
   const handleShare = () => {
     if (devotional) {
       navigator
@@ -353,20 +348,14 @@ export function DevotionalDisplay({
                       // Style Blockquote with theme colors
                       styles={{
                         root: {
-                          padding: theme.spacing.md,
-                          marginLeft: theme.spacing.md, // Indent slightly
-                          borderLeft: `${rem(4)} solid ${
-                            theme.colors.coverBlue[6]
-                          }`, // Use theme color for border
-                          background:
-                            colorScheme === "dark"
-                              ? theme.colors.dark[6]
-                              : theme.colors.gray[0], // Subtle background
+                          padding: "md",
+                          marginLeft: "md", // Indent slightly
+                          background: "coverBlue.9", // Subtle background
                         },
                         cite: {
-                          color: theme.colors.gray[7],
-                          fontSize: theme.fontSizes.sm,
-                          marginTop: theme.spacing.xs,
+                          color: "gray.7",
+                          fontSize: "sm",
+                          marginTop: "xs",
                         },
                       }}
                       radius="sm"
