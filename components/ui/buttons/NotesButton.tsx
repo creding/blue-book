@@ -51,7 +51,6 @@ export function NotesButton({
             variant="subtle"
             onClick={handleClick}
             pos="relative"
-            color="blue"
           >
             <IconNotes size="80%" />
           </ActionIcon>

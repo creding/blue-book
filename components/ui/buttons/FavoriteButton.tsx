@@ -40,7 +40,6 @@ export default function FavoriteButton({
     <Tooltip label={isFavorited ? "Remove from favorites" : "Add to favorites"}>
       <ActionIcon
         variant="subtle"
-        color="blue"
         onClick={handleClick}
         size={size}
         aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
