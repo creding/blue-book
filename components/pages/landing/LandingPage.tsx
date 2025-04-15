@@ -26,7 +26,8 @@ import classes from "./LandingPage.module.css"; // Keep your CSS module for cust
 import bookCover from "@/images/book_cover.jpg"; // Ensure path is correct
 import heroImage from "@/images/hero_bkg.jpg"; // Ensure path is correct
 import Link from "next/link";
-
+import backgroundCabin from "@/images/background_cabin.png";
+import backgroundLake from "@/images/background_lake.png";
 // Define feature data including icons
 const featuresData = [
   {
@@ -67,7 +68,7 @@ export default function LandingPage() {
         }}
       >
         <BackgroundImage
-          src={heroImage.src}
+          src={backgroundLake.src}
           radius="sm"
           style={{
             backgroundSize: "cover",
