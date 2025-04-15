@@ -118,13 +118,22 @@ export function NotesSection({
           />
           <Group justify="flex-end" gap="xs">
             <Button
-              variant="subtle"
-              color="gray"
+              variant="outline"
+              size="xs"
+              radius="xl"
+              color="red"
               onClick={() => closeSidebar()}
             >
               Cancel
             </Button>
-            <Button onClick={handleCreateNote}>Save Note</Button>
+            <Button
+              variant="light"
+              size="xs"
+              radius="xl"
+              onClick={handleCreateNote}
+            >
+              Save Note
+            </Button>
           </Group>
         </Stack>
 
