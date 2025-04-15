@@ -2,78 +2,78 @@ import { createTheme, rem, MantineColorsTuple } from "@mantine/core";
 
 // --- NEW --- Define color tuple based on book cover blue (#1a5276 approximation)
 const coverBlue: MantineColorsTuple = [
-  "#eaf1f8", // Lightest
+  "#eaf1f8",
   "#d1dde9",
   "#b4c8db",
   "#94b3cf",
   "#789fc4",
   "#5f8cb9",
-  "#4b7daf", // Index 6
-  "#21618C", // Primary Shade (Dark Mode Index 5 - Adjusted for visibility) - Similar to #21618C suggestion
-  "#1a5276", // Primary Shade (Light Mode Index 7 - approximates cover)
-  "#103e5e", // Darkest
+  "#4b7daf",
+  "#21618C",
+  "#1a5276",
+  "#103e5e",
 ];
 
 // Define custom color tuples (Existing)
 const devotionalBlue: MantineColorsTuple = [
-  "#e0f2f7", // Lightest
+  "#e0f2f7",
   "#b3e0ed",
   "#80cce2",
   "#4db9d7",
-  "#2aa8cf", // Index 4 (used for dark mode primary)
-  "#1398c8", // Index 5
-  "#0d89bf", // Index 6 (original light mode primary)
+  "#2aa8cf",
+  "#1398c8",
+  "#0d89bf",
   "#0976a9",
   "#056494",
-  "#025380", // Darkest
+  "#025380",
 ];
 
 const devotionalGold: MantineColorsTuple = [
-  "#fff8e1", // Lightest
+  "#fff8e1",
   "#ffecb3",
   "#ffe082",
   "#ffd54f",
-  "#ffca28", // Good accent shade
+  "#ffca28",
   "#ffc107",
   "#ffb300",
   "#ffa000",
   "#ff8f00",
-  "#ff6f00", // Darkest
+  "#ff6f00",
 ];
 
 const neutralGray: MantineColorsTuple = [
-  "#f8f9fa", // Very light gray (Body Background - Light)
-  "#f1f3f5", // Paper Background - Light
+  "#f8f9fa",
+  "#f1f3f5",
   "#e9ecef",
   "#dee2e6",
   "#ced4da",
   "#adb5bd",
-  "#868e96", // Muted text / borders
-  "#495057", // Body Text - Light
-  "#343a40", // Headings / Strong Text - Light
-  "#212529", // Darkest
+  "#868e96",
+  "#495057",
+  "#343a40",
+  "#212529",
 ];
 
 // Define dark theme colors (inverting grays, adjusting blues/golds)
 const darkColors = {
-  body: "#1a1b1e", // Dark background
-  text: "#C1C2C5", // Light text on dark background
-  paper: "#25262b", // Slightly lighter dark for cards/paper
-  border: "#2C2E33", // Subtle border for dark mode
-  paperHover: "#2C2E33", // Slightly lighter for hover states
+  body: "#1a1b1e",
+  text: "#C1C2C5",
+  paper: "#25262b",
+  border: "#2C2E33",
+  paperHover: "#2C2E33",
 };
 
 export const theme = createTheme({
   // --- Core ---
   fontFamily: "Inter, sans-serif",
-  primaryColor: "coverBlue", // --- UPDATED --- Use the new blue as primary
-  primaryShade: { light: 7, dark: 5 }, // --- UPDATED --- Use darker shade for light, lighter for dark
+  primaryColor: "coverBlue",
+  primaryShade: { light: 7, dark: 5 },
   defaultRadius: "md",
 
   // --- Colors ---
   colors: {
-    coverBlue, // --- NEW --- Register cover blue
-    devotionalBlue, // Keep original blue if needed elsewhere
+    coverBlue,
+    devotionalBlue,
     devotionalGold,
     neutralGray,
     // Keep Mantine's default colors if you might use them elsewhere
@@ -84,6 +84,7 @@ export const theme = createTheme({
 
   // --- Typography ---
   fontSizes: {
+    xxs: rem(10),
     xs: rem(12),
     sm: rem(14),
     md: rem(16),
@@ -98,8 +99,6 @@ export const theme = createTheme({
     xl: "1.65",
   },
   headings: {
-    // NOTE: You apply heading colors directly on components (e.g., <Title c="coverBlue">)
-    // You can setfontWeight etc. here though.
     fontFamily: "Inter, sans-serif",
     fontWeight: "600",
     sizes: {

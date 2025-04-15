@@ -51,7 +51,9 @@ export async function TableOfContents({ slug }: { slug: string }) {
   if (fetchError) {
     return (
       <Stack gap="md" h="100%">
-        <Title order={4}>Table of Contents</Title>
+        <Title c="coverBlue" order={4}>
+          Table of Contents
+        </Title>
         <Alert
           icon={<IconAlertCircle size={18} />}
           title="Error"
@@ -69,9 +71,7 @@ export async function TableOfContents({ slug }: { slug: string }) {
   return (
     // Use Flexbox for layout: Stack fills height, ScrollArea grows
     <Stack gap="md" h="100%">
-      <Title order={4} px="md" pt="md">
-        {" "}
-        {/* Add padding around title */}
+      <Title c="coverBlue" order={4} px="md" pt="md">
         Table of Contents
       </Title>
 
@@ -94,9 +94,10 @@ export async function TableOfContents({ slug }: { slug: string }) {
                   p="sm" // Adjust padding for desired density
                   fz="sm" // Adjust font size if needed
                   leftSection={
-                    <ActionIcon size="sm" variant="light" radius="xl">
-                      {/* Ensure 'id' is user-friendly here, or use another field like week_number */}
-                      <Text size="xs">{devotional.week}</Text>
+                    <ActionIcon size="md" variant="light" radius="xl">
+                      <Text size="xs" c="coverBlue">
+                        {devotional.week}
+                      </Text>
                     </ActionIcon>
                   }
                 />

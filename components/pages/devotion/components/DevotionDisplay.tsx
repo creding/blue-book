@@ -191,7 +191,7 @@ export function DevotionalDisplay({
                 size="lg"
                 variant="light"
                 color="coverBlue"
-                radius="md"
+                radius="xl"
               >
                 <IconBook style={{ width: "70%", height: "70%" }} />
               </ThemeIcon>
@@ -226,7 +226,7 @@ export function DevotionalDisplay({
                   size="lg"
                   variant="light"
                   color="coverBlue"
-                  radius="md"
+                  radius="xl"
                 >
                   <IconBible style={{ width: "70%", height: "70%" }} />{" "}
                   {/* Specific Icon */}
@@ -324,7 +324,7 @@ export function DevotionalDisplay({
                 size="lg"
                 variant="light"
                 color="coverBlue"
-                radius="md"
+                radius="xl"
               >
                 <IconMessageCircleHeart
                   style={{ width: "70%", height: "70%" }}
@@ -403,7 +403,7 @@ export function DevotionalDisplay({
                 size="lg"
                 variant="light"
                 color="coverBlue"
-                radius="md"
+                radius="xl"
               >
                 <IconBook style={{ width: "70%", height: "70%" }} />
               </ThemeIcon>
@@ -431,7 +431,7 @@ export function DevotionalDisplay({
                 size="lg"
                 variant="light"
                 color="coverBlue"
-                radius="md"
+                radius="xl"
               >
                 <IconMusic style={{ width: "70%", height: "70%" }} />
               </ThemeIcon>

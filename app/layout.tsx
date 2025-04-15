@@ -1,6 +1,9 @@
 import type React from "react";
+import { theme } from "@/theme";
+import { MantineProvider } from "@mantine/core";
+
 import "@mantine/core/styles.css";
-import Providers from "@/providers/Providers";
+import "./globals.css";
 
 export const metadata = {
   title: "The Blue Book - A Devotional Guide by Jim Branch",
@@ -20,10 +23,10 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <MantineProvider defaultColorScheme="light" theme={theme}>
+          {children}
+        </MantineProvider>
       </body>
     </html>
   );
 }
-
-import "./globals.css";

@@ -1,5 +1,9 @@
 import AuthForm from "@/components/auth/auth-form";
+import { DevotionalLayout } from "@/components/layout/devotional-layout";
+import { DevotionalSkeleton } from "@/components/skeletons/devotional-skeleton";
+import { TableOfContents } from "@/components/ui/table-of-contents";
 import { Title, Container, Card, Center } from "@mantine/core";
+import { Suspense } from "react";
 
 export default async function LoginPage({
   searchParams,
@@ -8,8 +12,8 @@ export default async function LoginPage({
 }) {
   const { redirect } = await searchParams;
   return (
-    <Container size="sm" my="lg">
-      <Center h="100vh">
+    <DevotionalLayout toc={<TableOfContents slug={""} />} user={null}>
+      <Center h="calc(100vh - 100px)">
         <Card
           withBorder
           shadow="md"
@@ -19,12 +23,14 @@ export default async function LoginPage({
           pb="xl"
           radius="md"
         >
-          <Title order={2} ta="center" mt="xl" mb="lg">
+          <Title c="coverBlue" order={2} ta="center" mt="xl" mb="lg">
             Welcome to The Blue Book
           </Title>
-          <AuthForm redirectPath={redirect || "/"} />
+          <Suspense fallback={<DevotionalSkeleton />}>
+            <AuthForm redirectPath={redirect || "/"} />
+          </Suspense>
         </Card>
       </Center>
-    </Container>
+    </DevotionalLayout>
   );
 }

@@ -59,13 +59,20 @@ export default function LandingPage() {
   return (
     <>
       {/* Hero Section - Simplified to just clickable image */}
-      <Box pos="relative" className={classes.hero}>
+      <Box
+        pos="relative"
+        className={classes.hero}
+        style={{
+          backgroundColor: "coverBlue.7",
+        }}
+      >
         <BackgroundImage
           src={heroImage.src}
           radius="sm"
           style={{
             backgroundSize: "cover",
             backgroundPosition: "center",
+
             minHeight: "800px", // Keep height or adjust as needed
             display: "flex",
             alignItems: "center",
@@ -205,11 +212,11 @@ export default function LandingPage() {
                 to: "devotionalBlue.5",
               }} // Example: coverBlue to devotionalBlue
               radius="md" // Use theme default radius
-              component="a"
-              href="/purchase"
+              component={Link}
+              href="/devotions"
               mt="md"
             >
-              Get Your Copy Today
+              Get Started
             </Button>
           </Stack>
         </Paper>

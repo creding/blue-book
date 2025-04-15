@@ -77,7 +77,7 @@ export function ScriptureAccordion({
                   size="sm"
                   variant="light"
                   color="coverBlue"
-                  radius="md"
+                  radius="xl"
                 >
                   <IconBook style={{ width: "70%", height: "70%" }} />
                 </ThemeIcon>
