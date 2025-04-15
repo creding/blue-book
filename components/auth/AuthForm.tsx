@@ -18,6 +18,7 @@ import { IconBrandGoogle, IconInfoCircle } from "@tabler/icons-react"; // Import
 import { getURL } from "@/utils/getUrl";
 import { createClient } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import { GoogleLoginButton } from "../ui/buttons/google/GoogleLoginButton";
 
 export default function AuthForm({ redirectPath }: { redirectPath: string }) {
   const [email, setEmail] = useState("");
@@ -163,10 +164,7 @@ export default function AuthForm({ redirectPath }: { redirectPath: string }) {
 
               <Button
                 type="submit"
-                // --- UPDATED --- Use variant="gradient"
-                variant="gradient"
                 loading={loading}
-                gradient={{ from: "coverBlue.7", to: "coverBlue.5" }}
                 fullWidth // Consider fullWidth for main action
               >
                 {mode === "signin" ? "Sign in" : "Sign up"}
@@ -178,33 +176,12 @@ export default function AuthForm({ redirectPath }: { redirectPath: string }) {
                 my="sm"
               />
 
-              <Button
-                variant="outline" // Outline variant often pairs well with custom styles for OAuth
-                leftSection={<IconBrandGoogle size={18} />}
+              <GoogleLoginButton
                 onClick={handleGoogleAuth}
                 disabled={loading}
-                fullWidth // Consider fullWidth for consistency
-                styles={(theme) => ({
-                  // Use theme callback for styles if needed
-                  root: {
-                    backgroundColor: theme.white,
-                    border: `1px solid ${theme.colors.neutralGray[3]}`, // Use theme color
-                    "&:hover": {
-                      backgroundColor: theme.colors.neutralGray[0], // Use theme color
-                    },
-                  },
-                  label: {
-                    color: theme.colors.neutralGray[8], // Use theme color
-                    fontWeight: 500,
-                  },
-                  section: {
-                    marginRight: theme.spacing.xs, // Adjust spacing
-                  },
-                })}
-              >
-                {/* Adjust text based on mode? Usually just "Sign in" */}
-                Sign in with Google
-              </Button>
+                fullWidth
+                variant="outline"
+              />
             </>
           )}
 

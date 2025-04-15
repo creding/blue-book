@@ -2,11 +2,11 @@
 
 import { ActionIcon, Group, Title, Anchor } from "@mantine/core";
 import { IconSearch, IconMenu2 } from "@tabler/icons-react";
-import { LoginButton } from "../auth/login-button";
+import { LoginButton } from "../ui/buttons/LoginButton";
 import Link from "next/link";
 import { User } from "@supabase/supabase-js";
 
-interface DevotionalHeaderProps {
+interface HeaderProps {
   leftOpened: boolean;
   rightOpened: boolean;
   toggleLeft: () => void;
@@ -14,13 +14,13 @@ interface DevotionalHeaderProps {
   user: User | null;
 }
 
-export function DevotionalHeader({
+export function Header({
   leftOpened,
   rightOpened,
   toggleLeft,
   toggleRight,
   user,
-}: DevotionalHeaderProps) {
+}: HeaderProps) {
   return (
     <Group h="100%" px="md" justify="space-between">
       <Group>

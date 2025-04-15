@@ -26,7 +26,7 @@ import PrintButton from "@/components/ui/buttons/PrintButton"; // Assuming path 
 import { NotesButton } from "@/components/ui/buttons/NotesButton"; // Assuming path is correct
 import { Devotion } from "@/types/graphql"; // Assuming path is correct
 import { ReferenceType } from "@/types/note"; // Assuming path is correct
-import { ScriptureAccordion } from "@/components/ui/scripture-accordion"; // Assuming path is correct
+import { ScriptureAccordion } from "@/components/ui/ScriptureAccordion"; // Assuming path is correct
 import { User } from "@supabase/supabase-js";
 import { useMediaQuery } from "@mantine/hooks";
 

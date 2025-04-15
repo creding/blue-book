@@ -1,7 +1,7 @@
-import AuthForm from "@/components/auth/auth-form";
-import { DevotionalLayout } from "@/components/layout/devotional-layout";
-import { DevotionalSkeleton } from "@/components/skeletons/devotional-skeleton";
-import { TableOfContents } from "@/components/ui/table-of-contents";
+import AuthForm from "@/components/auth/AuthForm";
+import { CustomLayout } from "@/components/layout/CustomLayout";
+import { DevotionalSkeleton } from "@/components/skeletons/DevotionalSkeleton";
+import { TableOfContents } from "@/components/ui/TableOfContents";
 import { Title, Container, Card, Center } from "@mantine/core";
 import { Suspense } from "react";
 
@@ -12,7 +12,7 @@ export default async function LoginPage({
 }) {
   const { redirect } = await searchParams;
   return (
-    <DevotionalLayout toc={<TableOfContents slug={""} />} user={null}>
+    <CustomLayout toc={<TableOfContents slug={""} />} user={null}>
       <Center h="calc(100vh - 100px)">
         <Card
           withBorder
@@ -31,6 +31,6 @@ export default async function LoginPage({
           </Suspense>
         </Card>
       </Center>
-    </DevotionalLayout>
+    </CustomLayout>
   );
 }

@@ -55,7 +55,7 @@ export interface Scripture {
   id: number;
   reference: string;
   text: string;
-  day?: string;
+  day_of_week?: string;
 }
 
 export interface Reading {

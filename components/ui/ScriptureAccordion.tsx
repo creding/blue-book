@@ -4,9 +4,8 @@ import {
   Stack,
   Text,
   Box,
-  // Removed useMantineTheme
-  Divider,
-  ThemeIcon, // Optional divider
+  ThemeIcon,
+  Badge,
 } from "@mantine/core";
 import { IconBook } from "@tabler/icons-react";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
@@ -36,12 +35,10 @@ export function ScriptureAccordion({
   notes,
   user,
 }: ScriptureAccordionProps) {
-  // Removed theme = useMantineTheme();
-
   // Sort scriptures by day order (same logic as before)
   const sortedScriptures = [...scriptures].sort((a, b) => {
-    const dayA = a.day || "";
-    const dayB = b.day || "";
+    const dayA = a.day_of_week || "";
+    const dayB = b.day_of_week || "";
     const indexA = dayOrder.indexOf(dayA);
     const indexB = dayOrder.indexOf(dayB);
     if (indexA === -1 && indexB === -1) return 0;
@@ -68,10 +65,10 @@ export function ScriptureAccordion({
       {sortedScriptures.map((scripture) => (
         <Accordion.Item
           key={scripture.id}
-          value={scripture.day || String(scripture.id)}
+          value={scripture.day_of_week || String(scripture.id)}
         >
           <Accordion.Control>
-            <Group justify="space-between" wrap="nowrap">
+            <Group justify="space-between" wrap="nowrap" pr="lg">
               <Group gap="sm" align="center" wrap="nowrap">
                 <ThemeIcon
                   size="sm"
@@ -85,10 +82,10 @@ export function ScriptureAccordion({
                   {scripture.reference}
                 </Text>
               </Group>
-              {scripture.day && (
-                <Text size="xs" c="neutralGray.6">
-                  {scripture.day}
-                </Text>
+              {scripture.day_of_week && (
+                <Badge variant="light" size="xs" radius="xl">
+                  {scripture.day_of_week}
+                </Badge>
               )}
             </Group>
           </Accordion.Control>

@@ -1,9 +1,7 @@
-import { DevotionalLayout } from "@/components/layout/devotional-layout";
-import { DevotionalContent } from "@/components/pages/devotion/Devotion";
-import { DevotionalSkeleton } from "@/components/skeletons/devotional-skeleton";
-import { redirect } from "next/navigation";
+import { CustomLayout } from "@/components/layout/CustomLayout";
+import { DevotionalSkeleton } from "@/components/skeletons/DevotionalSkeleton";
 import { Suspense } from "react";
-import { TableOfContents } from "@/components/ui/table-of-contents";
+import { TableOfContents } from "@/components/ui/TableOfContents";
 import { createClient } from "@/lib/supabaseServerClient";
 import { PrefaceIntroPage } from "@/components/pages/PrefaceIntroPage";
 
@@ -15,10 +13,10 @@ export default async function DevotionalPage() {
   } = await supabase.auth.getUser();
 
   return (
-    <DevotionalLayout toc={<TableOfContents slug={""} />} user={user}>
+    <CustomLayout toc={<TableOfContents slug={""} />} user={user}>
       <Suspense fallback={<DevotionalSkeleton />}>
         <PrefaceIntroPage />
       </Suspense>
-    </DevotionalLayout>
+    </CustomLayout>
   );
 }
