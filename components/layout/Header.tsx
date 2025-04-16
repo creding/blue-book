@@ -30,9 +30,6 @@ export function Header({ toggleLeft, toggleRight, user }: HeaderProps) {
 
         <Anchor component={Link} href="/">
           <Group gap="xs">
-            <ThemeIcon size="lg" variant="light" color="coverBlue" radius="xl">
-              <IconCross style={{ width: "70%", height: "70%" }} stroke={1.5} />
-            </ThemeIcon>
             <Title td="none" order={3}>
               The Blue Book
             </Title>

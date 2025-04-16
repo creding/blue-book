@@ -16,7 +16,7 @@ export function PrefaceIntroPage() {
         {/* Increased gap between sections */}
         {/* Preface Section */}
         <Paper
-          shadow="sm"
+          shadow={isMobile ? undefined : "sm"}
           p={{ base: "xs", xl: "xl" }}
           radius="md"
           withBorder={!isMobile}
@@ -65,7 +65,12 @@ export function PrefaceIntroPage() {
           </Stack>
         </Paper>
         {/* Introduction Section */}
-        <Paper shadow="sm" p="xl" radius="md" withBorder>
+        <Paper
+          shadow={isMobile ? undefined : "sm"}
+          p={{ base: "xs", xl: "xl" }}
+          radius="md"
+          withBorder={!isMobile}
+        >
           {" "}
           {/* Increased padding */}
           <Stack gap="lg">
