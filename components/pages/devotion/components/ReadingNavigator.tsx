@@ -1,148 +1,167 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Stack,
   Group,
-  ThemeIcon,
-  Title,
-  Blockquote,
-  Box,
-  ActionIcon,
   Text,
+  Title,
+  Box,
+  Blockquote,
+  ActionIcon,
 } from "@mantine/core";
-import {
-  IconMessageCircleHeart,
-  IconArrowLeft,
-  IconArrowRight,
-} from "@tabler/icons-react";
+import { IconArrowLeft, IconArrowRight, IconQuote } from "@tabler/icons-react";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
-import { Reading, Edge, Note } from "@/types/graphql"; // Assuming types are here
-import { ReferenceType } from "@/types/note"; // Assuming type is here
 import { User } from "@supabase/supabase-js";
+import { Reading } from "@/types/graphql";
+import { Note } from "@/types/note";
 
 interface ReadingNavigatorProps {
-  readings: Edge<Reading>[];
+  readings: Reading[];
+  notes: Note[];
   user: User | null;
 }
 
-export const ReadingNavigator = ({ readings, user }: ReadingNavigatorProps) => {
-  const [currentReadingIndex, setCurrentReadingIndex] = useState(0);
+const dayOrder = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
-  const handlePrevReading = () => {
-    setCurrentReadingIndex((prevIndex) => Math.max(0, prevIndex - 1));
+export function ReadingNavigator({
+  readings,
+  notes,
+  user,
+}: ReadingNavigatorProps) {
+  const [currentDayIndex, setCurrentDayIndex] = useState(0);
+  const allReadings = readings || [];
+
+  const readingsByDay = useMemo(() => {
+    const grouped: { [key: string]: Reading[] } = {};
+    const totalReadings = allReadings.length;
+    const readingsPerDayBase = Math.floor(totalReadings / 7);
+    const extraDays = totalReadings % 7;
+
+    let currentIndex = 0;
+    dayOrder.forEach((day, index) => {
+      const count = readingsPerDayBase + (index < extraDays ? 1 : 0);
+      grouped[day] = allReadings.slice(currentIndex, currentIndex + count);
+      currentIndex += count;
+    });
+    return grouped;
+  }, [allReadings]);
+
+  useEffect(() => {
+    const jsDayIndex = new Date().getDay();
+    const todayIndex = jsDayIndex === 0 ? 6 : jsDayIndex - 1;
+    setCurrentDayIndex(todayIndex);
+  }, []);
+
+  const currentDay = dayOrder[currentDayIndex];
+  const currentReadings = readingsByDay[currentDay] || [];
+
+  const handlePreviousDay = () => {
+    setCurrentDayIndex((prevIndex) => (prevIndex === 0 ? 6 : prevIndex - 1));
   };
 
-  const handleNextReading = () => {
-    setCurrentReadingIndex((prevIndex) =>
-      Math.min(readings.length - 1, prevIndex + 1)
-    );
+  const handleNextDay = () => {
+    setCurrentDayIndex((prevIndex) => (prevIndex === 6 ? 0 : prevIndex + 1));
   };
 
-  // Helper to get notes for the current reading
-  const getReadingNotes = (readingId: string | number) => {
-    const readingEdge = readings.find(
-      (edge) => String(edge.node.id) === String(readingId)
-    );
-    return (
-      readingEdge?.node.notesCollection.edges.map((noteEdge) => ({
-        id: noteEdge.node.id,
-        content: noteEdge.node.content,
-        created_at: noteEdge.node.created_at,
-        updated_at: noteEdge.node.updated_at,
-        user_id: "", // This should ideally be populated if needed downstream
-        reference_type: "reading" as ReferenceType,
-        reference_id: String(readingId),
-        devotion_id: null, // Assuming devotion ID isn't needed here
-        scripture_id: null,
-        reading_id: Number(readingId),
-      })) || []
-    );
-  };
-
-  if (!readings || readings.length === 0) {
-    return null; // Don't render anything if there are no readings
+  if (allReadings.length === 0) {
+    return <Text c="neutralGray.6">No daily readings available.</Text>;
   }
-
-  const { node: currentReading } = readings[currentReadingIndex];
-  const cite = `${currentReading.source || "Source"} ${
-    currentReading.author ? ` - ${currentReading.author}` : ""
-  }`;
 
   return (
     <Stack gap="md">
-      <Group justify="space-between" align="center">
-        {/* Title Group */}
+      <Group justify="space-between" align="center" wrap="nowrap">
         <Group gap="sm">
-          <ThemeIcon size="lg" variant="light" color="coverBlue" radius="xl">
-            <IconMessageCircleHeart style={{ width: "70%", height: "70%" }} />
-          </ThemeIcon>
           <Title order={4} c="coverBlue">
-            Readings for Reflection
+            Daily Readings - {currentDay}
           </Title>
         </Group>
-
-        {/* Navigation Controls - Only show if more than one reading */} 
-        {readings.length > 1 && (
-          <Group justify="flex-end" gap="xs">
-            <ActionIcon
-              variant="light"
-              onClick={handlePrevReading}
-              disabled={currentReadingIndex === 0}
-              aria-label="Previous reading"
-            >
-              <IconArrowLeft size={18} />
-            </ActionIcon>
-            <Text size="sm" c="dimmed" miw={30} ta="center">
-              {currentReadingIndex + 1} / {readings.length}
-            </Text>
-            <ActionIcon
-              variant="light"
-              onClick={handleNextReading}
-              disabled={currentReadingIndex === readings.length - 1}
-              aria-label="Next reading"
-            >
-              <IconArrowRight size={18} />
-            </ActionIcon>
-          </Group>
-        )}
+        <Group gap="xs" wrap="nowrap">
+          <ActionIcon
+            onClick={handlePreviousDay}
+            variant="light"
+            disabled={currentDayIndex === 0}
+            aria-label="Previous day's readings"
+          >
+            <IconArrowLeft size={16} />
+          </ActionIcon>
+          <Text size="sm" c="dimmed" miw={30} ta="center">
+            {currentDayIndex + 1} / 7
+          </Text>
+          <ActionIcon
+            onClick={handleNextDay}
+            variant="light"
+            disabled={currentDayIndex === 6}
+            aria-label="Next day's readings"
+          >
+            <IconArrowRight size={16} />
+          </ActionIcon>
+        </Group>
       </Group>
 
-      {/* Display only the current reading */}
-      <Blockquote
-        key={currentReading.id}
-        cite={cite}
-        styles={{
-          root: {
-            padding: "md",
-            border: "1px solid var(--mantine-color-neutralGray-2)",
-            background: "var(--mantine-color-neutralGray-0)",
-          },
-          cite: {
-            color: "var(--mantine-color-gray-7)",
-            fontSize: "sm",
-            marginTop: "xs",
-          },
-        }}
-        radius="sm"
-      >
-        <Group justify="space-between" align="stretch" wrap="nowrap" gap="sm">
-          <Box className="reading-container" lh={1.6}>
-            <div
-              dangerouslySetInnerHTML={{
-                __html:
-                  currentReading.text ||
-                  "<p>Reading text not available.</p>",
+      {currentReadings.length > 0 ? (
+        currentReadings.map((reading) => {
+          const readingNotes = notes.filter(
+            (note) =>
+              note.reference_type === "reading" &&
+              String(note.reference_id) === String(reading.id)
+          );
+
+          return (
+            <Blockquote
+              key={reading.id}
+              cite={`${reading.source} ${
+                reading.author ? ` - ${reading.author}` : ""
+              }`}
+              styles={{
+                root: {
+                  padding: "md",
+                  border: "1px solid var(--mantine-color-neutralGray-2)",
+                  background: "var(--mantine-color-neutralGray-0)",
+                },
+                cite: {
+                  color: "var(--mantine-color-gray-7)",
+                  fontSize: "sm",
+                  marginTop: "xs",
+                },
               }}
-            />
-          </Box>
-          <NotesButton
-            user={user}
-            referenceType="reading"
-            referenceId={String(currentReading.id)}
-            initialNotes={getReadingNotes(currentReading.id)}
-            size="sm"
-          />
-        </Group>
-      </Blockquote>
+              radius="sm"
+            >
+              <Group justify="space-between" wrap="nowrap" align="stretch">
+                <Box
+                  className="reading-container"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      reading.text || "<p>Reading text not available.</p>",
+                  }}
+                  style={{
+                    flexGrow: 1,
+                    marginRight: "var(--mantine-spacing-md)",
+                  }}
+                  lh={1.6}
+                />
+                <NotesButton
+                  user={user}
+                  referenceType="reading"
+                  referenceId={String(reading.id)}
+                  initialNotes={readingNotes}
+                  size="sm"
+                />
+              </Group>
+            </Blockquote>
+          );
+        })
+      ) : (
+        <Text c="neutralGray.6" ta="center" my="md">
+          No readings assigned for {currentDay}.
+        </Text>
+      )}
     </Stack>
   );
-};
+}

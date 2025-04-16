@@ -8,26 +8,20 @@ import {
   Title,
   Divider,
   ThemeIcon,
-  Box,
+  Blockquote,
 } from "@mantine/core";
-import {
-  IconBook,
-  IconQuote,
-  IconMessageCircleHeart,
-  IconMusic,
-  IconAlertCircle,
-  IconBible,
-} from "@tabler/icons-react";
+import { IconAlertCircle } from "@tabler/icons-react";
 import FavoriteButton from "@/components/ui/buttons/FavoriteButton";
 import ShareButton from "@/components/ui/buttons/ShareButton";
 import PrintButton from "@/components/ui/buttons/PrintButton";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
 import { Devotion } from "@/types/graphql";
 import { ReferenceType } from "@/types/note";
-import { ScriptureList } from "@/components/ui/ScriptureList";
+import { ScriptureNavigator } from "@/components/pages/devotion/components/ScriptureNavigator";
 import { User } from "@supabase/supabase-js";
 import { useMediaQuery } from "@mantine/hooks";
 import { ReadingNavigator } from "./ReadingNavigator";
+import { PsalmDisplay } from "./PsalmDisplay";
 import React from "react";
 
 export interface DevotionalDisplayProps {
@@ -76,19 +70,13 @@ export function DevotionalDisplay({
     );
   }
 
-  const getScriptureNotes = (
-    scriptureId: string | number,
-    isPsalm: boolean
-  ) => {
-    const scriptureEdges =
-      devotional.devotion_scripturesCollection.edges.filter(
-        (edge) =>
-          edge.node.scriptures.is_psalm === isPsalm &&
-          String(edge.node.scriptures.id) === String(scriptureId)
-      );
-
-    return scriptureEdges.flatMap((edge) =>
-      edge.node.scriptures.notesCollection.edges.map((noteEdge) => ({
+  const getScriptureNotes = (scriptureId: string | number | undefined) => {
+    if (!scriptureId) return [];
+    const scriptureEdge = devotional.devotion_scripturesCollection.edges.find(
+      (edge) => String(edge.node.scriptures.id) === String(scriptureId)
+    );
+    return (
+      scriptureEdge?.node.scriptures.notesCollection.edges.map((noteEdge) => ({
         id: noteEdge.node.id,
         content: noteEdge.node.content,
         created_at: noteEdge.node.created_at,
@@ -99,29 +87,29 @@ export function DevotionalDisplay({
         devotion_id: devotional.id,
         scripture_id: Number(scriptureId),
         reading_id: null,
-      }))
+      })) || []
     );
   };
 
-  const getReadingNotes = (readingId: string | number) => {
-    const readingEdges = devotional.readingsCollection.edges.filter(
-      (edge) => String(edge.node.id) === String(readingId)
-    );
-    return readingEdges.flatMap((edge) =>
-      edge.node.notesCollection.edges.map((noteEdge) => ({
-        id: noteEdge.node.id,
-        content: noteEdge.node.content,
-        created_at: noteEdge.node.created_at,
-        updated_at: noteEdge.node.updated_at,
-        user_id: "",
-        reference_type: "reading" as ReferenceType,
-        reference_id: String(readingId),
-        devotion_id: devotional.id,
-        scripture_id: null,
-        reading_id: Number(readingId),
-      }))
-    );
-  };
+  const notes = devotional.readingsCollection.edges.flatMap((edge) =>
+    edge.node.notesCollection.edges.map((noteEdge) => ({
+      id: noteEdge.node.id,
+      content: noteEdge.node.content,
+      created_at: noteEdge.node.created_at,
+      updated_at: noteEdge.node.updated_at,
+      user_id: "",
+      reference_type: "reading" as ReferenceType,
+      reference_id: String(edge.node.id),
+      devotion_id: devotional.id,
+      scripture_id: null,
+      reading_id: Number(edge.node.id),
+    }))
+  );
+
+  const psalmEdge = devotional.devotion_scripturesCollection.edges.find(
+    (edge) => edge.node.scriptures.is_psalm
+  );
+  const psalmScripture = psalmEdge?.node.scriptures;
 
   return (
     <Paper
@@ -175,132 +163,72 @@ export function DevotionalDisplay({
         {devotional.opening_prayer && (
           <Stack gap="md">
             <Group gap="sm" mb="xs">
-              <ThemeIcon
-                size="lg"
-                variant="light"
-                color="coverBlue"
-                radius="xl"
-              >
-                <IconBook style={{ width: "70%", height: "70%" }} />
-              </ThemeIcon>
               <Title order={4} c="coverBlue">
                 Opening Prayer
               </Title>
             </Group>
-            <Text lh={1.6}>{devotional.opening_prayer}</Text>
-            {devotional.opening_prayer_source && (
-              <Text size="sm" c="dimmed" fs="italic" mt="xs">
-                — {devotional.opening_prayer_source}
+            <Blockquote
+              cite={devotional.opening_prayer_source}
+              styles={{
+                root: {
+                  padding: "md",
+                  border: "1px solid var(--mantine-color-neutralGray-2)",
+                  background: "var(--mantine-color-neutralGray-0)",
+                },
+                cite: {
+                  color: "var(--mantine-color-gray-7)",
+                  fontSize: "sm",
+                  marginTop: "xs",
+                },
+              }}
+              radius="sm"
+            >
+              <Text className="prayer-container" lh={1.6}>
+                {devotional.opening_prayer}
               </Text>
-            )}
+            </Blockquote>
           </Stack>
         )}
         {devotional.opening_prayer && <Divider my="sm" />}
         {devotional.devotion_scripturesCollection.edges.some(
           (edge) => edge.node.scriptures.is_psalm
-        ) && (
-          <Stack gap="md">
-            <Group
-              justify="space-between"
-              align="stretch"
-              wrap="nowrap"
-              gap="sm"
-            >
-              <Group gap="sm" mb="xs">
-                <ThemeIcon
-                  size="lg"
-                  variant="light"
-                  color="coverBlue"
-                  radius="xl"
-                >
-                  <IconBible style={{ width: "70%", height: "70%" }} />
-                </ThemeIcon>
-                <Title order={4} c="coverBlue">
-                  Psalm for the Week
-                </Title>
-              </Group>
-              <NotesButton
-                user={user}
-                referenceType="scripture"
-                referenceId={String(
-                  devotional.devotion_scripturesCollection.edges.find(
-                    (edge) => edge.node.scriptures.is_psalm
-                  )?.node.scriptures.id
-                )}
-                initialNotes={getScriptureNotes(
-                  String(
-                    devotional.devotion_scripturesCollection.edges.find(
-                      (edge) => edge.node.scriptures.is_psalm
-                    )?.node.scriptures.id || ""
-                  ),
-                  true
-                )}
-                size="sm"
-              />
-            </Group>
-            <Group
-              justify="space-between"
-              align="stretch"
-              wrap="nowrap"
-              gap="sm"
-            >
-              <Box className="scripture-container" lh={1.6}>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      devotional.devotion_scripturesCollection.edges.find(
-                        (edge) => edge.node.scriptures.is_psalm
-                      )?.node.scriptures.text ||
-                      "<p>Psalm text not available.</p>",
-                  }}
-                />
-              </Box>
-            </Group>
-          </Stack>
-        )}
+        ) &&
+          psalmScripture && (
+            <PsalmDisplay
+              psalm={psalmScripture}
+              notes={getScriptureNotes(psalmScripture.id)}
+              user={user}
+            />
+          )}
         <Divider my="sm" />
         {devotional.devotion_scripturesCollection.edges.some(
           (edge) => !edge.node.scriptures.is_psalm
         ) && (
-          <Stack gap="md">
-            <Group gap="sm" mb="xs">
-              <ThemeIcon
-                size="lg"
-                variant="light"
-                color="coverBlue"
-                radius="xl"
-              >
-                <IconBook style={{ width: "70%", height: "70%" }} />
-              </ThemeIcon>
-              <Title order={4} c="coverBlue">
-                Scripture Reading
-              </Title>
-            </Group>
-            <ScriptureList
-              scriptures={devotional.devotion_scripturesCollection.edges
-                .filter((edge) => !edge.node.scriptures.is_psalm)
-                .map((edge) => ({
-                  id: edge.node.scriptures.id,
-                  reference: edge.node.scriptures.reference,
-                  text: edge.node.scriptures.text,
-                  is_psalm: edge.node.scriptures.is_psalm,
-                  notesCollection: edge.node.scriptures.notesCollection,
-                  day_of_week: edge.node.day_of_week,
-                }))}
-              notes={devotional.devotion_scripturesCollection.edges
-                .filter((edge) => !edge.node.scriptures.is_psalm)
-                .flatMap((edge) =>
-                  getScriptureNotes(edge.node.scriptures.id, false)
-                )}
-              user={user}
-            />
-          </Stack>
+          <ScriptureNavigator
+            scriptures={devotional.devotion_scripturesCollection.edges
+              .filter((edge) => !edge.node.scriptures.is_psalm)
+              .map((edge) => ({
+                id: edge.node.scriptures.id,
+                reference: edge.node.scriptures.reference,
+                text: edge.node.scriptures.text,
+                is_psalm: edge.node.scriptures.is_psalm,
+                notesCollection: edge.node.scriptures.notesCollection,
+                day_of_week: edge.node.day_of_week,
+              }))}
+            notes={devotional.devotion_scripturesCollection.edges
+              .filter((edge) => !edge.node.scriptures.is_psalm)
+              .flatMap((edge) => getScriptureNotes(edge.node.scriptures.id))}
+            user={user}
+          />
         )}
         <Divider my="sm" />
         {devotional?.readingsCollection?.edges &&
           devotional.readingsCollection.edges.length > 0 && (
             <ReadingNavigator
-              readings={devotional.readingsCollection.edges}
+              readings={devotional.readingsCollection.edges.map(
+                (edge) => edge.node
+              )}
+              notes={notes}
               user={user}
             />
           )}
@@ -308,24 +236,30 @@ export function DevotionalDisplay({
         {devotional.closing_prayer && (
           <Stack gap="md">
             <Group gap="sm" mb="xs">
-              <ThemeIcon
-                size="lg"
-                variant="light"
-                color="coverBlue"
-                radius="xl"
-              >
-                <IconBook style={{ width: "70%", height: "70%" }} />
-              </ThemeIcon>
               <Title order={4} c="coverBlue">
                 Closing Prayer
               </Title>
             </Group>
-            <Text lh={1.6}>{devotional.closing_prayer}</Text>
-            {devotional.closing_prayer_source && (
-              <Text size="sm" c="dimmed" fs="italic" mt="xs">
-                — {devotional.closing_prayer_source}
+            <Blockquote
+              cite={devotional.closing_prayer_source}
+              styles={{
+                root: {
+                  padding: "md",
+                  border: "1px solid var(--mantine-color-neutralGray-2)",
+                  background: "var(--mantine-color-neutralGray-0)",
+                },
+                cite: {
+                  color: "var(--mantine-color-gray-7)",
+                  fontSize: "sm",
+                  marginTop: "xs",
+                },
+              }}
+              radius="sm"
+            >
+              <Text className="prayer-container" lh={1.6}>
+                {devotional.closing_prayer}
               </Text>
-            )}
+            </Blockquote>
           </Stack>
         )}
         {devotional.closing_prayer && devotional.song_title && (
@@ -334,14 +268,6 @@ export function DevotionalDisplay({
         {devotional.song_title && (
           <Stack gap="md">
             <Group gap="sm" mb="xs">
-              <ThemeIcon
-                size="lg"
-                variant="light"
-                color="coverBlue"
-                radius="xl"
-              >
-                <IconMusic style={{ width: "70%", height: "70%" }} />
-              </ThemeIcon>
               <Title order={4} c="coverBlue">
                 Suggested Song
               </Title>

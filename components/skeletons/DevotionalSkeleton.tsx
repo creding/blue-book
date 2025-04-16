@@ -1,116 +1,60 @@
+import React from "react";
 import {
-  Container,
-  Group,
-  Paper,
   Skeleton,
   Stack,
+  Group,
   Divider,
+  Paper,
+  Container,
 } from "@mantine/core";
 
-export function DevotionalSkeleton() {
+export const DevotionalSkeleton = () => {
   return (
     <Container size="lg" p={{ base: "xs", xl: "xl" }}>
-      <Paper p={{ base: "xs", xl: "xl" }} withBorder>
-        {/* Header with title and actions */}
-        <Group justify="space-between" align="flex-start" mb="lg">
-          <Skeleton height={32} width={200} radius="md" />
-          <Group gap="xs">
-            <Skeleton height={36} circle />
-            <Skeleton height={36} circle />
-            <Skeleton height={36} circle />
+      <Paper shadow="sm" radius="md" p="lg" withBorder>
+        <Stack>
+          <Skeleton height={30} width="40%" mb="lg" />
+          <Group justify="space-between" align="center">
+            <Skeleton height={20} width="30%" mb="xs" />
           </Group>
-        </Group>
-
-        {/* Opening Prayer Section */}
-        <Stack gap="lg">
-          <Stack gap="sm">
-            <Group gap="sm">
-              <Skeleton height={40} circle />
-              <Skeleton height={24} width={150} radius="md" />
-            </Group>
-            <Stack gap="xs">
-              <Skeleton height={16} width="100%" />
-              <Skeleton height={16} width="90%" />
-              <Skeleton height={14} width={120} />
-            </Stack>
-          </Stack>
-
+          <Skeleton height={80} radius="sm" mb="md" />
           <Divider />
-
-          {/* Scripture Section */}
-          <Stack gap="sm">
-            <Group gap="sm">
-              <Skeleton height={40} circle />
-              <Skeleton height={24} width={150} radius="md" />
-            </Group>
-            {/* Multiple scripture items */}
-            <Stack gap="md">
-              {[1, 2, 3].map((i) => (
-                <Paper key={i} withBorder p="md" radius="md">
-                  <Group justify="space-between" mb="sm">
-                    <Group gap="sm">
-                      <Skeleton height={24} circle />
-                      <Skeleton height={20} width={150} radius="md" />
-                    </Group>
-                    <Skeleton height={16} width={80} />
-                  </Group>
-                  <Stack gap="sm">
-                    <Skeleton height={16} width="100%" />
-                    <Skeleton height={16} width="95%" />
-                    <Skeleton height={16} width="90%" />
-                  </Stack>
-                </Paper>
-              ))}
-            </Stack>
-          </Stack>
-
+          <Group justify="space-between" align="center">
+            <Skeleton height={20} width="30%" mb="xs" />
+          </Group>
+          <Skeleton height={100} radius="sm" mb="md" />
           <Divider />
-
-          {/* Readings Section */}
-          <Stack gap="sm">
-            <Group gap="sm">
-              <Skeleton height={40} circle />
-              <Skeleton height={24} width={150} radius="md" />
+          <Group justify="space-between" align="center">
+            <Skeleton height={20} width="40%" mb="xs" />
+            <Group gap="xs">
+              <Skeleton height={24} circle />
+              <Skeleton height={16} width={40} />
+              <Skeleton height={24} circle />
             </Group>
-            <Stack gap="md">
-              {[1, 2].map((i) => (
-                <Paper key={i} withBorder p="md" radius="md">
-                  <Stack gap="sm">
-                    <Skeleton height={16} width="100%" />
-                    <Skeleton height={16} width="95%" />
-                    <Skeleton height={16} width="90%" />
-                    <Skeleton height={14} width={120} />
-                  </Stack>
-                </Paper>
-              ))}
-            </Stack>
-          </Stack>
-
+          </Group>
+          <Skeleton height={120} radius="sm" mb="md" />
           <Divider />
-
-          {/* Closing Prayer Section */}
-          <Stack gap="sm">
-            <Group gap="sm">
-              <Skeleton height={40} circle />
-              <Skeleton height={24} width={150} radius="md" />
+          <Group justify="space-between" align="center">
+            <Skeleton height={20} width="35%" mb="xs" />
+            <Group gap="xs">
+              <Skeleton height={24} circle />
+              <Skeleton height={16} width={40} />
+              <Skeleton height={24} circle />
             </Group>
-            <Stack gap="xs">
-              <Skeleton height={16} width="100%" />
-              <Skeleton height={16} width="90%" />
-              <Skeleton height={14} width={120} />
-            </Stack>
-          </Stack>
-
-          {/* Song Section */}
-          <Stack gap="sm">
-            <Group gap="sm">
-              <Skeleton height={40} circle />
-              <Skeleton height={24} width={150} radius="md" />
-            </Group>
-            <Skeleton height={16} width="60%" />
-          </Stack>
+          </Group>
+          <Skeleton height={150} radius="sm" mb="md" />
+          <Divider />
+          <Group justify="space-between" align="center">
+            <Skeleton height={20} width="30%" mb="xs" />
+          </Group>
+          <Skeleton height={80} radius="sm" mb="md" />
+          <Divider />
+          <Group justify="space-between" align="center">
+            <Skeleton height={20} width="30%" mb="xs" />
+          </Group>
+          <Skeleton height={40} radius="sm" />
         </Stack>
       </Paper>
     </Container>
   );
-}
+};
