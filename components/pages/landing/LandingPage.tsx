@@ -14,21 +14,19 @@ import {
   SimpleGrid,
   Card,
   ThemeIcon,
+  Center,
 } from "@mantine/core";
-// Assuming you have Tabler Icons installed
 import {
   IconBook,
   IconHeartHandshake,
   IconMessages,
   IconMusic,
 } from "@tabler/icons-react";
-import classes from "./LandingPage.module.css"; // Keep your CSS module for custom styles
-import bookCover from "@/images/book_cover.jpg"; // Ensure path is correct
-import heroImage from "@/images/hero_bkg.jpg"; // Ensure path is correct
+import classes from "./LandingPage.module.css";
+import bookCover from "@/images/book_cover.jpg";
 import Link from "next/link";
-import backgroundCabin from "@/images/background_cabin.png";
 import backgroundLake from "@/images/background_lake.png";
-// Define feature data including icons
+
 const featuresData = [
   {
     icon: IconBook,
@@ -59,7 +57,6 @@ const featuresData = [
 export default function LandingPage() {
   return (
     <>
-      {/* Hero Section - Simplified to just clickable image */}
       <Box
         pos="relative"
         className={classes.hero}
@@ -70,56 +67,44 @@ export default function LandingPage() {
         <BackgroundImage
           src={backgroundLake.src}
           radius="sm"
-          style={{
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-
-            minHeight: "900px", // Keep height or adjust as needed
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center", // Center the content horizontally too
-          }}
+          mih={{ base: "600px", xl: "900px" }}
+          bgsz="cover"
+          bgp="center"
+          display="flex"
         >
-          {/* Overlay */}
           <Overlay color="#000" opacity={0.2} zIndex={1} />
-
-          {/* Content container */}
           <Container size="lg" style={{ zIndex: 2, position: "relative" }}>
-            {/* Centered clickable book cover */}
-            <Group justify="center">
-              <Link href="/devotions">
-                <Image
-                  src={bookCover.src}
-                  alt="The Blue Book Cover"
-                  w={{ base: 150, sm: 200, md: 250 }}
-                  radius="md"
-                  style={{ boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}
-                />
-              </Link>
-            </Group>
+            <Center h="100%">
+              <Stack gap="xs">
+                <Link href="/devotions" className={classes.bookCoverLink}>
+                  <Image
+                    src={bookCover.src}
+                    alt="The Blue Book Cover"
+                    w={{ base: 150, sm: 200, md: 250 }}
+                    radius="md"
+                    style={{ boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}
+                  />
+                </Link>
+              </Stack>
+            </Center>
           </Container>
         </BackgroundImage>
       </Box>
 
-      {/* Introduction Section */}
       <Container size="lg" py={{ base: "xl", md: "80px" }}>
         <Stack gap="lg" align="center">
-          {/* Use primary theme color for title */}
           <Title order={2} c="coverBlue" ta="center">
             Discovering the Ancient Rhythms of God
           </Title>
-          {/* Use theme text color or specific gray shade */}
           <Text size="lg" c="dimmed" ta="center" maw={750} lh={1.6}>
-            *The Blue Book* is a spiritual journal drawn from the themes and
+            "The Blue Book" is a spiritual journal drawn from the themes and
             seasons of Jim Branch's journey with Jesus over twenty years. It
             gathers words, poems, scriptures, and prayers shared by saints,
             poets, and pilgrims to help you discover the ancient rhythms of God.
             This guide offers space, time, and structure to nourish your soul
             and transform your heart through being with Jesus.
           </Text>
-          {/* Use primary theme color for divider */}
           <Divider w={100} color="coverBlue.6" size="sm" my="sm" />
-          {/* Use appropriate gray shade from theme */}
           <Text size="md" c="neutralGray.7" ta="center" fs="italic">
             “My deepest desire is that this book might be helpful in your
             journey with Jesus.” — Jim Branch
@@ -127,14 +112,9 @@ export default function LandingPage() {
         </Stack>
       </Container>
 
-      {/* Features Section */}
-      {/* Use a background color from the theme */}
       <Box bg="neutralGray.0" py={{ base: "xl", md: "80px" }}>
         <Container size="xl">
-          {" "}
-          {/* Consider 'lg' or 'xl' based on preference */}
           <Stack gap="xl" align="center">
-            {/* Use primary theme color for title */}
             <Title order={2} c="coverBlue" ta="center" mb="lg">
               How to Use This Guide
             </Title>
@@ -148,9 +128,8 @@ export default function LandingPage() {
                   key={index}
                   shadow="sm"
                   padding="lg"
-                  radius="md" // Use theme default radius
+                  radius="md"
                   withBorder
-                  // Style border with theme color
                   style={{
                     borderColor: "neutralGray.2",
                   }}
@@ -159,17 +138,15 @@ export default function LandingPage() {
                     <ThemeIcon
                       size="lg"
                       variant="light"
-                      color="coverBlue" // Use primary theme color
-                      radius="md" // Use theme default radius
+                      color="coverBlue"
+                      radius="md"
                     >
                       <feature.icon style={{ width: "70%", height: "70%" }} />
                     </ThemeIcon>
-                    {/* Use primary theme color for title */}
                     <Title order={4} c="coverBlue">
                       {feature.title}
                     </Title>
                   </Group>
-                  {/* Use theme text color or specific gray */}
                   <Text size="sm" c="dimmed">
                     {feature.description}
                   </Text>
@@ -184,21 +161,12 @@ export default function LandingPage() {
         </Container>
       </Box>
 
-      {/* CTA Section */}
       <Container size="lg" py={{ base: "xl", md: "80px" }}>
-        {/* Use a background color from the theme */}
-        <Paper
-          shadow="md"
-          p="xl"
-          radius="lg" // Keep larger radius for emphasis
-          bg="coverBlue.0"
-        >
+        <Paper shadow="md" p="xl" radius="lg" bg="coverBlue.0">
           <Stack gap="md" align="center">
-            {/* Use primary theme color */}
             <Title order={2} c="coverBlue" ta="center">
               Begin Your Devotional Journey
             </Title>
-            {/* Use theme appropriate text color */}
             <Text size="lg" c="coverBlue" ta="center" maw={600}>
               Join countless others in discovering the depths of God’s love
               through *The Blue Book*. Let it be your companion in every season
@@ -207,12 +175,11 @@ export default function LandingPage() {
             <Button
               size="lg"
               variant="gradient"
-              // Use theme colors for gradient
               gradient={{
                 from: "coverBlue.6",
                 to: "devotionalBlue.5",
-              }} // Example: coverBlue to devotionalBlue
-              radius="md" // Use theme default radius
+              }}
+              radius="md"
               component={Link}
               href="/devotions"
               mt="md"

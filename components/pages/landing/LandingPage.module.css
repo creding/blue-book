@@ -24,6 +24,17 @@
   line-height: 1.2;
 }
 
+.bookCoverLink {
+  display: inline-block; /* Ensure transform origin is centered */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition for scale and shadow */
+}
+
+.bookCoverLink:hover {
+  transform: scale(1.03); /* Slightly scale up on hover */
+  /* Optional: Enhance shadow on hover */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
 @media (max-width: 768px) {
   .title {
     font-size: 2rem;
