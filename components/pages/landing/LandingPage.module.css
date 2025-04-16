@@ -27,12 +27,22 @@
 .bookCoverLink {
   display: inline-block; /* Ensure transform origin is centered */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transition for scale and shadow */
+  border-radius: var(--mantine-radius-md); /* Apply radius here for next/image */
+  overflow: hidden; /* Ensure radius clips the image */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Apply initial shadow here */
 }
 
 .bookCoverLink:hover {
   transform: scale(1.03); /* Slightly scale up on hover */
   /* Optional: Enhance shadow on hover */
   box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+}
+
+.quote {
+  padding-left: 1rem; /* Indent the quote */
+  border-left: 3px solid var(--mantine-color-neutralGray-3); /* Add a subtle left border */
+  margin-top: var(--mantine-spacing-sm);
+  margin-bottom: var(--mantine-spacing-sm);
 }
 
 @media (max-width: 768px) {

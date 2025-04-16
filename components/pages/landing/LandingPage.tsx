@@ -4,7 +4,7 @@ import {
   Text,
   Button,
   Group,
-  Image,
+  Image as NextImage,
   Paper,
   Stack,
   Divider,
@@ -24,7 +24,9 @@ import {
 } from "@tabler/icons-react";
 import classes from "./LandingPage.module.css";
 import bookCover from "@/images/book_cover.jpg";
+import heroImage from "@/images/hero_bkg.jpg";
 import Link from "next/link";
+import backgroundCabin from "@/images/background_cabin.png";
 import backgroundLake from "@/images/background_lake.png";
 
 const featuresData = [
@@ -75,16 +77,34 @@ export default function LandingPage() {
           <Overlay color="#000" opacity={0.2} zIndex={1} />
           <Container size="lg" style={{ zIndex: 2, position: "relative" }}>
             <Center h="100%">
-              <Stack gap="xs">
-                <Link href="/devotions" className={classes.bookCoverLink}>
-                  <Image
-                    src={bookCover.src}
-                    alt="The Blue Book Cover"
-                    w={{ base: 150, sm: 200, md: 250 }}
-                    radius="md"
-                    style={{ boxShadow: "0 4px 15px rgba(0,0,0,0.2)" }}
-                  />
-                </Link>
+              <Stack gap="xs" align="center">
+                <Box
+                  w={{ base: 150, sm: 200, md: 250 }}
+                  className={classes.bookCoverLink}
+                >
+                  <Link href="/devotions">
+                    <NextImage
+                      src={bookCover.src}
+                      alt="The Blue Book Cover"
+                      width={250}
+                      height={350}
+                      style={{
+                        display: "block",
+                        maxWidth: "100%",
+                        height: "auto",
+                      }}
+                    />
+                  </Link>
+                </Box>
+                <Text
+                  size="sm"
+                  c="white"
+                  ta="center"
+                  mt="xs"
+                  style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.5)" }}
+                >
+                  A Daily Guide to Spiritual Rhythms
+                </Text>
               </Stack>
             </Center>
           </Container>
@@ -98,14 +118,22 @@ export default function LandingPage() {
           </Title>
           <Text size="lg" c="dimmed" ta="center" maw={750} lh={1.6}>
             "The Blue Book" is a spiritual journal drawn from the themes and
-            seasons of Jim Branch's journey with Jesus over twenty years. It
-            gathers words, poems, scriptures, and prayers shared by saints,
+            seasons of Jim Branch's journey with Jesus over twenty years.
+          </Text>
+          <Text size="lg" c="dimmed" ta="center" maw={750} lh={1.6}>
+            It gathers words, poems, scriptures, and prayers shared by saints,
             poets, and pilgrims to help you discover the ancient rhythms of God.
             This guide offers space, time, and structure to nourish your soul
             and transform your heart through being with Jesus.
           </Text>
           <Divider w={100} color="coverBlue.6" size="sm" my="sm" />
-          <Text size="md" c="neutralGray.7" ta="center" fs="italic">
+          <Text
+            size="md"
+            c="neutralGray.7"
+            ta="center"
+            fs="italic"
+            className={classes.quote}
+          >
             “My deepest desire is that this book might be helpful in your
             journey with Jesus.” — Jim Branch
           </Text>
@@ -167,6 +195,9 @@ export default function LandingPage() {
             <Title order={2} c="coverBlue" ta="center">
               Begin Your Devotional Journey
             </Title>
+            <Text size="md" c="coverBlue" ta="center" maw={500}>
+              Find daily peace and connection through guided reflection.
+            </Text>
             <Text size="lg" c="coverBlue" ta="center" maw={600}>
               Join countless others in discovering the depths of God’s love
               through *The Blue Book*. Let it be your companion in every season

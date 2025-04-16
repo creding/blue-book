@@ -64,6 +64,8 @@ export function PrefaceIntroPage() {
             </Text>
           </Stack>
         </Paper>
+        {/* Add Divider between sections */}
+        <Divider my="xl" />
         {/* Introduction Section */}
         <Paper
           shadow={isMobile ? undefined : "sm"}
