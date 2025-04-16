@@ -2,29 +2,29 @@ import React from "react";
 import { Stack, Group, Title, Box, Blockquote } from "@mantine/core";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
 import { User } from "@supabase/supabase-js";
-import { Scripture } from "@/types/graphql"; 
+import { Scripture } from "@/types/graphql";
 import { Note } from "@/types/note";
 
 interface PsalmDisplayProps {
-  psalm: Scripture; 
-  notes: Note[]; 
+  psalm: Scripture;
+  notes: Note[];
   user: User | null;
 }
 
 export function PsalmDisplay({ psalm, notes, user }: PsalmDisplayProps) {
   if (!psalm) {
-    return null; 
+    return null;
   }
 
   return (
     <Stack gap="md">
       <Group justify="space-between" align="center" wrap="nowrap" gap="sm">
-        <Title order={4} c="coverBlue"> 
+        <Title order={4} c="coverBlue">
           Psalm for the Week
         </Title>
       </Group>
       <Blockquote
-        cite={psalm.reference} 
+        cite={psalm.reference}
         styles={{
           root: {
             padding: "md",
@@ -40,13 +40,15 @@ export function PsalmDisplay({ psalm, notes, user }: PsalmDisplayProps) {
         radius="sm"
       >
         <Group justify="space-between" wrap="nowrap" align="flex-start">
-          <Box pr="md" style={{ flexGrow: 1 }} lh={1.6}> 
-            <div
-              dangerouslySetInnerHTML={{
-                __html: psalm.text || "<p>Psalm text not available.</p>",
-              }}
-            />
-          </Box>
+          <Box
+            pr="md"
+            style={{ flexGrow: 1 }}
+            lh={1.6}
+            className="scripture-container"
+            dangerouslySetInnerHTML={{
+              __html: psalm.text || "<p>Psalm text not available.</p>",
+            }}
+          />
           <NotesButton
             user={user}
             referenceType="scripture"
