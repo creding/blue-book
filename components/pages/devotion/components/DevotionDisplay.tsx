@@ -24,7 +24,7 @@ import PrintButton from "@/components/ui/buttons/PrintButton";
 import { NotesButton } from "@/components/ui/buttons/NotesButton";
 import { Devotion } from "@/types/graphql";
 import { ReferenceType } from "@/types/note";
-import { ScriptureAccordion } from "@/components/ui/ScriptureAccordion";
+import { ScriptureList } from "@/components/ui/ScriptureList";
 import { User } from "@supabase/supabase-js";
 import { useMediaQuery } from "@mantine/hooks";
 import { ReadingNavigator } from "./ReadingNavigator";
@@ -276,7 +276,7 @@ export function DevotionalDisplay({
                 Scripture Reading
               </Title>
             </Group>
-            <ScriptureAccordion
+            <ScriptureList
               scriptures={devotional.devotion_scripturesCollection.edges
                 .filter((edge) => !edge.node.scriptures.is_psalm)
                 .map((edge) => ({
