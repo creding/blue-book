@@ -74,7 +74,7 @@ export default function LandingPage() {
             backgroundSize: "cover",
             backgroundPosition: "center",
 
-            minHeight: "800px", // Keep height or adjust as needed
+            minHeight: "900px", // Keep height or adjust as needed
             display: "flex",
             alignItems: "center",
             justifyContent: "center", // Center the content horizontally too

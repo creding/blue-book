@@ -1,19 +1,26 @@
 "use client";
 import { Container, Title, Text, Paper, Stack, Divider } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 // Assuming you are wrapping your app in MantineProvider with the custom theme
 
 export function PrefaceIntroPage() {
+  const isMobile = useMediaQuery("(max-width: 768px)");
   return (
     // Use Box with background from theme's 'other' object if desired, or keep it simple
     // Example: <Box bg={theme.other.bodyBg.light} miw="100vh">
-    <Container size="lg" py="xl">
+    <Container size="lg" p={{ base: "xs", xl: "xl" }}>
       {" "}
       {/* Optimal reading width */}
       <Stack gap="xl">
         {" "}
         {/* Increased gap between sections */}
         {/* Preface Section */}
-        <Paper shadow="sm" p="xl" radius="md" withBorder>
+        <Paper
+          shadow="sm"
+          p={{ base: "xs", xl: "xl" }}
+          radius="md"
+          withBorder={!isMobile}
+        >
           {" "}
           {/* Increased padding */}
           <Stack gap="lg">
